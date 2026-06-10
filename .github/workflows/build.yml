@@ -1,0 +1,94 @@
+name: Build KeyHolder Standalone Apps
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  build-windows:
+    name: Build Windows App
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore Dependencies
+      run: dotnet restore windows/KeyHolder/KeyHolder.csproj
+
+    - name: Compile and Publish Standalone EXE
+      run: |
+        dotnet publish windows/KeyHolder/KeyHolder.csproj -c Release -o publish
+
+    - name: Upload Standalone EXE
+      uses: actions/upload-artifact@v4
+      with:
+        name: KeyHolder-Windows-Standalone
+        path: publish/KeyHolder.exe
+
+  build-macos:
+    name: Build macOS App
+    runs-on: macos-14
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Compile Swift Project
+      run: swift build -c release
+
+    - name: Create macOS App Bundle
+      run: |
+        APP_DIR="build/KeyHolder.app"
+        mkdir -p "$APP_DIR/Contents/MacOS"
+        mkdir -p "$APP_DIR/Contents/Resources"
+        cp .build/release/keyholder "$APP_DIR/Contents/MacOS/KeyHolder"
+        chmod +x "$APP_DIR/Contents/MacOS/KeyHolder"
+        
+        # Create Info.plist
+        cat <<EOF > "$APP_DIR/Contents/Info.plist"
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+            <key>CFBundleDevelopmentRegion</key>
+            <string>en</string>
+            <key>CFBundleExecutable</key>
+            <string>KeyHolder</string>
+            <key>CFBundleIdentifier</key>
+            <string>com.olixstudios.KeyHolder</string>
+            <key>CFBundleName</key>
+            <string>KeyHolder</string>
+            <key>CFBundlePackageType</key>
+            <string>APPL</string>
+            <key>CFBundleShortVersionString</key>
+            <string>1.0</string>
+            <key>CFBundleVersion</key>
+            <string>1</string>
+            <key>LSMinimumSystemVersion</key>
+            <string>13.0</string>
+            <key>LSUIElement</key>
+            <string>1</string>
+            <key>NSPrincipalClass</key>
+            <string>NSApplication</string>
+        </dict>
+        </plist>
+        EOF
+
+    - name: Compress App Bundle
+      run: |
+        ditto -c -k --sequesterRsrc --keepParent build/KeyHolder.app KeyHolder-macOS.zip
+
+    - name: Upload Standalone App
+      uses: actions/upload-artifact@v4
+      with:
+        name: KeyHolder-macOS-Standalone
+        path: KeyHolder-macOS.zip

@@ -43,6 +43,19 @@ To protect your credentials, KeyHolder enforces strict **separation of concerns*
    - Secrets are saved into your macOS System Keychain or Windows Credential Locker.
    - This ensures that even if someone reads your local metadata file, they see no sensitive data. The secret key is only queried from the secure OS vault at the exact millisecond you choose to copy or reveal it, and only after successful biometric authentication.
 
+## CI/CD Standalone Builds (GitHub Actions) 🚀
+
+This repository is configured with a unified **GitHub Actions** CI/CD pipeline that automatically compiles, packages, and outputs standalone production-ready builds for both macOS and Windows on every push to the `main` branch. 
+
+You do not need to install local compilers (like Xcode Command Line Tools or .NET SDK) to obtain the compiled applications:
+
+1. Click on the **Actions** tab at the top of this repository on GitHub.
+2. Select the latest run of the **Build KeyHolder Standalone Apps** workflow.
+3. Scroll down to the **Artifacts** section at the bottom of the page.
+4. Download the desired package:
+   - **`KeyHolder-macOS-Standalone`**: Contains a zipped native `KeyHolder.app` macOS app.
+   - **`KeyHolder-Windows-Standalone`**: Contains the single-file, self-contained `KeyHolder.exe` Windows app.
+
 ---
 
 ## Installation & Running
