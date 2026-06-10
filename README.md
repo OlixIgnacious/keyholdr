@@ -29,6 +29,25 @@ KeyHolder is implemented as a native application for both **macOS** and **Window
 
 ---
 
+## Platform Auto-Mapping
+
+KeyHolder automatically parses the platform name to assign it a matching visual category:
+
+| Platform Category | Matches (Substring) | Icon / Symbol | Primary Theme |
+| :--- | :--- | :--- | :--- |
+| **AI / Machine Learning** | `openai`, `chatgpt`, `claude`, `anthropic`, `gemini`, `huggingface`, `cohere`, `deepseek`, `ollama` | Sparkles (✨) | Teal / Orange / Purple / Yellow / Blue |
+| **Version Control** | `github`, `gitlab`, `bitbucket`, `git` | Terminal (💻) | Purple / Orange / Blue |
+| **Cloud & Hosting** | `aws`, `amazon`, `azure`, `cloudflare`, `digitalocean`, `heroku`, `vercel`, `netlify`, `fly.io`, `render` | Cloud (☁️) | Orange / Blue / Purple / Black / Cyan |
+| **Databases & Backend** | `postgres`, `mysql`, `mongo`, `redis`, `supabase`, `firebase`, `dynamodb`, `prisma`, `hasura`, `db` | Database Server (🗄️) | Green / Mint / Orange / Blue / Red |
+| **Payments & Commerce** | `stripe`, `paypal`, `braintree`, `adyen`, `coinbase`, `shopify` | Credit Card (💳) | Indigo / Blue / Lime |
+| **Networking & Servers** | `ssh`, `server`, `vps`, `docker`, `kubernetes` (k8s), `nginx` | Network (🌐) | Gray / Blue |
+| **Productivity & Chat** | `slack`, `discord`, `telegram`, `teams`, `zoom`, `notion`, `figma`, `jira`, `linear` | Speech Bubble (💬) | Pink / Blue / Indigo / Purple |
+| **Monitoring & Logging** | `sentry`, `datadog`, `grafana`, `prometheus`, `mixpanel`, `amplitude` | Waveform (📈) | Purple / Orange |
+| **Communications & Email** | `twilio`, `sendgrid`, `mailchimp`, `postmark`, `ses` | Paper Plane (✈️) | Red / Blue |
+| **Search & General APIs** | `google` | Globe (🌍) | Blue |
+
+---
+
 ## Security Model
 
 To protect your credentials, KeyHolder enforces strict **separation of concerns** in its storage model:
