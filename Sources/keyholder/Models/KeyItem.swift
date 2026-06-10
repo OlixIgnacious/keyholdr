@@ -18,25 +18,120 @@ public struct KeyItem: Codable, Identifiable, Hashable {
     
     public var symbol: String {
         let p = platform.lowercased()
-        if p.contains("github") { return "terminal.fill" }
-        if p.contains("aws") || p.contains("amazon") { return "cloud.fill" }
-        if p.contains("openai") || p.contains("chatgpt") { return "sparkles" }
-        if p.contains("google") { return "globe" }
-        if p.contains("stripe") { return "creditcard.fill" }
-        if p.contains("db") || p.contains("database") || p.contains("postgres") || p.contains("mysql") || p.contains("mongo") || p.contains("sql") { return "server.rack" }
-        if p.contains("ssh") || p.contains("server") || p.contains("vps") { return "network" }
+        
+        // AI / ML
+        if p.contains("openai") || p.contains("chatgpt") || p.contains("claude") || p.contains("anthropic") || p.contains("gemini") || p.contains("huggingface") || p.contains("cohere") || p.contains("deepseek") || p.contains("ollama") {
+            return "sparkles"
+        }
+        
+        // Version Control
+        if p.contains("github") || p.contains("gitlab") || p.contains("bitbucket") || p.contains("git") {
+            return "terminal.fill"
+        }
+        
+        // Cloud & Hosting
+        if p.contains("aws") || p.contains("amazon") || p.contains("azure") || p.contains("cloudflare") || p.contains("digitalocean") || p.contains("heroku") || p.contains("vercel") || p.contains("netlify") || p.contains("fly.io") || p.contains("render") {
+            return "cloud.fill"
+        }
+        
+        // Databases / Backend services
+        if p.contains("db") || p.contains("database") || p.contains("postgres") || p.contains("mysql") || p.contains("mongo") || p.contains("sql") || p.contains("redis") || p.contains("supabase") || p.contains("firebase") || p.contains("dynamodb") || p.contains("prisma") || p.contains("hasura") {
+            return "server.rack"
+        }
+        
+        // Payments & E-commerce
+        if p.contains("stripe") || p.contains("paypal") || p.contains("braintree") || p.contains("adyen") || p.contains("coinbase") || p.contains("shopify") {
+            return "creditcard.fill"
+        }
+        
+        // Servers & Networking
+        if p.contains("ssh") || p.contains("server") || p.contains("vps") || p.contains("docker") || p.contains("k8s") || p.contains("kubernetes") || p.contains("nginx") {
+            return "network"
+        }
+        
+        // Communication, Collaboration & Productivity
+        if p.contains("slack") || p.contains("discord") || p.contains("telegram") || p.contains("teams") || p.contains("zoom") || p.contains("notion") || p.contains("figma") || p.contains("jira") || p.contains("linear") {
+            return "bubble.left.and.bubble.right.fill"
+        }
+        
+        // Monitoring, Logging & Analytics
+        if p.contains("sentry") || p.contains("datadog") || p.contains("grafana") || p.contains("prometheus") || p.contains("mixpanel") || p.contains("amplitude") {
+            return "waveform.path.ecg"
+        }
+        
+        // Email, SMS & Messaging APIs
+        if p.contains("twilio") || p.contains("sendgrid") || p.contains("mailchimp") || p.contains("postmark") || p.contains("ses") {
+            return "paperplane.fill"
+        }
+        
+        // Search & Public APIs
+        if p.contains("google") {
+            return "globe"
+        }
+        
         return "key.fill"
     }
     
     public var symbolColor: Color {
         let p = platform.lowercased()
-        if p.contains("github") { return .purple }
-        if p.contains("aws") || p.contains("amazon") { return .orange }
+        
+        // AI / ML
         if p.contains("openai") || p.contains("chatgpt") { return .teal }
-        if p.contains("google") { return .blue }
+        if p.contains("claude") || p.contains("anthropic") { return .orange }
+        if p.contains("gemini") { return .purple }
+        if p.contains("huggingface") { return .yellow }
+        if p.contains("deepseek") { return .blue }
+        
+        // Version Control
+        if p.contains("github") { return .purple }
+        if p.contains("gitlab") { return .orange }
+        if p.contains("bitbucket") { return .blue }
+        if p.contains("git") { return .orange }
+        
+        // Cloud & Providers
+        if p.contains("aws") || p.contains("amazon") { return .orange }
+        if p.contains("azure") { return .blue }
+        if p.contains("cloudflare") { return .orange }
+        if p.contains("digitalocean") { return .blue }
+        if p.contains("heroku") { return .purple }
+        if p.contains("vercel") { return .primary }
+        if p.contains("netlify") { return .cyan }
+        
+        // Databases & Backend
+        if p.contains("supabase") { return .mint }
+        if p.contains("firebase") { return .orange }
+        if p.contains("postgres") { return .blue }
+        if p.contains("redis") { return .red }
+        if p.contains("mongo") { return .green }
+        if p.contains("db") || p.contains("database") || p.contains("mysql") || p.contains("sql") || p.contains("dynamodb") { return .green }
+        
+        // Payments
         if p.contains("stripe") { return .indigo }
-        if p.contains("db") || p.contains("database") || p.contains("postgres") || p.contains("mysql") || p.contains("mongo") || p.contains("sql") { return .green }
-        if p.contains("ssh") || p.contains("server") || p.contains("vps") { return .gray }
+        if p.contains("paypal") { return .blue }
+        if p.contains("shopify") { return .green }
+        
+        // Networking & VPS
+        if p.contains("docker") { return .blue }
+        if p.contains("ssh") || p.contains("server") || p.contains("vps") || p.contains("k8s") || p.contains("kubernetes") { return .gray }
+        
+        // Communication & Collaboration
+        if p.contains("slack") { return .pink }
+        if p.contains("discord") { return .indigo }
+        if p.contains("telegram") { return .blue }
+        if p.contains("notion") { return .primary }
+        if p.contains("figma") { return .purple }
+        
+        // Monitoring
+        if p.contains("sentry") { return .purple }
+        if p.contains("datadog") { return .orange }
+        
+        // Mailing
+        if p.contains("twilio") { return .red }
+        if p.contains("sendgrid") || p.contains("mailchimp") { return .blue }
+        
+        // Google ecosystem
+        if p.contains("google") { return .blue }
+        
         return .yellow
     }
 }
