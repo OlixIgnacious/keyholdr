@@ -1,0 +1,244 @@
+<Window x:Class="KeyHolder.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2000/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2000/xaml"
+        Title="KeyHolder" 
+        Height="500" Width="360"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Topmost="True"
+        Deactivated="Window_Deactivated"
+        WindowStartupLocation="Manual">
+
+    <Window.Resources>
+        <!-- Scrollbar Customization for Modern Scrollbars -->
+        <Style x:Key="ModernScrollViewer" TargetType="{x:Type ScrollViewer}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                        <Grid>
+                            <ScrollContentPresenter x:Name="PART_ScrollContentPresenter"/>
+                            <ScrollBar x:Name="PART_VerticalScrollBar"
+                                       Value="{TemplateBinding VerticalOffset}"
+                                       Maximum="{TemplateBinding ScrollableHeight}"
+                                       ViewportSize="{TemplateBinding ViewportHeight}"
+                                       Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
+                                       HorizontalAlignment="Right"
+                                       Width="6" Background="Transparent"
+                                       Opacity="0.4">
+                                <ScrollBar.Template>
+                                    <ControlTemplate TargetType="{x:Type ScrollBar}">
+                                        <Track x:Name="PART_Track" IsDirectionReversed="true">
+                                            <Track.Thumb>
+                                                <Thumb Background="#55FFFFFF" Width="6">
+                                                    <Thumb.Template>
+                                                        <ControlTemplate TargetType="{x:Type Thumb}">
+                                                            <Border Background="{TemplateBinding Background}" CornerRadius="3" />
+                                                        </ControlTemplate>
+                                                    </Thumb.Template>
+                                                </Thumb>
+                                            </Track.Thumb>
+                                        </Track>
+                                    </ControlTemplate>
+                                </ScrollBar.Template>
+                            </ScrollBar>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border Background="#1C1C1E" BorderBrush="#2C2C2E" BorderThickness="1.5" CornerRadius="16">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="20" Color="Black" Opacity="0.5" ShadowDepth="4" Direction="270" />
+        </Border.Effect>
+        
+        <Grid Margin="16">
+            <!-- Main List State -->
+            <Grid x:Name="MainListPanel" Visibility="Visible">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/> <!-- Header -->
+                    <RowDefinition Height="Auto"/> <!-- Search -->
+                    <RowDefinition Height="Auto"/> <!-- Tags -->
+                    <RowDefinition Height="*"/>    <!-- Key List -->
+                </Grid.RowDefinitions>
+
+                <!-- Header -->
+                <Grid Grid.Row="0" Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="KeyHolder" Foreground="White" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="LockStatusIndicator" Text="🔑" Margin="6,0,0,0" FontSize="14" VerticalAlignment="Center" Cursor="Hand" MouseLeftButtonDown="LockStatusIndicator_Click"/>
+                    </StackPanel>
+
+                    <Button Grid.Column="1" Click="AddKeyButton_Click" Background="Transparent" BorderBrush="Transparent" Foreground="#FF007AFF" FontSize="14" FontWeight="Medium" Padding="4" Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <ContentPresenter />
+                            </ControlTemplate>
+                        </Button.Template>
+                        <TextBlock Text="+ Add Key" />
+                    </Button>
+                </Grid>
+
+                <!-- Search Bar -->
+                <Border Grid.Row="1" Background="#2C2C2E" CornerRadius="8" Padding="8,6" Margin="0,0,0,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="&#xE721;" FontFamily="Segoe MDL2 Assets" Foreground="#8E8E93" FontSize="12" Margin="0,1,6,0" VerticalAlignment="Center"/>
+                        <TextBox x:Name="SearchBox" Grid.Column="1" Background="Transparent" BorderThickness="0" Foreground="White" CaretBrush="White" VerticalAlignment="Center" TextChanged="SearchBox_TextChanged"/>
+                        <TextBlock IsHitTestVisible="False" Text="Search platforms or tags..." Grid.Column="1" Foreground="#8E8E93" VerticalAlignment="Center" Margin="2,0,0,0">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Text, ElementName=SearchBox}" Value="">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+                </Border>
+
+                <!-- Tag Pills -->
+                <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="0,0,0,12">
+                    <StackPanel x:Name="TagPanel" Orientation="Horizontal">
+                        <!-- Dynamic list of filter pills injected in code -->
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Key List -->
+                <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" Style="{StaticResource ModernScrollViewer}">
+                    <ItemsControl x:Name="KeysItemsControl">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="#2C2C2E" CornerRadius="10" Padding="12" Margin="0,0,0,8">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" /> <!-- Platform Icon -->
+                                            <ColumnDefinition Width="*" />    <!-- Name / Label -->
+                                            <ColumnDefinition Width="Auto" /> <!-- Actions -->
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Platform Icon -->
+                                        <Border Width="32" Height="32" Background="#1C1C1E" CornerRadius="6" VerticalAlignment="Center" Margin="0,0,12,0">
+                                            <TextBlock Text="{Binding Glyph}" 
+                                                       FontFamily="Segoe MDL2 Assets" 
+                                                       Foreground="{Binding SymbolBrush}" 
+                                                       FontSize="16" 
+                                                       HorizontalAlignment="Center" 
+                                                       VerticalAlignment="Center"/>
+                                        </Border>
+
+                                        <!-- Name & Label -->
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Platform}" Foreground="White" FontWeight="SemiBold" FontSize="14"/>
+                                            <TextBlock Text="{Binding Label}" Foreground="#8E8E93" FontSize="11" Margin="0,1,0,0"/>
+                                        </StackPanel>
+
+                                        <!-- Action Buttons -->
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <!-- Reveal Button -->
+                                            <Button Tag="{Binding Id}" Click="RevealKeyButton_Click" Background="Transparent" BorderBrush="Transparent" Foreground="#8E8E93" Margin="0,0,8,0" Padding="4" Cursor="Hand">
+                                                <Button.Template>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <ContentPresenter />
+                                                    </ControlTemplate>
+                                                </Button.Template>
+                                                <TextBlock Text="&#xE7B3;" FontFamily="Segoe MDL2 Assets" FontSize="15" /> <!-- Eye icon -->
+                                            </Button>
+                                            
+                                            <!-- Copy Button -->
+                                            <Button Tag="{Binding Id}" Click="CopyKeyButton_Click" Background="Transparent" BorderBrush="Transparent" Foreground="#FF007AFF" Padding="4" Cursor="Hand">
+                                                <Button.Template>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <ContentPresenter />
+                                                    </ControlTemplate>
+                                                </Button.Template>
+                                                <TextBlock Text="&#xE8C8;" FontFamily="Segoe MDL2 Assets" FontSize="15" /> <!-- Copy icon -->
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+
+            <!-- Add/Edit Key Form State -->
+            <Grid x:Name="AddKeyPanel" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/> <!-- Title -->
+                    <RowDefinition Property="*"/>     <!-- Input fields -->
+                    <RowDefinition Height="Auto"/> <!-- Actions -->
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" x:Name="FormTitle" Text="Add Secure Key" Foreground="White" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,16"/>
+
+                <StackPanel Grid.Row="1">
+                    <!-- Platform -->
+                    <TextBlock Text="Platform Name" Foreground="#8E8E93" FontSize="11" Margin="0,0,0,4"/>
+                    <Border Background="#2C2C2E" CornerRadius="8" Padding="8,6" Margin="0,0,0,12">
+                        <TextBox x:Name="FormPlatformInput" Background="Transparent" BorderThickness="0" Foreground="White" CaretBrush="White"/>
+                    </Border>
+
+                    <!-- Label -->
+                    <TextBlock Text="Reference Label" Foreground="#8E8E93" FontSize="11" Margin="0,0,0,4"/>
+                    <Border Background="#2C2C2E" CornerRadius="8" Padding="8,6" Margin="0,0,0,12">
+                        <TextBox x:Name="FormLabelInput" Background="Transparent" BorderThickness="0" Foreground="White" CaretBrush="White"/>
+                    </Border>
+
+                    <!-- Secret value -->
+                    <TextBlock Text="Key Value" Foreground="#8E8E93" FontSize="11" Margin="0,0,0,4"/>
+                    <Border Background="#2C2C2E" CornerRadius="8" Padding="8,6" Margin="0,0,0,12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <!-- Use PasswordBox for secure input -->
+                            <PasswordBox x:Name="FormSecretInput" Background="Transparent" BorderThickness="0" Foreground="White" CaretBrush="White"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Tags -->
+                    <TextBlock Text="Tags (comma separated)" Foreground="#8E8E93" FontSize="11" Margin="0,0,0,4"/>
+                    <Border Background="#2C2C2E" CornerRadius="8" Padding="8,6" Margin="0,0,0,12">
+                        <TextBox x:Name="FormTagsInput" Background="Transparent" BorderThickness="0" Foreground="White" CaretBrush="White"/>
+                    </Border>
+                </StackPanel>
+
+                <!-- Actions -->
+                <Grid Grid.Row="2" Margin="0,16,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Button Content="Cancel" Click="FormCancel_Click" Background="Transparent" BorderBrush="Transparent" Foreground="#8E8E93" HorizontalAlignment="Left" Padding="8,4" Cursor="Hand"/>
+                    
+                    <Button Grid.Column="1" Content="Add Key" Click="FormSave_Click" Background="#FF007AFF" Foreground="White" BorderThickness="0" FontWeight="SemiBold" Padding="16,8" Cursor="Hand">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="8"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
