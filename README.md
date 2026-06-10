@@ -62,15 +62,26 @@ Run the build script located at the root of the project:
 ---
 
 ### Windows
-#### Prerequisite
-Ensure you have the [.NET 8.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) installed.
+#### Build, Run, & Publish Standalone EXE
 
-#### Build & Run
-Open terminal in the Windows project directory and run:
+You can run the app in development mode using the SDK, or generate a **self-contained, standalone `.exe`** with zero external dependencies (meaning users do not need .NET installed to run it).
+
+##### Option A: Run in Development (Requires SDK)
 ```cmd
 cd windows/KeyHolder
 dotnet run
 ```
+
+##### Option B: Build a Standalone `.exe` (Self-Contained)
+To bundle the .NET runtime and WPF libraries directly into a single file:
+```cmd
+cd windows/KeyHolder
+dotnet publish -c Release
+```
+This compiles a single executable file at:
+`windows/KeyHolder/bin/Release/net8.0-windows10.0.19041.0/win-x64/publish/KeyHolder.exe`
+
+You can copy and run this `KeyHolder.exe` file on any Windows 10/11 PC without installing any prerequisites.
 
 ---
 

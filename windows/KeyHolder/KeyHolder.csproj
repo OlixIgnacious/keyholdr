@@ -9,6 +9,12 @@
     <UseWindowsForms>true</UseWindowsForms>
     <RootNamespace>KeyHolder</RootNamespace>
     <AssemblyName>KeyHolder</AssemblyName>
+    
+    <!-- Self-Contained Single-File Publish Configuration -->
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
 
   <ItemGroup>
