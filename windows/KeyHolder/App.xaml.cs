@@ -11,8 +11,10 @@ namespace KeyHolder
         private Forms.NotifyIcon? _notifyIcon;
         private MainWindow? _mainWindow;
 
-        protected void OnStartup(object sender, StartupEventArgs e)
+        protected override void OnStartup(StartupEventArgs e)
         {
+            base.OnStartup(e);
+
             // Configure app to stay running in background even if all windows are closed
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
@@ -102,8 +104,10 @@ namespace KeyHolder
             Shutdown();
         }
 
-        protected void OnExit(object sender, ExitEventArgs e)
+        protected override void OnExit(ExitEventArgs e)
         {
+            base.OnExit(e);
+
             if (_notifyIcon != null)
             {
                 _notifyIcon.Visible = false;

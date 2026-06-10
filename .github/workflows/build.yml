@@ -26,13 +26,13 @@ jobs:
 
     - name: Compile and Publish Standalone EXE
       run: |
-        dotnet publish windows/KeyHolder/KeyHolder.csproj -c Release -o publish
+        dotnet publish windows/KeyHolder/KeyHolder.csproj -c Release
 
     - name: Upload Standalone EXE
       uses: actions/upload-artifact@v4
       with:
         name: KeyHolder-Windows-Standalone
-        path: publish/KeyHolder.exe
+        path: windows/KeyHolder/bin/Release/net8.0-windows10.0.19041.0/win-x64/publish/KeyHolder.exe
 
   build-macos:
     name: Build macOS App
@@ -41,6 +41,9 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
+
+    - name: Select Xcode 16
+      run: sudo xcode-select -s /Applications/Xcode_16.app
 
     - name: Compile Swift Project
       run: swift build -c release
