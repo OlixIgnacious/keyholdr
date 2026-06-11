@@ -21,4 +21,11 @@
     <PackageReference Include="System.Text.Json" Version="8.0.3" />
   </ItemGroup>
 
+  <!-- UseWindowsForms injects global usings that collide with WPF types
+       (Application, Button, Brush). All files declare explicit usings. -->
+  <ItemGroup>
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+
 </Project>
