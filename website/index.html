@@ -2,469 +2,261 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KeyHolder — Secure Native Tray Utility for Developers</title>
-  <meta name="description" content="KeyHolder is an ultra-lightweight, native menu bar and system tray utility built for developers. Securely store and copy API keys with Touch ID and Windows Hello.">
-  
-  <!-- Fonts -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>KeyHolder — Your keys, one keystroke away</title>
+  <meta name="description" content="KeyHolder is a native, open-source menu bar and system tray vault for API keys. Hardware-backed storage, Touch ID and Windows Hello, under 1 MB.">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- CSS -->
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="index.css">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="KeyHolder">
+  <meta property="og:description" content="A native, hardware-secured vault for your API keys. macOS &amp; Windows.">
 </head>
-<body>
+<body data-theme="light">
 
-  <!-- Navigation -->
-  <nav class="nav-bar" id="main-nav">
-    <div class="nav-container">
-      <a href="#" class="nav-logo-link">
-        <img src="logo.svg" alt="KeyHolder Logo" class="nav-logo-img" id="nav-logo">
-        <span class="nav-brand-name">KeyHolder</span>
-      </a>
-      <ul class="nav-links">
-        <li><a href="#features" class="nav-link">Features</a></li>
-        <li><a href="#simulator" class="nav-link">Simulator</a></li>
-        <li><a href="#security" class="nav-link">Security</a></li>
-        <li><a href="#specs" class="nav-link">Specs</a></li>
-        <li><a href="https://github.com/OlixIgnacious/keyholder" class="nav-btn-github" target="_blank" rel="noopener">GitHub</a></li>
-      </ul>
-    </div>
-  </nav>
+  <!-- ============ Header ============ -->
+  <header class="site-header" id="site-header">
+    <a class="brand" href="#top" aria-label="KeyHolder home">
+      <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="9" cy="9" r="4.25"/>
+        <path d="M12 12l7.5 7.5M16.5 16.5l2-2M19 19l2-2"/>
+      </svg>
+      <span class="brand-name">KeyHolder</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="#product">Product</a>
+      <a href="#security">Security</a>
+      <a href="#specs">Specs</a>
+      <a href="#download">Download</a>
+    </nav>
+    <a class="header-cta" href="https://github.com/OlixIgnacious/keyholder" target="_blank" rel="noopener">GitHub</a>
+  </header>
 
-  <!-- Hero Section -->
-  <section class="hero-section" id="hero">
-    <div class="hero-bg-glows">
-      <div class="glow-1"></div>
-      <div class="glow-2"></div>
+  <main id="top">
+
+    <!-- ============ Hero ============ -->
+    <section class="hero" data-section-theme="light">
+      <div class="hero-inner">
+        <p class="eyebrow reveal">Open source · macOS &amp; Windows</p>
+        <h1 class="hero-title">
+          <span class="line-mask"><span class="line">Your keys,</span></span>
+          <span class="line-mask"><span class="line">one keystroke</span></span>
+          <span class="line-mask"><span class="line muted">away.</span></span>
+        </h1>
+        <div class="hero-foot reveal">
+          <p class="hero-sub">
+            A native vault that lives quietly in your menu bar.
+            Hardware-backed storage, biometric unlock, and your
+            API&nbsp;keys on the clipboard in a blink.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-solid" href="https://github.com/OlixIgnacious/keyholder/releases" target="_blank" rel="noopener">Download for macOS</a>
+            <a class="btn btn-ghost" href="https://github.com/OlixIgnacious/keyholder/releases" target="_blank" rel="noopener">Download for Windows</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live popover demo -->
+      <div class="hero-demo reveal" aria-label="Interactive preview of the KeyHolder popover">
+        <div class="demo-window" id="demo-window">
+          <div class="demo-menubar">
+            <div class="demo-menubar-left">
+              <span class="demo-dot"></span>
+              <span>KeyHolder</span>
+            </div>
+            <div class="demo-menubar-right">
+              <svg class="demo-tray-key" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="9" cy="9" r="4.25"/>
+                <path d="M12 12l7.5 7.5M16.5 16.5l2-2M19 19l2-2"/>
+              </svg>
+              <span id="demo-clock">9:41</span>
+            </div>
+          </div>
+          <div class="demo-popover">
+            <div class="demo-search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.5-4.5"/></svg>
+              <input id="demo-search-input" type="text" placeholder="Search keys…" autocomplete="off" spellcheck="false" aria-label="Search keys">
+            </div>
+            <ul class="demo-list" id="demo-list"></ul>
+            <div class="demo-footer">
+              <span>⌘⇧K to open</span>
+              <span class="demo-lock">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+                Locked at rest
+              </span>
+            </div>
+            <div class="demo-bio" id="demo-bio" aria-hidden="true">
+              <svg viewBox="0 0 100 100" class="demo-bio-print" aria-hidden="true">
+                <path d="M 50,18 A 32,32 0 0,1 82,50 M 50,26 A 24,24 0 0,1 74,50 M 50,34 A 16,16 0 0,1 66,50 M 50,42 A 8,8 0 0,1 58,50 M 50,50 A 8,8 0 0,0 42,50 M 50,50 A 16,16 0 0,0 34,50 M 50,50 A 24,24 0 0,0 26,50 M 50,50 A 32,32 0 0,0 18,50" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+              </svg>
+              <span id="demo-bio-text">Touch ID</span>
+            </div>
+          </div>
+        </div>
+        <p class="demo-hint">Try it — click a key to copy</p>
+      </div>
+    </section>
+
+    <!-- ============ Ticker ============ -->
+    <div class="ticker" data-section-theme="light" aria-hidden="true">
+      <div class="ticker-track" id="ticker-track">
+        <span>Touch ID</span><i>·</i>
+        <span>Windows Hello</span><i>·</i>
+        <span>Keychain Services</span><i>·</i>
+        <span>Credential Locker</span><i>·</i>
+        <span>680 KB</span><i>·</i>
+        <span>Zero Electron</span><i>·</i>
+        <span>100% native</span><i>·</i>
+        <span>MIT licensed</span><i>·</i>
+      </div>
     </div>
-    
-    <div class="hero-container">
-      <div class="hero-content">
-        <span class="hero-badge">Now Open Source</span>
-        <h1 class="hero-title">Your API keys.<br>Always within reach.<br><span class="gradient-text">Secure by design.</span></h1>
-        <p class="hero-subtitle">
-          A native, ultra-lightweight, and hardware-secured menu bar &amp; system tray accessory designed for modern development workflows.
+
+    <!-- ============ 01 Product ============ -->
+    <section class="section" id="product" data-section-theme="light">
+      <header class="section-head">
+        <span class="index reveal">01</span>
+        <h2 class="reveal">Out of sight.<br><em>Never out of reach.</em></h2>
+      </header>
+      <div class="section-body">
+        <p class="lede reveal">
+          No dock icon, no window, no clutter. KeyHolder sits beside your clock
+          and opens with a click or a global shortcut — search, copy, gone.
         </p>
-        <div class="hero-actions">
-          <a href="https://github.com/OlixIgnacious/keyholder/releases" class="cta-primary-btn" id="btn-download-mac">Download for macOS</a>
-          <a href="https://github.com/OlixIgnacious/keyholder/releases" class="cta-secondary-btn" id="btn-download-win">Download for Windows</a>
+        <div class="feature-grid">
+          <article class="feature reveal">
+            <span class="feature-no">a</span>
+            <h3>Instant recall</h3>
+            <p>Open the popover, type two letters, hit return. Your key is on the clipboard before the window finishes fading in.</p>
+          </article>
+          <article class="feature reveal">
+            <span class="feature-no">b</span>
+            <h3>Smart mapping</h3>
+            <p>Platform names resolve to icons and themes automatically — OpenAI, GitHub, Stripe, AWS — no manual organizing.</p>
+          </article>
+          <article class="feature reveal">
+            <span class="feature-no">c</span>
+            <h3>Auto-lock</h3>
+            <p>Click away and the popover vanishes and locks. Nothing lingers on screen, nothing stays decrypted.</p>
+          </article>
+          <article class="feature reveal">
+            <span class="feature-no">d</span>
+            <h3>Featherweight</h3>
+            <p>Pure SwiftUI on Mac, WPF on Windows. Under 1 MB, negligible memory, zero Chromium.</p>
+          </article>
         </div>
       </div>
-      
-      <!-- Three.js Canvas Container -->
-      <div class="hero-visual">
-        <div id="canvas-container">
-          <div class="three-instructions">
-            <span>Drag to rotate 3D Vault • Hover to align</span>
-          </div>
-          <!-- Canvas injected here -->
-        </div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Section: Interactive Simulator -->
-  <section class="simulator-section" id="simulator">
-    <div class="section-header">
-      <span class="section-tag">Interactive Preview</span>
-      <h2 class="section-title">Try KeyHolder in your browser</h2>
-      <p class="section-description">
-        Experience the native interface, automatic platform mapping, and secure biometric authentication exactly as it runs on your desktop.
+    <!-- ============ 02 Security (dark) ============ -->
+    <section class="section section-dark" id="security" data-section-theme="dark">
+      <header class="section-head">
+        <span class="index reveal">02</span>
+        <h2 class="reveal">Hardware-backed.<br><em>Nothing in cleartext.</em></h2>
+      </header>
+      <div class="section-body">
+        <p class="lede reveal">
+          Metadata and secrets never travel together. Names and labels live in a
+          local file — the secrets themselves go straight into the operating
+          system's hardware-backed vault and never touch the disk in cleartext.
+        </p>
+        <ul class="ledger">
+          <li class="ledger-row reveal">
+            <span class="ledger-no">2.1</span>
+            <h3>System vaults only</h3>
+            <p>Secrets are written to macOS Keychain Services and Windows Credential Locker — encrypted by the OS, backed by hardware.</p>
+          </li>
+          <li class="ledger-row reveal">
+            <span class="ledger-no">2.2</span>
+            <h3>Biometric gate</h3>
+            <p>Touch ID or Windows Hello is required before any secret is decrypted. Physical presence, every time.</p>
+          </li>
+          <li class="ledger-row reveal">
+            <span class="ledger-no">2.3</span>
+            <h3>Strictly local</h3>
+            <p>No servers, no sync, no analytics, no network calls. Your keys never leave the machine.</p>
+          </li>
+          <li class="ledger-row reveal">
+            <span class="ledger-no">2.4</span>
+            <h3>Fully auditable</h3>
+            <p>Every line is open source under MIT. Read it, build it yourself, trust nothing on faith.</p>
+            <a class="ledger-link" href="https://github.com/OlixIgnacious/keyholder" target="_blank" rel="noopener">Read the source ↗</a>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ 03 Specs (dark) ============ -->
+    <section class="section section-dark" id="specs" data-section-theme="dark">
+      <header class="section-head">
+        <span class="index reveal">03</span>
+        <h2 class="reveal">Two platforms.<br><em>One discipline.</em></h2>
+      </header>
+      <div class="section-body">
+        <div class="specs reveal">
+          <div class="specs-row specs-head" role="row">
+            <span></span><span>macOS</span><span>Windows</span>
+          </div>
+          <div class="specs-row">
+            <span>Stack</span><span>Swift 6 · SwiftUI</span><span>C# 12 · WPF · .NET 8</span>
+          </div>
+          <div class="specs-row">
+            <span>Form</span><span>Menu bar accessory</span><span>System tray utility</span>
+          </div>
+          <div class="specs-row">
+            <span>Vault</span><span>Keychain Services</span><span>Credential Locker</span>
+          </div>
+          <div class="specs-row">
+            <span>Unlock</span><span>Touch ID · Apple Watch</span><span>Hello — face, finger, PIN</span>
+          </div>
+          <div class="specs-row">
+            <span>Footprint</span><span>~680 KB</span><span>Self-contained .exe</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Download CTA ============ -->
+    <section class="cta" id="download" data-section-theme="light">
+      <h2 class="cta-title">
+        <span class="line-mask"><span class="line">Get</span></span>
+        <span class="line-mask"><span class="line">KeyHolder<em>.</em></span></span>
+      </h2>
+      <div class="cta-actions reveal">
+        <a class="btn btn-solid btn-lg" href="https://github.com/OlixIgnacious/keyholder/releases" target="_blank" rel="noopener">Download for macOS</a>
+        <a class="btn btn-ghost btn-lg" href="https://github.com/OlixIgnacious/keyholder/releases" target="_blank" rel="noopener">Download for Windows</a>
+      </div>
+      <p class="cta-note reveal">Free · open source · no account, ever</p>
+    </section>
+
+  </main>
+
+  <!-- ============ Footer ============ -->
+  <footer class="footer" data-section-theme="dark">
+    <div class="footer-top">
+      <div class="footer-col">
+        <span class="footer-label">Project</span>
+        <a href="https://github.com/OlixIgnacious/keyholder" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/OlixIgnacious/keyholder/releases" target="_blank" rel="noopener">Releases</a>
+        <a href="https://github.com/OlixIgnacious/keyholder/issues" target="_blank" rel="noopener">Issues</a>
+      </div>
+      <div class="footer-col">
+        <span class="footer-label">Site</span>
+        <a href="#product">Product</a>
+        <a href="#security">Security</a>
+        <a href="#specs">Specs</a>
+      </div>
+      <p class="footer-note">
+        An open-source desktop vault for developers.<br>
+        MIT licensed. © 2026 Olix Studios.
       </p>
     </div>
-
-    <div class="simulator-container">
-      <!-- Simulated OS Desktop Environment -->
-      <div class="desktop-mockup">
-        <!-- Mac Menu Bar Mockup -->
-        <div class="mac-menu-bar">
-          <div class="menu-left">
-            <span class="apple-icon"></span>
-            <span class="menu-item active-app">KeyHolder</span>
-            <span class="menu-item">File</span>
-            <span class="menu-item">Edit</span>
-            <span class="menu-item">Help</span>
-          </div>
-          <div class="menu-right">
-            <span class="tray-icon battery-icon">⚡️ 98%</span>
-            <span class="tray-icon wifi-icon">📡</span>
-            <button class="tray-icon-btn keyholder-tray-trigger" id="tray-trigger-btn" aria-label="Toggle KeyHolder window">
-              <img src="logo.svg" alt="KeyHolder Tray Icon" class="tray-logo-small">
-            </button>
-            <span class="menu-time" id="mock-clock">12:00 PM</span>
-          </div>
-        </div>
-
-        <div class="desktop-wallpaper">
-          <!-- Translucent popover app window (simulated) -->
-          <div class="app-popover" id="keyholder-popover">
-            <div class="popover-arrow"></div>
-            
-            <!-- Search & Filters -->
-            <div class="popover-header">
-              <div class="search-box-container">
-                <span class="search-icon">🔍</span>
-                <input type="text" id="sim-search-input" placeholder="Search platforms or tags..." autocomplete="off" spellcheck="false">
-                <button class="clear-search-btn" id="sim-clear-search" hidden>✕</button>
-              </div>
-              <div class="filters-container" role="tablist" aria-label="Filter credentials by tag">
-                <button class="filter-pill active" data-tag="all">All</button>
-                <button class="filter-pill" data-tag="dev">dev</button>
-                <button class="filter-pill" data-tag="prod">prod</button>
-                <button class="filter-pill" data-tag="api">api</button>
-              </div>
-            </div>
-
-            <!-- Credentials List -->
-            <div class="credentials-list" id="sim-keys-list">
-              <!-- Dynamically populated in JS -->
-            </div>
-
-            <!-- Bottom Actions -->
-            <div class="popover-footer">
-              <button class="footer-btn add-key-trigger" id="btn-add-key-view">
-                <span class="btn-icon">＋</span> Add Secret Key
-              </button>
-              <span class="status-indicator-secure">🔒 Locked at rest</span>
-            </div>
-
-            <!-- Inline Add Key Panel (Slides up) -->
-            <div class="add-key-panel" id="add-key-slide-panel">
-              <div class="panel-header">
-                <h3>Add New Secret</h3>
-                <button class="close-panel-btn" id="btn-close-add-panel">✕</button>
-              </div>
-              <form class="add-key-form" id="sim-add-key-form">
-                <div class="form-group">
-                  <label for="input-platform">Platform Name</label>
-                  <input type="text" id="input-platform" placeholder="e.g. OpenAI, GitHub, Stripe" required autocomplete="off">
-                  <div class="platform-mapping-preview" id="platform-preview-badge">
-                    <span class="preview-icon">✨</span>
-                    <span class="preview-name">Auto-mapping</span>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="input-label">Account / Label</label>
-                  <input type="text" id="input-label" placeholder="e.g. user@domain.com, prod-read-only" required autocomplete="off">
-                </div>
-                <div class="form-group">
-                  <label for="input-secret">Secret Value / API Key</label>
-                  <input type="password" id="input-secret" placeholder="sk-proj-..." required autocomplete="off">
-                </div>
-                <div class="form-group">
-                  <label>Environment Tags</label>
-                  <div class="tag-selector-group">
-                    <button type="button" class="tag-select-btn" data-value="dev">dev</button>
-                    <button type="button" class="tag-select-btn" data-value="prod">prod</button>
-                    <button type="button" class="tag-select-btn" data-value="api">api</button>
-                  </div>
-                </div>
-                <button type="submit" class="submit-add-btn">Save to Secure Vault</button>
-              </form>
-            </div>
-
-            <!-- Biometric Scan Overlay Modal -->
-            <div class="biometric-modal-overlay" id="biometric-overlay">
-              <div class="biometric-modal">
-                <div class="sensor-icon-wrapper">
-                  <!-- Touch ID Fingerprint SVG -->
-                  <svg class="fingerprint-svg" viewBox="0 0 100 100" width="80" height="80">
-                    <path class="fingerprint-path" d="M 50,15 A 35,35 0 0,1 85,50 M 50,22 A 28,28 0 0,1 78,50 M 50,29 A 21,21 0 0,1 71,50 M 50,36 A 14,14 0 0,1 64,50 M 50,43 A 7,7 0 0,1 57,50 M 50,50 A 0.1,0.1 0 0,1 50.1,50.1 M 50,50 A 7,7 0 0,0 43,50 M 50,50 A 14,14 0 0,0 36,50 M 50,50 A 21,21 0 0,0 29,50 M 50,50 A 28,28 0 0,0 22,50 M 50,50 A 35,35 0 0,0 15,50" fill="none" stroke="#009efd" stroke-width="4" stroke-linecap="round" />
-                    <circle class="fingerprint-scanner-bar" cx="50" cy="50" r="45" fill="none" stroke="#2af598" stroke-width="2" stroke-dasharray="10 200" />
-                  </svg>
-                </div>
-                <h4 id="biometric-title">Biometric Authentication</h4>
-                <p id="biometric-subtitle">Touch ID / Windows Hello required to copy this credential.</p>
-                <div class="biometric-actions">
-                  <button class="bio-cancel-btn" id="btn-cancel-bio">Cancel</button>
-                  <button class="bio-confirm-btn" id="btn-trigger-bio-scan">Scan Fingerprint</button>
-                </div>
-              </div>
-            </div>
-
-          </div>
-          <div class="desktop-text-hint">
-            <span>Click the KeyHolder logo in the menu bar to open or close the popup.</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Section: Scrollytelling Features -->
-  <section class="scrolly-section" id="features">
-    <!-- Named timeline tracking elements -->
-    <div id="tracked">
-      <section id="feat-1" class="trigger-panel"></section>
-      <section id="feat-2" class="trigger-panel"></section>
-      <section id="feat-3" class="trigger-panel"></section>
-      <section id="feat-4" class="trigger-panel"></section>
-    </div>
-
-    <!-- Sticky display viewport -->
-    <div id="animated" class="sticky-display-container">
-      <div class="split-layout">
-        <!-- Text content animations -->
-        <div class="feature-text-panels">
-          <div class="text-panel-slide" id="text-1">
-            <span class="feat-badge">01 / zero clutter</span>
-            <h2>Lives in your System Tray</h2>
-            <p>
-              KeyHolder remains completely out of the way, operating silently next to your clock. With a click or a simple global shortcut, the clean overlay slides open instantly, ready to deliver credentials.
-            </p>
-          </div>
-          <div class="text-panel-slide" id="text-2">
-            <span class="feat-badge">02 / ironclad security</span>
-            <h2>Hardware-Backed Vaults</h2>
-            <p>
-              We separate metadata from secrets. Your platform names and labels are stored locally in light metadata files, but all secrets are written directly to macOS Keychain or Windows Credential Locker. Absolutely zero cleartext secrets are ever written to disk.
-            </p>
-          </div>
-          <div class="text-panel-slide" id="text-3">
-            <span class="feat-badge">03 / zero lag</span>
-            <h2>Touch ID &amp; Windows Hello</h2>
-            <p>
-              Credentials are unlocked on-demand. Simply trigger a copy, verify your fingerprint with Touch ID or Windows Hello, and the credential decrypts and copies to your clipboard in under 1ms, re-locking itself immediately.
-            </p>
-          </div>
-          <div class="text-panel-slide" id="text-4">
-            <span class="feat-badge">04 / intelligent mapping</span>
-            <h2>Smart Platform Auto-Mapping</h2>
-            <p>
-              KeyHolder automatically maps your credential names to themed colors and platform icons (AI, Version Control, Hosting, Payment, Databases, Productivity). No manual organization or tagging required.
-            </p>
-          </div>
-        </div>
-
-        <!-- Graphic animations -->
-        <div class="feature-graphic-panels">
-          <div class="graphic-viewport">
-            <div class="graphic-canvas" id="graphic-visualizer">
-              <!-- Visuals will be dynamic CSS blocks / canvas layers -->
-              <div class="device-mockup-scrolly">
-                <!-- Zero Clutter visualizer -->
-                <div class="visual-layer layer-1 active">
-                  <div class="mock-os-topbar">
-                    <div class="indicator-glow-ring"></div>
-                    <img src="logo.svg" alt="Key" class="pulse-key-icon">
-                  </div>
-                  <div class="popover-ghost">
-                    <div class="ghost-row"></div>
-                    <div class="ghost-row"></div>
-                    <div class="ghost-row"></div>
-                  </div>
-                </div>
-
-                <!-- Security separation visualizer -->
-                <div class="visual-layer layer-2">
-                  <div class="secure-split-flow">
-                    <div class="node node-json">
-                      <span class="node-label">keys.json</span>
-                      <span class="node-sub">Metadata Store</span>
-                    </div>
-                    <div class="flow-arrow flow-split"></div>
-                    <div class="node node-hardware">
-                      <span class="node-label">Secure Enclave</span>
-                      <span class="node-sub">Encrypted Vault</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Biometric auth visualizer -->
-                <div class="visual-layer layer-3">
-                  <div class="touchid-scanner-visual">
-                    <div class="laser-scanner"></div>
-                    <svg viewBox="0 0 100 100" class="biometric-pulse-svg">
-                      <path d="M 50,15 A 35,35 0 0,1 85,50 M 50,22 A 28,28 0 0,1 78,50 M 50,29 A 21,21 0 0,1 71,50 M 50,36 A 14,14 0 0,1 64,50" fill="none" stroke="#2af598" stroke-width="4" stroke-linecap="round" />
-                    </svg>
-                    <span class="decrypt-badge">Vault Decrypted</span>
-                  </div>
-                </div>
-
-                <!-- Auto mapping visualizer -->
-                <div class="visual-layer layer-4">
-                  <div class="mapping-carousel-visual">
-                    <div class="mapping-pill ai">
-                      <span class="icon">✨</span>
-                      <span>openai</span>
-                      <span class="tag">AI Theme</span>
-                    </div>
-                    <div class="mapping-pill code">
-                      <span class="icon">💻</span>
-                      <span>github</span>
-                      <span class="tag">Terminal Theme</span>
-                    </div>
-                    <div class="mapping-pill pay">
-                      <span class="icon">💳</span>
-                      <span>stripe</span>
-                      <span class="tag">Indigo Theme</span>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Section: Security Bento Grid -->
-  <section class="security-section" id="security">
-    <div class="section-header">
-      <span class="section-tag">Security Architecture</span>
-      <h2 class="section-title">Built for developer peace of mind</h2>
-      <p class="section-description">
-        KeyHolder operates strictly locally. Your secret keys never touch any external server or cleartext storage.
-      </p>
-    </div>
-
-    <!-- Bento Grid -->
-    <div class="bento-grid">
-      <!-- Card 1: Hardware-Backed -->
-      <div class="bento-card x2" id="card-vault">
-        <div class="bento-card-bg"></div>
-        <div class="bento-card-content">
-          <div class="bento-icon">🔒</div>
-          <h3>System Locker Integrations</h3>
-          <p>
-            Uses macOS <strong>Keychain Services</strong> and Windows <strong>Credential Locker</strong> APIs. Secrets are encrypted using hardware-backed credentials and only decrypted for a millisecond to load into memory.
-          </p>
-          <div class="code-badge-flow">
-            <code>SecItemCopyMatching(...)</code>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card 2: Biometrics -->
-      <div class="bento-card" id="card-biometrics">
-        <div class="bento-card-bg"></div>
-        <div class="bento-card-content">
-          <div class="bento-icon">👤</div>
-          <h3>Biometric Gate</h3>
-          <p>
-            Touch ID and Windows Hello verification are required before any secret key can be copied, ensuring physical possession.
-          </p>
-        </div>
-      </div>
-
-      <!-- Card 3: Lightweight -->
-      <div class="bento-card" id="card-size">
-        <div class="bento-card-bg"></div>
-        <div class="bento-card-content">
-          <div class="bento-icon">⚡️</div>
-          <h3>Ultra Lightweight</h3>
-          <p>
-            At under <strong>680 KB</strong> on Mac, KeyHolder is fully native SwiftUI and C#. Zero Electron. Zero Chromium. Zero Node overhead.
-          </p>
-        </div>
-      </div>
-
-      <!-- Card 4: Open Source -->
-      <div class="bento-card x2" id="card-open-source">
-        <div class="bento-card-bg"></div>
-        <div class="bento-card-content">
-          <div class="bento-icon">💻</div>
-          <h3>Fully Open Source &amp; Auditable</h3>
-          <p>
-            We believe security tools should be transparent. Inspect every line of code, compile it yourself from source, or build native binaries. No secret analytic calls or remote logging.
-          </p>
-          <a href="https://github.com/OlixIgnacious/keyholder" class="bento-link" target="_blank" rel="noopener">Explore Source Code →</a>
-        </div>
-      </div>
-      
-      <!-- Card 5: Auto Lock -->
-      <div class="bento-card" id="card-lock">
-        <div class="bento-card-bg"></div>
-        <div class="bento-card-content">
-          <div class="bento-icon">⏱️</div>
-          <h3>Smart Auto-Lock</h3>
-          <p>
-            The popup automatically loses visibility and locks the moment you click away or change focus. No active windows remain on your screen.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Spec Tables Section (Bento specifications) -->
-  <section class="specs-section" id="specs">
-    <div class="section-header">
-      <span class="section-tag">Specifications</span>
-      <h2 class="section-title">Technical Matrix</h2>
-    </div>
-    
-    <div class="specs-container">
-      <div class="specs-table-wrapper">
-        <table class="specs-table" id="tech-specs-table">
-          <caption>KeyHolder Platform Matrix &amp; Technology Stack</caption>
-          <thead>
-            <tr>
-              <th scope="col">Feature</th>
-              <th scope="col">macOS Implementation</th>
-              <th scope="col">Windows Implementation</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">Language &amp; Framework</th>
-              <td>Swift 6.0 / SwiftUI</td>
-              <td>C# 12 / WPF (.NET 8.0)</td>
-            </tr>
-            <tr>
-              <th scope="row">App Style</th>
-              <td>Menu Bar Accessory (LSUIElement = 1)</td>
-              <td>System Tray Utility (NotifyIcon)</td>
-            </tr>
-            <tr>
-              <th scope="row">Secure Vault</th>
-              <td>Keychain Services (Security API)</td>
-              <td>Credential Locker (PasswordVault API)</td>
-            </tr>
-            <tr>
-              <th scope="row">Biometrics</th>
-              <td>Touch ID / Apple Watch (LocalAuthentication)</td>
-              <td>Windows Hello (Fingerprint / Face / PIN)</td>
-            </tr>
-            <tr>
-              <th scope="row">App Bundle Size</th>
-              <td>~680 KB</td>
-              <td>Ultra-lightweight self-contained .exe</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="footer-container">
-      <div class="footer-brand">
-        <img src="logo.svg" alt="KeyHolder logo" class="footer-logo">
-        <span class="footer-brand-name">KeyHolder</span>
-      </div>
-      <p class="footer-text">
-        An open-source desktop tool built for developers. Code licensed under MIT.
-      </p>
-      <div class="footer-links">
-        <a href="https://github.com/OlixIgnacious/keyholder" target="_blank" rel="noopener">GitHub Repository</a>
-        <span class="footer-divider">•</span>
-        <a href="https://github.com/OlixIgnacious/keyholder/issues" target="_blank" rel="noopener">Submit Issue</a>
-      </div>
-      <p class="footer-copyright">
-        &copy; 2026 Olix Studios. Built with modern 3D Web standards.
-      </p>
-    </div>
+    <div class="footer-wordmark" aria-hidden="true">KeyHolder</div>
   </footer>
 
-  <!-- Scripts -->
-  <!-- Load Three.js from CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <!-- Main application script -->
   <script src="index.js"></script>
 </body>
 </html>
