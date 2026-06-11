@@ -1,6 +1,6 @@
 <Window x:Class="KeyHolder.Views.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2000/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2000/xaml"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="KeyHolder" 
         Height="500" Width="360"
         WindowStyle="None"
