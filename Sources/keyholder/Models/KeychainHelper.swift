@@ -44,6 +44,50 @@ public struct KeychainHelper {
         return String(data: data, encoding: .utf8)
     }
     
+    // MARK: - Metadata backup
+    // A mirror of keys.json stored as a Keychain item, so the key list can be
+    // restored if the file is deleted by accident. Contains no secret values.
+
+    private static let backupAccount = "metadata.backup"
+
+    @discardableResult
+    public static func saveMetadataBackup(_ data: Data) -> Bool {
+        let deleteQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: backupAccount
+        ]
+        SecItemDelete(deleteQuery as CFDictionary)
+
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: backupAccount,
+            kSecValueData as String: data,
+            kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock
+        ]
+
+        return SecItemAdd(query as CFDictionary, nil) == errSecSuccess
+    }
+
+    public static func retrieveMetadataBackup() -> Data? {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: backupAccount,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+
+        var dataTypeRef: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &dataTypeRef)
+
+        guard status == errSecSuccess, let data = dataTypeRef as? Data else {
+            return nil
+        }
+        return data
+    }
+
     @discardableResult
     public static func delete(for id: UUID) -> Bool {
         let account = id.uuidString

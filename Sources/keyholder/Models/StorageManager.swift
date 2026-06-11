@@ -13,18 +13,37 @@ public struct StorageManager {
     
     public static func loadKeys() -> [KeyItem] {
         let url = fileURL
-        guard FileManager.default.fileExists(atPath: url.path) else {
+
+        if FileManager.default.fileExists(atPath: url.path) {
+            do {
+                let data = try Data(contentsOf: url)
+                let keys = try JSONDecoder().decode([KeyItem].self, from: data)
+                // Seed the mirror for installs that predate it.
+                if KeychainHelper.retrieveMetadataBackup() == nil {
+                    KeychainHelper.saveMetadataBackup(data)
+                }
+                return keys
+            } catch {
+                print("Error loading key metadata: \(error)")
+                // File is corrupt — fall through to the Keychain backup.
+            }
+        }
+
+        return restoreFromBackup()
+    }
+
+    /// Rebuilds keys.json from the Keychain-stored mirror when the file is
+    /// missing or unreadable, so accidental deletion loses nothing.
+    private static func restoreFromBackup() -> [KeyItem] {
+        guard let data = KeychainHelper.retrieveMetadataBackup(),
+              let keys = try? JSONDecoder().decode([KeyItem].self, from: data),
+              !keys.isEmpty else {
             return []
         }
-        
-        do {
-            let data = try Data(contentsOf: url)
-            let decoder = JSONDecoder()
-            return try decoder.decode([KeyItem].self, from: data)
-        } catch {
-            print("Error loading key metadata: \(error)")
-            return []
-        }
+
+        print("keys.json missing or unreadable — restored \(keys.count) entries from Keychain backup")
+        saveKeys(keys)
+        return keys
     }
     
     public static func saveKeys(_ keys: [KeyItem]) {
@@ -40,6 +59,7 @@ public struct StorageManager {
             encoder.outputFormatting = .prettyPrinted
             let data = try encoder.encode(keys)
             try data.write(to: url, options: .atomic)
+            KeychainHelper.saveMetadataBackup(data)
         } catch {
             print("Error saving key metadata: \(error)")
         }
