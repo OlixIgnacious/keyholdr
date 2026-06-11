@@ -65,7 +65,7 @@ Grab the [latest release](https://github.com/OlixIgnacious/keyholder/releases/la
 | Platform | Asset | Notes |
 |---|---|---|
 | macOS (Apple Silicon) | `KeyHolder-macOS-*.zip` | Unzip → move to /Applications. Unsigned for now: right-click → **Open** on first launch. |
-| Windows 10/11 (x64) | `KeyHolder-windows-x64-*.zip` | Self-contained single `.exe` — no .NET install needed. SmartScreen: **More info → Run anyway**. |
+| Windows 10/11 (x64) | `KeyHolder-windows-x64-*.zip` | **Still in testing** — built on CI but not yet verified on real hardware. Self-contained single `.exe`, no .NET install needed. SmartScreen: **More info → Run anyway**. |
 
 ### Shortcuts (macOS)
 
