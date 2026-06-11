@@ -58,6 +58,12 @@ graph LR
 from the OS vault at the millisecond you copy it — and only after biometric
 authentication succeeds.
 
+**Self-healing on macOS:** every save also mirrors the (non-secret) metadata
+into a Keychain item. If `keys.json` is ever deleted or corrupted, the app
+silently restores it from the mirror — and since secrets already live in the
+Keychain, deleting the app or its files loses nothing. *(Windows parity is on
+the roadmap.)*
+
 ## Install
 
 Grab the [latest release](https://github.com/OlixIgnacious/keyholder/releases/latest):

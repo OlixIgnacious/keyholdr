@@ -163,6 +163,21 @@ body[data-theme="dark"] .header-cta:hover { background: var(--bone); color: var(
 .btn-ghost:hover { border-color: var(--ink); }
 .btn-lg { padding: 1.05rem 2.2rem; font-size: 1.05rem; }
 
+.beta-tag {
+  font-family: var(--font-mono);
+  font-size: 0.58em;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-left: 0.45em;
+  padding: 0.2em 0.55em;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  opacity: 0.65;
+  vertical-align: 0.35em;
+  line-height: 1;
+}
+
 /* ============ Hero ============ */
 
 .hero {
