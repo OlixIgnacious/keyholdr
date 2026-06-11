@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Radial Gradient -->
+    <radialGradient id="bg-grad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1c1c1e" />
+      <stop offset="100%" stop-color="#0a0a0c" />
+    </radialGradient>
+
+    <!-- Ring/Shield Gradient -->
+    <linearGradient id="shield-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2af598" />
+      <stop offset="50%" stop-color="#009efd" />
+      <stop offset="100%" stop-color="#7000ff" />
+    </linearGradient>
+
+    <!-- Key Body Gradient -->
+    <linearGradient id="key-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#8e8e93" />
+    </linearGradient>
+
+    <!-- Glow Filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="16" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Dark background -->
+  <rect width="100%" height="100%" rx="112" fill="url(#bg-grad)" />
+
+  <g transform="translate(0, 0)">
+    <!-- Security Shield Outer Ring (Glow) -->
+    <circle cx="256" cy="256" r="170" fill="none" stroke="url(#shield-grad)" stroke-width="16" stroke-linecap="round" stroke-dasharray="8 16" filter="url(#glow)" opacity="0.6" />
+    
+    <!-- Solid Shield Ring -->
+    <circle cx="256" cy="256" r="140" fill="none" stroke="url(#shield-grad)" stroke-width="12" />
+
+    <!-- Shield Face -->
+    <path d="M256,160 C290,160 320,180 320,220 C320,270 256,330 256,330 C256,330 192,270 192,220 C192,180 222,160 256,160 Z" fill="url(#shield-grad)" opacity="0.15" />
+
+    <!-- The Key Symbol -->
+    <!-- Head of the key: concentric circles -->
+    <circle cx="256" cy="210" r="40" fill="none" stroke="url(#key-grad)" stroke-width="14" />
+    <circle cx="256" cy="210" r="16" fill="none" stroke="url(#key-grad)" stroke-width="6" />
+
+    <!-- Shaft of the key -->
+    <rect x="249" y="250" width="14" height="110" rx="4" fill="url(#key-grad)" />
+
+    <!-- Teeth of the key -->
+    <path d="M263,300 H285 V314 H263 Z" fill="url(#key-grad)" rx="2" />
+    <path d="M263,325 H295 V339 H263 Z" fill="url(#key-grad)" rx="2" />
+    
+    <!-- Small security sparkle -->
+    <path d="M360,170 Q370,170 370,160 Q370,170 380,170 Q370,170 370,180 Q370,170 360,170 Z" fill="#2af598" filter="url(#glow)" />
+    <path d="M140,290 Q150,290 150,280 Q150,290 160,290 Q150,290 150,300 Q150,290 140,290 Z" fill="#009efd" filter="url(#glow)" />
+  </g>
+</svg>
