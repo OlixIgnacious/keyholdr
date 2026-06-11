@@ -182,7 +182,7 @@
             <Grid x:Name="AddKeyPanel" Visibility="Collapsed">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/> <!-- Title -->
-                    <RowDefinition Property="*"/>     <!-- Input fields -->
+                    <RowDefinition Height="*"/>     <!-- Input fields -->
                     <RowDefinition Height="Auto"/> <!-- Actions -->
                 </Grid.RowDefinitions>
 
