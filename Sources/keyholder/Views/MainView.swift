@@ -17,6 +17,10 @@ struct MainView: View {
     @State private var itemToDelete: KeyItem? = nil
     @State private var showingDeleteAlert = false
 
+    // MenuBarExtra windows do not route key equivalents to SwiftUI buttons,
+    // so shortcuts are handled through a local event monitor instead.
+    @State private var keyMonitor: Any? = nil
+
     var body: some View {
         ZStack {
             KHTheme.paper.ignoresSafeArea()
@@ -213,6 +217,10 @@ struct MainView: View {
         .frame(width: 360, height: 440)
         .onAppear {
             loadKeysData()
+            installKeyMonitor()
+        }
+        .onDisappear {
+            removeKeyMonitor()
         }
         // Auto-lock session when status bar popup is dismissed/closed
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.willResignActiveNotification)) { _ in
@@ -239,6 +247,51 @@ struct MainView: View {
 
     private func loadKeysData() {
         keys = StorageManager.loadKeys()
+    }
+
+    private func installKeyMonitor() {
+        guard keyMonitor == nil else { return }
+        keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            let keyCode = event.keyCode
+            let characters = event.charactersIgnoringModifiers?.lowercased()
+            let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+            let handled = MainActor.assumeIsolated {
+                handleKeyDown(keyCode: keyCode, characters: characters, modifiers: modifiers)
+            }
+            return handled ? nil : event
+        }
+    }
+
+    private func removeKeyMonitor() {
+        if let monitor = keyMonitor {
+            NSEvent.removeMonitor(monitor)
+            keyMonitor = nil
+        }
+    }
+
+    /// Returns true to swallow the event when it was handled.
+    private func handleKeyDown(keyCode: UInt16, characters: String?, modifiers: NSEvent.ModifierFlags) -> Bool {
+        let isFormOpen = showingAddSheet || editingItem != nil
+
+        // ⌘N — new key
+        if modifiers == .command, characters == "n", !isFormOpen {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
+                showingAddSheet = true
+            }
+            return true
+        }
+
+        // Escape — close the add/edit form
+        if keyCode == 53, isFormOpen {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
+                showingAddSheet = false
+                editingItem = nil
+                editingSecret = nil
+            }
+            return true
+        }
+
+        return false
     }
 
     private func saveNewKey(_ item: KeyItem, secret: String) {
