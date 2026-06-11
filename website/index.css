@@ -1021,13 +1021,18 @@
     padding: 0;
     position: relative;
     background-color: #070709;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
   }
 
   /* Scoll tracking nodes */
   #tracked {
-    position: relative;
-    width: 100%;
-    z-index: 5;
+    grid-area: 1 / 1 / 2 / 2;
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+    pointer-events: none;
   }
 
   .trigger-panel {
@@ -1045,6 +1050,7 @@
 
   /* Sticky Viewport Display */
   .sticky-display-container {
+    grid-area: 1 / 1 / 2 / 2;
     position: sticky;
     top: 0;
     height: 100vh;
@@ -1053,6 +1059,7 @@
     align-items: center;
     justify-content: center;
     z-index: 10;
+    align-self: start;
     overflow: hidden;
   }
 

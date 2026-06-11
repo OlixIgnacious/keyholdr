@@ -93,7 +93,6 @@ function initThreeDScene() {
     metalness: 0.1,
     roughness: 0.15,
     transmission: 0.9,      // transparency
-    thickness: 1.0,         // refraction
     ior: 1.6,
     clearcoat: 1.0,
     clearcoatRoughness: 0.1,
@@ -353,9 +352,26 @@ function initThreeDScene() {
       vaultGroup.position.y = Math.sin(animationTime * 25.0) * 0.02;
     }
     
-    // Smooth lerp rotation to target mouse/state values
-    vaultGroup.rotation.x = lerp(vaultGroup.rotation.x, targetRotation.x, 0.08);
-    vaultGroup.rotation.y = lerp(vaultGroup.rotation.y, targetRotation.y, 0.08);
+    // Smooth lerp rotation to target mouse/state/scroll values
+    let currentTargetX = targetRotation.x;
+    let currentTargetY = targetRotation.y;
+    let currentTargetZ = 0;
+
+    // Scroll Integration: Rotate card as page scrolls
+    const scrollY = window.scrollY;
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    if (maxScroll > 0) {
+      const scrollPercent = scrollY / maxScroll;
+      if (!isScanning && !isUnlocked) {
+        currentTargetY += scrollPercent * 2.5;
+        currentTargetX += scrollPercent * 0.8;
+        currentTargetZ = -scrollPercent * 3.0;
+      }
+    }
+
+    vaultGroup.rotation.x = lerp(vaultGroup.rotation.x, currentTargetX, 0.08);
+    vaultGroup.rotation.y = lerp(vaultGroup.rotation.y, currentTargetY, 0.08);
+    vaultGroup.position.z = lerp(vaultGroup.position.z, currentTargetZ, 0.08);
 
     // Rotate core ring and particles
     if (isScanning) {
@@ -368,19 +384,6 @@ function initThreeDScene() {
     
     dataParticles.rotation.y += delta * 0.05;
     dataParticles.rotation.x += delta * 0.02;
-
-    // Scroll Integration: Rotate card as page scrolls
-    const scrollY = window.scrollY;
-    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-    if (maxScroll > 0) {
-      const scrollPercent = scrollY / maxScroll;
-      // Add extra scroll rotation
-      if (!isScanning && !isUnlocked) {
-        vaultGroup.rotation.y += scrollPercent * 2.5;
-        vaultGroup.rotation.x += scrollPercent * 0.8;
-        vaultGroup.position.z = -scrollPercent * 3.0; // push card away as user scrolls
-      }
-    }
 
     renderer.render(scene, camera);
   }
