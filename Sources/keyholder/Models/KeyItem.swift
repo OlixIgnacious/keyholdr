@@ -16,6 +16,32 @@ public struct KeyItem: Codable, Identifiable, Hashable {
         self.dateCreated = dateCreated
     }
     
+    /// Two-letter tile monogram, e.g. "GitHub" → "GH", "OpenAI" → "OA", "AWS" → "AW".
+    public var initials: String {
+        let trimmed = platform.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return "??" }
+
+        // Split on whitespace and lowercase→uppercase camelCase boundaries
+        var words: [String] = []
+        var current = ""
+        for char in trimmed {
+            if char.isWhitespace {
+                if !current.isEmpty { words.append(current); current = "" }
+            } else if char.isUppercase, let last = current.last, last.isLowercase {
+                words.append(current)
+                current = String(char)
+            } else {
+                current.append(char)
+            }
+        }
+        if !current.isEmpty { words.append(current) }
+
+        if words.count >= 2 {
+            return String(words[0].prefix(1) + words[1].prefix(1)).uppercased()
+        }
+        return String(trimmed.prefix(2)).uppercased()
+    }
+
     public var symbol: String {
         let p = platform.lowercased()
         
