@@ -160,6 +160,20 @@ function initDownloadMenus() {
       if (menu.open && !menu.contains(e.target)) menu.open = false;
     }
   });
+
+  // Replay the roll-in on every open: re-matching a CSS selector doesn't
+  // reliably restart an animation, so toggle a class with a reflow between.
+  for (const menu of menus) {
+    const pop = menu.querySelector('.dl-pop');
+    if (!pop) continue;
+    menu.addEventListener('toggle', () => {
+      pop.classList.remove('is-rolling');
+      if (menu.open) {
+        void pop.offsetWidth;
+        pop.classList.add('is-rolling');
+      }
+    });
+  }
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') for (const menu of menus) menu.open = false;
   });
