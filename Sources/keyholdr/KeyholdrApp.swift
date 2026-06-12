@@ -5,6 +5,7 @@ struct KeyholdrApp: App {
     init() {
         // Hides the Dock icon programmatically, rendering the app only in the menu bar
         NSApplication.shared.setActivationPolicy(.accessory)
+        LaunchAtLogin.enableOnFirstLaunch()
     }
     
     var body: some Scene {

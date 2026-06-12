@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Windows;
 using Forms = System.Windows.Forms;
+using Keyholdr.Models;
 using Keyholdr.Views;
 
 namespace Keyholdr
@@ -17,6 +18,9 @@ namespace Keyholdr
 
             // Configure app to stay running in background even if all windows are closed
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
+            // Survive reboots: register in the Run key on first launch
+            StartupManager.EnableOnFirstLaunch();
 
             // Initialize the System Tray icon
             _notifyIcon = new Forms.NotifyIcon
@@ -38,6 +42,14 @@ namespace Keyholdr
             // Set up context menu
             var contextMenu = new Forms.ContextMenuStrip();
             contextMenu.Items.Add("Open Keyholdr", null, (s, args) => ShowWindow());
+            contextMenu.Items.Add("-");
+            var startupItem = new Forms.ToolStripMenuItem("Start at login")
+            {
+                Checked = StartupManager.IsEnabled,
+                CheckOnClick = true
+            };
+            startupItem.CheckedChanged += (s, args) => StartupManager.SetEnabled(startupItem.Checked);
+            contextMenu.Items.Add(startupItem);
             contextMenu.Items.Add("-");
             contextMenu.Items.Add("Exit", null, (s, args) => ShutdownApp());
             _notifyIcon.ContextMenuStrip = contextMenu;

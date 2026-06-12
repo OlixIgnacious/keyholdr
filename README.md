@@ -30,6 +30,7 @@ letters, hit copy — Touch ID or Windows Hello verifies it's you, the secret
 lands on your clipboard, and everything locks itself again.
 
 - **Out of sight, never out of reach** — no dock icon, no window. A key icon in the menu bar / system tray, summoned with a click.
+- **Survives reboots** — starts at login on both platforms, with a one-click toggle to opt out.
 - **Hardware-backed, nothing in cleartext** — secrets live in macOS Keychain / Windows Credential Locker, never on disk.
 - **Biometric gate** — every copy and reveal requires Touch ID, Apple Watch, or Windows Hello.
 - **Auto-lock** — click away and the popover vanishes and locks. Nothing lingers.

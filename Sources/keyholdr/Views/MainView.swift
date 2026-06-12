@@ -21,6 +21,8 @@ struct MainView: View {
     // so shortcuts are handled through a local event monitor instead.
     @State private var keyMonitor: Any? = nil
 
+    @State private var launchAtLogin = LaunchAtLogin.isEnabled
+
     var body: some View {
         ZStack {
             KHTheme.paper.ignoresSafeArea()
@@ -187,12 +189,30 @@ struct MainView: View {
 
                     // Footer
                     HStack {
-                        Text("\(keys.count) \(keys.count == 1 ? "KEY" : "KEYS") · ⌘N TO ADD")
+                        Text("\(keys.count) \(keys.count == 1 ? "KEY" : "KEYS")")
                             .font(.khMonoLabel)
                             .tracking(0.5)
                             .foregroundColor(KHTheme.ink40)
 
                         Spacer()
+
+                        Button(action: {
+                            LaunchAtLogin.setEnabled(!launchAtLogin)
+                            launchAtLogin = LaunchAtLogin.isEnabled
+                        }) {
+                            HStack(spacing: 4) {
+                                Image(systemName: launchAtLogin ? "checkmark.circle.fill" : "circle")
+                                    .font(.system(size: 9, weight: .medium))
+                                Text("AUTOSTART")
+                                    .font(.khMonoLabel)
+                                    .tracking(0.5)
+                            }
+                            .foregroundColor(launchAtLogin ? KHTheme.ink60 : KHTheme.ink40)
+                        }
+                        .buttonStyle(.plain)
+                        .help(launchAtLogin ? "Keyholdr starts at login — click to disable" : "Start Keyholdr at login")
+
+                        Spacer().frame(width: 12)
 
                         HStack(spacing: 5) {
                             Image(systemName: "lock")
@@ -218,6 +238,8 @@ struct MainView: View {
         .onAppear {
             loadKeysData()
             installKeyMonitor()
+            // The user may have changed the login item in System Settings.
+            launchAtLogin = LaunchAtLogin.isEnabled
         }
         .onDisappear {
             removeKeyMonitor()
