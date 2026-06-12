@@ -170,6 +170,14 @@ function initDownloadMenus() {
     if (!pop || !summary) continue;
     summary.addEventListener('click', () => {
       if (menu.open) return; // this click is closing the menu
+
+      // body{overflow-x:clip} guillotines anything past the viewport edge,
+      // so right-anchor the panel when left-anchoring would overflow.
+      const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize);
+      const panelW = Math.min(28 * remPx, window.innerWidth - 2 * remPx);
+      const wouldOverflow = menu.getBoundingClientRect().left + panelW > window.innerWidth - remPx;
+      pop.classList.toggle('is-flipped', wouldOverflow);
+
       pop.classList.remove('is-rolling');
       void pop.offsetWidth; // commit the removal so the animation restarts
       pop.classList.add('is-rolling');

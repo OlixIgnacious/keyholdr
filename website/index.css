@@ -300,8 +300,11 @@ body[data-theme="dark"] .header-cta:hover { background: var(--bone); color: var(
   color: var(--ink-40);
   margin-left: 0.5rem;
 }
+/* Right-anchor when the panel would cross the viewport edge (set by JS) */
+.dl-pop.is-flipped { left: auto; right: 0; transform-origin: top right; }
 /* `translate` (not `transform`) so the centering survives the keyframes */
 .cta-actions .dl-pop { left: 50%; translate: -50% 0; transform-origin: top center; }
+.cta-actions .dl-pop.is-flipped { left: auto; translate: 0; }
 
 /* ---- Hero demo window ---- */
 
