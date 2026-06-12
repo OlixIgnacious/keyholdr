@@ -120,6 +120,9 @@ keyholdr list                                    # every key, with age — never
 keyholdr get openai                              # Touch ID → secret on stdout
 keyholdr get github --label work --copy          # to the clipboard instead
 keyholdr run -e OPENAI_API_KEY=openai -- npm start   # inject as env vars, nothing on stdout
+keyholdr add github --label work --tags dev,ci   # secret via hidden prompt — never argv
+pbpaste | keyholdr add openai                    # or piped straight from the clipboard
+keyholdr rm github --label work                  # confirms first; --force for scripts
 ```
 
 When several keys match (`keyholdr get aws` with a work and a personal key),

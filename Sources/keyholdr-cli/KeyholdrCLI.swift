@@ -10,10 +10,121 @@ struct KeyholdrCLI: ParsableCommand {
         commandName: "keyholdr",
         abstract: "Your keys, one command away.",
         discussion: "Reads the same vault as the Keyholdr menu bar app. Every secret access requires Touch ID (or your password). Run with no arguments to browse interactively.",
-        version: "1.3.0",
-        subcommands: [Pick.self, List.self, Get.self, Run.self],
+        version: "1.4.0",
+        subcommands: [Pick.self, List.self, Get.self, Run.self, Add.self, Remove.self],
         defaultSubcommand: Pick.self
     )
+}
+
+// MARK: - add
+
+struct Add: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        abstract: "Add a key. The secret comes from a hidden prompt or stdin — never from arguments.",
+        discussion: """
+        Arguments are visible to every process on the machine (`ps`), so the
+        secret is read interactively with echo off, or piped:
+
+            keyholdr add github --label work --tags dev,ci
+            pbpaste | keyholdr add openai
+        """
+    )
+
+    @Argument(help: "Platform name, e.g. github or openai.")
+    var platform: String
+
+    @Option(name: .shortAndLong, help: "Label to tell multiple keys for one platform apart.")
+    var label: String = "default"
+
+    @Option(name: .shortAndLong, help: "Comma-separated tags.")
+    var tags: String = ""
+
+    func run() throws {
+        let keys = StorageManager.loadKeys()
+        // Same guard as the app: an identical platform + label pair would be
+        // unaddressable later.
+        if keys.contains(where: {
+            $0.platform.caseInsensitiveCompare(platform) == .orderedSame &&
+            $0.label.caseInsensitiveCompare(label) == .orderedSame
+        }) {
+            throw ValidationError("A \(platform) key labeled '\(label)' already exists. Use a different --label.")
+        }
+
+        guard let secret = readSecret(prompt: "Secret for \(platform) (\(label)) — input hidden: "),
+              !secret.isEmpty else {
+            throw ValidationError("No secret provided.")
+        }
+
+        let tagList = tags.split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
+        let item = KeyItem(platform: platform, label: label, tags: tagList, secretUpdatedAt: Date())
+
+        guard KeychainHelper.save(secret: secret, for: item.id) else {
+            throw ValidationError("Couldn't write the secret to the Keychain.")
+        }
+        StorageManager.saveKeys(keys + [item])
+        FileHandle.standardError.write(Data("Added \(platform) (\(label)).\n".utf8))
+    }
+}
+
+// MARK: - rm
+
+struct Remove: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        commandName: "rm",
+        abstract: "Delete a key and its secret from the Keychain."
+    )
+
+    @Argument(help: "Platform name (case-insensitive).")
+    var platform: String
+
+    @Option(name: .shortAndLong, help: "Disambiguate when one platform has several keys.")
+    var label: String?
+
+    @Flag(name: [.customShort("f"), .long], help: "Skip the confirmation prompt.")
+    var force = false
+
+    func run() throws {
+        let key = try resolveKey(platform: platform, label: label, interactive: true)
+
+        if !force {
+            guard Picker.isInteractive else {
+                throw ValidationError("Refusing to delete without confirmation — pass --force in scripts.")
+            }
+            FileHandle.standardError.write(Data("Delete \(key.platform) (\(key.label)) and permanently erase its secret? [y/N] ".utf8))
+            guard readLine()?.trimmingCharacters(in: .whitespaces).lowercased() == "y" else {
+                throw ExitCode(1)
+            }
+        }
+
+        KeychainHelper.delete(for: key.id)
+        var keys = StorageManager.loadKeys()
+        keys.removeAll { $0.id == key.id }
+        StorageManager.saveKeys(keys)
+        FileHandle.standardError.write(Data("Removed \(key.platform) (\(key.label)).\n".utf8))
+    }
+}
+
+/// Reads a secret without echoing it; from stdin when piped.
+func readSecret(prompt: String) -> String? {
+    guard isatty(STDIN_FILENO) != 0 else {
+        let data = FileHandle.standardInput.readDataToEndOfFile()
+        return String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    let err = FileHandle.standardError
+    err.write(Data(prompt.utf8))
+    var original = termios()
+    tcgetattr(STDIN_FILENO, &original)
+    var noEcho = original
+    noEcho.c_lflag &= ~UInt(ECHO)
+    tcsetattr(STDIN_FILENO, TCSANOW, &noEcho)
+    defer {
+        tcsetattr(STDIN_FILENO, TCSANOW, &original)
+        err.write(Data("\n".utf8))
+    }
+    return readLine()?.trimmingCharacters(in: .whitespacesAndNewlines)
 }
 
 // MARK: - pick (default)
