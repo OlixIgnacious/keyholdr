@@ -566,7 +566,8 @@ body[data-theme="dark"] .header-cta:hover { background: var(--bone); color: var(
 }
 .specs-row {
   display: grid;
-  grid-template-columns: minmax(5.5rem, 1fr) 2fr 2fr;
+  /* Windows column hidden until testing completes — was: minmax(5.5rem, 1fr) 2fr 2fr */
+  grid-template-columns: minmax(5.5rem, 1fr) 4fr;
   gap: 1rem;
   padding: 1.1rem clamp(1rem, 2.5vw, 1.75rem);
   font-size: 0.95rem;
@@ -589,8 +590,10 @@ body[data-theme="dark"] .header-cta:hover { background: var(--bone); color: var(
 @media (max-width: 600px) {
   .specs-row { grid-template-columns: 1fr; gap: 0.2rem; padding-block: 0.9rem; }
   .specs-head { display: none; }
+  /* Windows column hidden until testing completes — restore with the column:
   .specs-row > span:nth-child(2)::before { content: "macOS — "; color: var(--bone-40); }
   .specs-row > span:nth-child(3)::before { content: "Windows — "; color: var(--bone-40); }
+  */
 }
 
 /* ============ CTA ============ */

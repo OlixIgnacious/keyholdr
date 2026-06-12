@@ -1,5 +1,7 @@
 name: Build Windows Release
 
+# Manual-dispatch only while the Windows build awaits verification on real
+# hardware — restore the tag trigger below to ship it with releases again.
 on:
   workflow_dispatch:
     inputs:
@@ -7,9 +9,9 @@ on:
         description: "Existing release tag to attach the Windows build to"
         required: true
         default: "v1.0.0"
-  push:
-    tags:
-      - "v*"
+  # push:
+  #   tags:
+  #     - "v*"
 
 permissions:
   contents: write

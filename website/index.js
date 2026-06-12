@@ -82,8 +82,10 @@ function initDemo() {
   const bioText = document.getElementById('demo-bio-text');
   if (!list || !search || !bio) return;
 
-  const isMac = /Mac|iP(hone|ad|od)/.test(navigator.platform || '');
-  const bioMethod = isMac ? 'Touch ID' : 'Windows Hello';
+  // Windows is hidden until testing completes — restore the platform check then:
+  // const isMac = /Mac|iP(hone|ad|od)/.test(navigator.platform || '');
+  // const bioMethod = isMac ? 'Touch ID' : 'Windows Hello';
+  const bioMethod = 'Touch ID';
   let busy = false;
 
   function render(filter = '') {

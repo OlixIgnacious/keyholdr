@@ -4,14 +4,16 @@
 
 **Your keys, one keystroke away.**
 
-A native menu bar / system tray vault for API keys.<br>
+A native menu bar vault for API keys.<br>
 Hardware-backed storage. Biometric unlock. Zero Electron.
 
 [**Website**](https://olixignacious.github.io/keyholdr/) · [**Download**](https://github.com/OlixIgnacious/keyholdr/releases/latest) · [**Build from source**](#build-from-source)
 
 [![Release](https://img.shields.io/github/v/release/OlixIgnacious/keyholdr?style=flat-square&color=121212&labelColor=121212)](https://github.com/OlixIgnacious/keyholdr/releases/latest)
 [![macOS](https://img.shields.io/badge/macOS-Swift%206%20·%20SwiftUI-121212?style=flat-square&logo=apple&logoColor=white)](https://github.com/OlixIgnacious/keyholdr/releases/latest)
+<!-- Windows is hidden until testing on real hardware completes:
 [![Windows](https://img.shields.io/badge/Windows-C%23%2012%20·%20WPF-121212?style=flat-square&logoColor=white)](https://github.com/OlixIgnacious/keyholdr/releases/latest)
+-->
 [![License: MIT](https://img.shields.io/badge/license-MIT-121212?style=flat-square)](#license)
 
 <br>
@@ -26,17 +28,17 @@ Hardware-backed storage. Biometric unlock. Zero Electron.
 
 API keys end up in dotfiles, Slack DMs, and `notes.txt`. Keyholdr gives them a
 proper home: a tiny native popover next to your clock. Open it, type two
-letters, hit copy — Touch ID or Windows Hello verifies it's you, the secret
-lands on your clipboard, and everything locks itself again.
+letters, hit copy — Touch ID verifies it's you, the secret lands on your
+clipboard, and everything locks itself again.
 
-- **Out of sight, never out of reach** — no dock icon, no window. A key icon in the menu bar / system tray, summoned with a click.
-- **Survives reboots** — starts at login on both platforms, with a one-click toggle to opt out.
-- **Hardware-backed, nothing in cleartext** — secrets live in macOS Keychain / Windows Credential Locker, never on disk.
-- **Biometric gate** — every copy and reveal requires Touch ID, Apple Watch, or Windows Hello.
+- **Out of sight, never out of reach** — no dock icon, no window. A key icon in the menu bar, summoned with a click or `⌃⌥⌘K` from anywhere.
+- **Survives reboots** — starts at login, with a one-click toggle to opt out.
+- **Hardware-backed, nothing in cleartext** — secrets live in the macOS Keychain, never on disk.
+- **Biometric gate** — every copy and reveal requires Touch ID or Apple Watch.
 - **Auto-lock** — click away and the popover vanishes and locks. Nothing lingers.
-- **Featherweight** — pure SwiftUI and WPF. The macOS app is **~700 KB**.
+- **Featherweight** — pure SwiftUI. **~700 KB**.
 - **Strictly local** — no servers, no sync, no analytics, no network calls. Ever.
-- **Moves when you do** — export the vault to a single passphrase-encrypted file (PBKDF2 + AES-GCM) and import it on the new machine. *(macOS first; Windows on the roadmap.)*
+- **Moves when you do** — export the vault to a single passphrase-encrypted file (PBKDF2 + AES-GCM) and import it on the new machine.
 
 ## How secrets are stored
 
@@ -46,15 +48,15 @@ Metadata and secrets never travel together:
 graph LR
     UI[Keyholdr] --> M["keys.json<br>platform · label · tags"]
     UI --> V["OS secure vault<br>the actual secrets"]
-    V --> B{{"Touch ID / Windows Hello"}}
+    V --> B{{"Touch ID"}}
     B -->|verified| C[clipboard]
 ```
 
-| | macOS | Windows |
-|---|---|---|
-| **Metadata** | `~/Library/Application Support/com.olixstudios.Keyholdr/keys.json` | `%APPDATA%/Keyholdr/keys.json` |
-| **Secrets** | Keychain Services (`Security` API) | Credential Locker (`PasswordVault` API) |
-| **Unlock** | Touch ID / Apple Watch (`LocalAuthentication`) | Windows Hello — face, finger, PIN |
+| | |
+|---|---|
+| **Metadata** | `~/Library/Application Support/com.olixstudios.Keyholdr/keys.json` |
+| **Secrets** | Keychain Services (`Security` API) |
+| **Unlock** | Touch ID / Apple Watch (`LocalAuthentication`) |
 
 `keys.json` holds platform names, labels, and tags only. The secret is fetched
 from the OS vault at the millisecond you copy it — and only after biometric
@@ -73,7 +75,13 @@ Grab the [latest release](https://github.com/OlixIgnacious/keyholdr/releases/lat
 | Platform | Asset | Notes |
 |---|---|---|
 | macOS (Apple Silicon) | `Keyholdr-macOS-*.zip` | Unzip → move to /Applications. Unsigned for now: right-click → **Open** on first launch. |
+
+<!-- Windows is hidden until testing on real hardware completes:
 | Windows 10/11 (x64) | `Keyholdr-windows-x64-*.zip` | **Still in testing** — built on CI but not yet verified on real hardware. Self-contained single `.exe`, no .NET install needed. SmartScreen: **More info → Run anyway**. |
+-->
+
+> A native Windows build (C# 12, WPF) lives in [windows/](windows/) — it ships
+> once testing on real hardware wraps up.
 
 ### Shortcuts (macOS)
 
@@ -92,7 +100,7 @@ Grab the [latest release](https://github.com/OlixIgnacious/keyholdr/releases/lat
 ./build.sh   # release build → app bundle → launches in your menu bar
 ```
 
-**Windows** — needs the [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0):
+**Windows** *(source only while testing is pending)* — needs the [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0):
 
 ```cmd
 cd windows/Keyholdr
@@ -100,8 +108,9 @@ dotnet run               # development
 dotnet publish -c Release   # self-contained single-file exe
 ```
 
-Tagged releases (`v*`) automatically build the Windows exe on CI and attach it
-to the GitHub release.
+Tagged releases (`v*`) automatically build the macOS app on CI and attach it
+to the GitHub release. The Windows build is manual-dispatch only until it is
+verified on real hardware.
 
 ## Project layout
 

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Keyholdr — Your keys, one keystroke away</title>
-  <meta name="description" content="Keyholdr is a native, open-source menu bar and system tray vault for API keys. Hardware-backed storage, Touch ID and Windows Hello, under 1 MB.">
+  <meta name="description" content="Keyholdr is a native, open-source menu bar vault for API keys. Hardware-backed storage, Touch ID unlock, under 1 MB.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,7 +14,7 @@
 
   <meta property="og:type" content="website">
   <meta property="og:title" content="Keyholdr">
-  <meta property="og:description" content="A native, hardware-secured vault for your API keys. macOS &amp; Windows.">
+  <meta property="og:description" content="A native, hardware-secured vault for your API keys, living in your Mac's menu bar.">
 </head>
 <body data-theme="light">
 
@@ -41,7 +41,7 @@
     <!-- ============ Hero ============ -->
     <section class="hero" data-section-theme="light">
       <div class="hero-inner">
-        <p class="eyebrow reveal">Open source · macOS &amp; Windows</p>
+        <p class="eyebrow reveal">Open source · Native macOS</p>
         <h1 class="hero-title">
           <span class="line-mask"><span class="line">Your keys,</span></span>
           <span class="line-mask"><span class="line">one keystroke</span></span>
@@ -55,7 +55,9 @@
           </p>
           <div class="hero-actions">
             <a class="btn btn-solid" href="https://github.com/OlixIgnacious/keyholdr/releases" target="_blank" rel="noopener">Download for macOS</a>
+            <!-- Windows is hidden until testing on real hardware completes:
             <a class="btn btn-ghost" href="https://github.com/OlixIgnacious/keyholdr/releases" target="_blank" rel="noopener">Download for Windows <sup class="beta-tag">beta</sup></a>
+            -->
           </div>
         </div>
       </div>
@@ -105,9 +107,8 @@
     <div class="ticker" data-section-theme="light" aria-hidden="true">
       <div class="ticker-track" id="ticker-track">
         <span>Touch ID</span><i>·</i>
-        <span>Windows Hello</span><i>·</i>
         <span>Keychain Services</span><i>·</i>
-        <span>Credential Locker</span><i>·</i>
+        <span>AES-256-GCM export</span><i>·</i>
         <span>680 KB</span><i>·</i>
         <span>Zero Electron</span><i>·</i>
         <span>100% native</span><i>·</i>
@@ -124,7 +125,7 @@
       <div class="section-body">
         <p class="lede reveal">
           No dock icon, no window, no clutter. Keyholdr sits beside your clock
-          and opens with a click or a global shortcut — search, copy, gone.
+          and opens with a click — or ⌃⌥⌘K from anywhere. Search, copy, gone.
         </p>
         <div class="feature-grid">
           <article class="feature reveal">
@@ -145,7 +146,17 @@
           <article class="feature reveal">
             <span class="feature-no">d</span>
             <h3>Featherweight</h3>
-            <p>Pure SwiftUI on Mac, WPF on Windows. Under 1 MB, negligible memory, zero Chromium.</p>
+            <p>Pure SwiftUI. Under 1 MB, negligible memory, zero Chromium.</p>
+          </article>
+          <article class="feature reveal">
+            <span class="feature-no">e</span>
+            <h3>Always on duty</h3>
+            <p>Starts at login and survives reboots — toggle it off in one click if you'd rather it didn't.</p>
+          </article>
+          <article class="feature reveal">
+            <span class="feature-no">f</span>
+            <h3>Moves with you</h3>
+            <p>Export the whole vault to one passphrase-encrypted file and import it on your next machine. No cloud required.</p>
           </article>
         </div>
       </div>
@@ -167,12 +178,12 @@
           <li class="ledger-row reveal">
             <span class="ledger-no">2.1</span>
             <h3>System vaults only</h3>
-            <p>Secrets are written to macOS Keychain Services and Windows Credential Locker — encrypted by the OS, backed by hardware.</p>
+            <p>Secrets are written to macOS Keychain Services — encrypted by the OS, backed by hardware.</p>
           </li>
           <li class="ledger-row reveal">
             <span class="ledger-no">2.2</span>
             <h3>Biometric gate</h3>
-            <p>Touch ID or Windows Hello is required before any secret is decrypted. Physical presence, every time.</p>
+            <p>Touch ID or Apple Watch is required before any secret is decrypted. Physical presence, every time.</p>
           </li>
           <li class="ledger-row reveal">
             <span class="ledger-no">2.3</span>
@@ -198,29 +209,36 @@
     <section class="section section-dark" id="specs" data-section-theme="dark">
       <header class="section-head">
         <span class="index reveal">03</span>
-        <h2 class="reveal">Two platforms.<br><em>One discipline.</em></h2>
+        <h2 class="reveal">Native macOS.<br><em>Down to the byte.</em></h2>
       </header>
       <div class="section-body">
         <div class="specs reveal">
-          <div class="specs-row specs-head" role="row">
-            <span></span><span>macOS</span><span>Windows</span>
+          <div class="specs-row">
+            <span>Stack</span><span>Swift 6 · SwiftUI</span>
           </div>
           <div class="specs-row">
-            <span>Stack</span><span>Swift 6 · SwiftUI</span><span>C# 12 · WPF · .NET 8</span>
+            <span>Form</span><span>Menu bar accessory</span>
           </div>
           <div class="specs-row">
-            <span>Form</span><span>Menu bar accessory</span><span>System tray utility</span>
+            <span>Vault</span><span>Keychain Services</span>
           </div>
           <div class="specs-row">
-            <span>Vault</span><span>Keychain Services</span><span>Credential Locker</span>
+            <span>Unlock</span><span>Touch ID · Apple Watch</span>
           </div>
           <div class="specs-row">
-            <span>Unlock</span><span>Touch ID · Apple Watch</span><span>Hello — face, finger, PIN</span>
+            <span>Summon</span><span>⌃⌥⌘K — system-wide</span>
           </div>
           <div class="specs-row">
-            <span>Footprint</span><span>~680 KB</span><span>Self-contained .exe</span>
+            <span>Backup</span><span>Passphrase-encrypted export · AES-256-GCM</span>
+          </div>
+          <div class="specs-row">
+            <span>Footprint</span><span>~680 KB</span>
           </div>
         </div>
+        <p class="lede reveal" style="margin-top: 1.5rem;">
+          A native Windows sibling — C# 12, WPF, Credential Locker, Windows Hello —
+          is built and waiting in the repo. It ships once testing wraps up.
+        </p>
       </div>
     </section>
 
@@ -232,7 +250,9 @@
       </h2>
       <div class="cta-actions reveal">
         <a class="btn btn-solid btn-lg" href="https://github.com/OlixIgnacious/keyholdr/releases" target="_blank" rel="noopener">Download for macOS</a>
+        <!-- Windows is hidden until testing on real hardware completes:
         <a class="btn btn-ghost btn-lg" href="https://github.com/OlixIgnacious/keyholdr/releases" target="_blank" rel="noopener">Download for Windows <sup class="beta-tag">beta</sup></a>
+        -->
       </div>
       <p class="cta-note reveal">Free · open source · no account, ever</p>
     </section>
