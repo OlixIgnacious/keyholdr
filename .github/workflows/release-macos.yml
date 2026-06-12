@@ -13,8 +13,8 @@ name: Build macOS Release
 #   APPLE_APP_PASSWORD      app-specific password for notarytool
 #
 # Required secret for automatic Homebrew tap updates:
-#   TAP_GITHUB_TOKEN        fine-grained PAT with contents: read/write
-#                           on OlixIgnacious/homebrew-tap only
+#   TAP_DEPLOY_KEY          private half of an SSH deploy key that has
+#                           write access on OlixIgnacious/homebrew-tap
 
 on:
   workflow_dispatch:
@@ -35,7 +35,7 @@ jobs:
     runs-on: macos-latest
     env:
       HAS_SIGNING: ${{ secrets.MACOS_CERT_P12 != '' }}
-      HAS_TAP_TOKEN: ${{ secrets.TAP_GITHUB_TOKEN != '' }}
+      HAS_TAP_KEY: ${{ secrets.TAP_DEPLOY_KEY != '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -97,14 +97,18 @@ jobs:
           gh release upload "$TAG" "Keyholdr-macOS-$TAG.zip" --clobber
 
       - name: Update Homebrew tap
-        if: env.HAS_TAP_TOKEN == 'true'
+        if: env.HAS_TAP_KEY == 'true'
         env:
-          TAP_TOKEN: ${{ secrets.TAP_GITHUB_TOKEN }}
+          TAP_DEPLOY_KEY: ${{ secrets.TAP_DEPLOY_KEY }}
         run: |
           TAG="${{ github.event.inputs.tag || github.ref_name }}"
           VERSION="${TAG#v}"
           SHA=$(shasum -a 256 "Keyholdr-macOS-$TAG.zip" | cut -d' ' -f1)
-          git clone --depth 1 "https://x-access-token:${TAP_TOKEN}@github.com/OlixIgnacious/homebrew-tap.git" tap
+          KEY_FILE=$(mktemp)
+          echo "$TAP_DEPLOY_KEY" > "$KEY_FILE"
+          chmod 600 "$KEY_FILE"
+          export GIT_SSH_COMMAND="ssh -i $KEY_FILE -o StrictHostKeyChecking=accept-new"
+          git clone --depth 1 git@github.com:OlixIgnacious/homebrew-tap.git tap
           cd tap
           sed -i '' -E "s|^  version \".*\"|  version \"$VERSION\"|" Casks/keyholdr.rb
           sed -i '' -E "s|^  sha256 \".*\"|  sha256 \"$SHA\"|" Casks/keyholdr.rb
