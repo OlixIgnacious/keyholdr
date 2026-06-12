@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initTicker();
   initClock();
   initDemo();
+  initDownloadMenus();
 });
 
 /* ---- Scroll reveals ---- */
@@ -146,4 +147,35 @@ function initDemo() {
 
   search.addEventListener('input', () => render(search.value));
   render();
+}
+
+/* ---- Download menus (hero + CTA) ---- */
+
+function initDownloadMenus() {
+  const menus = Array.from(document.querySelectorAll('.dl-menu'));
+  if (!menus.length) return;
+
+  document.addEventListener('click', (e) => {
+    for (const menu of menus) {
+      if (menu.open && !menu.contains(e.target)) menu.open = false;
+    }
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') for (const menu of menus) menu.open = false;
+  });
+
+  for (const btn of document.querySelectorAll('.dl-row[data-copy]')) {
+    btn.addEventListener('click', async () => {
+      const hint = btn.querySelector('.dl-copy-hint');
+      try {
+        await navigator.clipboard.writeText(btn.dataset.copy);
+        if (hint) {
+          hint.textContent = 'copied ✓';
+          setTimeout(() => { hint.textContent = 'click to copy'; }, 1600);
+        }
+      } catch {
+        // Clipboard unavailable — the command is visible in the row to select manually.
+      }
+    });
+  }
 }
