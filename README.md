@@ -121,9 +121,11 @@ keyholdr get github --label work --copy          # to the clipboard instead
 keyholdr run -e OPENAI_API_KEY=openai -- npm start   # inject as env vars, nothing on stdout
 ```
 
-The first time the CLI reads each key, macOS shows a one-time Keychain
-consent prompt (the CLI is a separate binary from the app) — choose
-**Always Allow**. This disappears once Keyholdr ships signed builds.
+Two one-time prompts while builds are unsigned: Gatekeeper blocks the
+quarantined CLI (clear it with
+`xattr -dr com.apple.quarantine /Applications/Keyholdr.app`), and the first
+read of each key shows a macOS Keychain consent — choose **Always Allow**.
+Both disappear once Keyholdr ships signed builds.
 
 ## Build from source
 
