@@ -36,6 +36,7 @@ lands on your clipboard, and everything locks itself again.
 - **Auto-lock** — click away and the popover vanishes and locks. Nothing lingers.
 - **Featherweight** — pure SwiftUI and WPF. The macOS app is **~700 KB**.
 - **Strictly local** — no servers, no sync, no analytics, no network calls. Ever.
+- **Moves when you do** — export the vault to a single passphrase-encrypted file (PBKDF2 + AES-GCM) and import it on the new machine. *(macOS first; Windows on the roadmap.)*
 
 ## How secrets are stored
 
@@ -78,6 +79,7 @@ Grab the [latest release](https://github.com/OlixIgnacious/keyholdr/releases/lat
 
 | Keys | Action |
 |---|---|
+| `⌃⌥K` | Summon or dismiss Keyholdr — works system-wide |
 | `⌘N` | Add a new key |
 | `Esc` | Dismiss the add/edit form |
 | just type | Search is focused by default |

@@ -46,6 +46,12 @@ cat <<EOF > "$APP_DIR/Contents/Info.plist"
 </plist>
 EOF
 
+# CI mode: produce the bundle and stop, don't touch running processes
+if [[ "${1:-}" == "--no-launch" ]]; then
+    echo "📦 Bundle ready at $APP_DIR (skipping launch)"
+    exit 0
+fi
+
 echo "🛑 Stopping any running instances of Keyholdr..."
 pkill Keyholdr || true
 

@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 @MainActor
 struct MainView: View {
@@ -16,6 +17,10 @@ struct MainView: View {
     // Delete states
     @State private var itemToDelete: KeyItem? = nil
     @State private var showingDeleteAlert = false
+
+    // Vault export/import states
+    @State private var transferMode: TransferMode? = nil
+    @State private var transferError: String? = nil
 
     // MenuBarExtra windows do not route key equivalents to SwiftUI buttons,
     // so shortcuts are handled through a local event monitor instead.
@@ -59,6 +64,21 @@ struct MainView: View {
                             editingSecret = nil
                         }
                     }
+                )
+                .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .trailing)))
+            } else if let mode = transferMode {
+                TransferView(
+                    mode: mode,
+                    errorText: transferError,
+                    onConfirm: { passphrase in
+                        switch mode {
+                        case .exportAll:
+                            performExport(passphrase: passphrase)
+                        case .importFile(let url):
+                            performImport(from: url, passphrase: passphrase)
+                        }
+                    },
+                    onCancel: { closeTransfer() }
                 )
                 .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .trailing)))
             } else {
@@ -109,6 +129,27 @@ struct MainView: View {
                         .buttonStyle(.plain)
                         .keyboardShortcut("n", modifiers: .command)
                         .help("Add new key (⌘N)")
+
+                        Menu {
+                            Button("Export Vault…") { beginExport() }
+                                .disabled(keys.isEmpty)
+                            Button("Import Vault…") { beginImport() }
+                        } label: {
+                            Image(systemName: "ellipsis")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundColor(KHTheme.ink60)
+                                .frame(width: 30, height: 30)
+                                .background(KHTheme.field)
+                                .clipShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 9, style: .continuous)
+                                        .strokeBorder(KHTheme.ink12, lineWidth: 1)
+                                )
+                        }
+                        .menuStyle(.borderlessButton)
+                        .menuIndicator(.hidden)
+                        .frame(width: 30, height: 30)
+                        .help("Export or import the vault")
                     }
                     .padding(.horizontal, 14)
                     .padding(.top, 14)
@@ -295,6 +336,14 @@ struct MainView: View {
     private func handleKeyDown(keyCode: UInt16, characters: String?, modifiers: NSEvent.ModifierFlags) -> Bool {
         let isFormOpen = showingAddSheet || editingItem != nil
 
+        // Escape — close the export/import form
+        if keyCode == 53, transferMode != nil {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
+                closeTransfer()
+            }
+            return true
+        }
+
         // ⌘N — new key
         if modifiers == .command, characters == "n", !isFormOpen {
             withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
@@ -342,6 +391,82 @@ struct MainView: View {
         StorageManager.saveKeys(keys)
         editingItem = nil
         editingSecret = nil
+    }
+
+    // MARK: - Vault export / import
+
+    private var vaultFileType: [UTType] {
+        UTType(filenameExtension: VaultExport.fileExtension).map { [$0] } ?? []
+    }
+
+    private func beginExport() {
+        transferError = nil
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
+            transferMode = .exportAll
+        }
+    }
+
+    private func beginImport() {
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = vaultFileType
+        panel.allowsMultipleSelection = false
+        panel.message = "Choose a Keyholdr vault export"
+        NSApp.activate(ignoringOtherApps: true)
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+
+        transferError = nil
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
+            transferMode = .importFile(url)
+        }
+    }
+
+    private func closeTransfer() {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
+            transferMode = nil
+            transferError = nil
+        }
+    }
+
+    private func performExport(passphrase: String) {
+        Task {
+            let success = await securityManager.authenticate(reason: "export all keys")
+            guard success else { return }
+
+            // Capture everything before the save panel: the popover may close
+            // beneath us once the panel takes key focus.
+            let entries = keys.map { ExportedKey(item: $0, secret: KeychainHelper.retrieve(for: $0.id) ?? "") }
+            do {
+                let data = try VaultExport.export(entries, passphrase: passphrase)
+
+                let panel = NSSavePanel()
+                panel.allowedContentTypes = vaultFileType
+                panel.nameFieldStringValue = "vault.\(VaultExport.fileExtension)"
+                panel.message = "The file is encrypted with your passphrase"
+                NSApp.activate(ignoringOtherApps: true)
+                closeTransfer()
+                guard panel.runModal() == .OK, let url = panel.url else { return }
+                try data.write(to: url)
+            } catch {
+                transferError = "Export failed: \(error.localizedDescription)"
+            }
+        }
+    }
+
+    private func performImport(from url: URL, passphrase: String) {
+        do {
+            let data = try Data(contentsOf: url)
+            let entries = try VaultExport.import(data, passphrase: passphrase)
+            for entry in entries where !keys.contains(where: { $0.id == entry.item.id }) {
+                KeychainHelper.save(secret: entry.secret, for: entry.item.id)
+                keys.append(entry.item)
+            }
+            StorageManager.saveKeys(keys)
+            closeTransfer()
+        } catch VaultExportError.wrongPassphrase {
+            transferError = "Wrong passphrase for this file."
+        } catch {
+            transferError = "That file doesn't look like a Keyholdr vault export."
+        }
     }
 
     private func deleteKey(_ item: KeyItem) {
