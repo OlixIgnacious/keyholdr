@@ -239,9 +239,9 @@ body[data-theme="dark"] .header-cta:hover { background: var(--bone); color: var(
   position: absolute;
   top: calc(100% + 0.6rem);
   left: 0;
-  min-width: 21rem;
-  max-width: min(23rem, calc(100vw - 2rem));
-  padding: 0.4rem;
+  min-width: 24rem;
+  max-width: min(26rem, calc(100vw - 2rem));
+  padding: 0.5rem;
   background: var(--paper);
   border: 1px solid var(--ink-12);
   border-radius: 1rem;
@@ -273,7 +273,7 @@ body[data-theme="dark"] .header-cta:hover { background: var(--bone); color: var(
 .dl-row {
   display: block;
   width: 100%;
-  padding: 0.7rem 0.95rem;
+  padding: 0.9rem 1.1rem;
   border: 0;
   border-radius: 0.7rem;
   background: none;
@@ -285,17 +285,17 @@ body[data-theme="dark"] .header-cta:hover { background: var(--bone); color: var(
 }
 .dl-row:hover { background: var(--ink-06); }
 .dl-row + .dl-row { margin-top: 0.15rem; }
-.dl-row-title { display: block; font-weight: 500; font-size: 0.92rem; }
+.dl-row-title { display: block; font-weight: 500; font-size: 1rem; }
 .dl-row-sub {
   display: block;
-  margin-top: 0.25rem;
+  margin-top: 0.3rem;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   color: var(--ink-60);
 }
 .dl-copy-hint {
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   letter-spacing: 0.04em;
   color: var(--ink-40);
   margin-left: 0.5rem;
