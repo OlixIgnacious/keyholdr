@@ -1,4 +1,5 @@
 import SwiftUI
+import KeyholdrKit
 import AppKit
 
 struct AddKeyView: View {
@@ -188,12 +189,15 @@ struct AddKeyView: View {
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
 
+        // The rotation age only resets when the secret value itself changes.
+        let secretChanged = editingItem == nil || cleanedSecret != existingSecret
         let item = KeyItem(
             id: editingItem?.id ?? UUID(),
             platform: cleanedPlatform,
             label: cleanedLabel.isEmpty ? "default" : cleanedLabel,
             tags: tagsList,
-            dateCreated: editingItem?.dateCreated ?? Date()
+            dateCreated: editingItem?.dateCreated ?? Date(),
+            secretUpdatedAt: secretChanged ? Date() : editingItem?.secretUpdatedAt
         )
 
         onSave(item, cleanedSecret)

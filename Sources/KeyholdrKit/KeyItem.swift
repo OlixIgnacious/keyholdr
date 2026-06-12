@@ -7,13 +7,41 @@ public struct KeyItem: Codable, Identifiable, Hashable {
     public var label: String
     public var tags: [String]
     public let dateCreated: Date
-    
-    public init(id: UUID = UUID(), platform: String, label: String, tags: [String] = [], dateCreated: Date = Date()) {
+    /// When the secret value last changed. Optional so keys.json files written
+    /// before this field existed still decode; falls back to dateCreated.
+    public var secretUpdatedAt: Date?
+
+    public init(id: UUID = UUID(), platform: String, label: String, tags: [String] = [], dateCreated: Date = Date(), secretUpdatedAt: Date? = nil) {
         self.id = id
         self.platform = platform
         self.label = label
         self.tags = tags
         self.dateCreated = dateCreated
+        self.secretUpdatedAt = secretUpdatedAt
+    }
+
+    // MARK: - Secret age
+
+    /// Secrets older than this are flagged for rotation.
+    public static let staleAfter: TimeInterval = 60 * 60 * 24 * 180
+
+    public var secretLastChanged: Date {
+        secretUpdatedAt ?? dateCreated
+    }
+
+    public var isStale: Bool {
+        Date().timeIntervalSince(secretLastChanged) > Self.staleAfter
+    }
+
+    /// Compact age like "5d", "3w", "11mo", "2y".
+    public var compactAge: String {
+        let days = Int(Date().timeIntervalSince(secretLastChanged) / 86_400)
+        switch days {
+        case ..<14: return "\(max(days, 0))d"
+        case ..<60: return "\(days / 7)w"
+        case ..<548: return "\(days / 30)mo"
+        default: return "\(days / 365)y"
+        }
     }
     
     /// Two-letter tile monogram, e.g. "GitHub" → "GH", "OpenAI" → "OA", "AWS" → "AW".

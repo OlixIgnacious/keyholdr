@@ -10,20 +10,34 @@ let package = Package(
     ],
     dependencies: [
         // Programmatic open/close for MenuBarExtra, used by the global hotkey.
-        .package(url: "https://github.com/orchetect/MenuBarExtraAccess", from: "1.0.0")
+        .package(url: "https://github.com/orchetect/MenuBarExtraAccess", from: "1.0.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0")
     ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
+        // Shared core: model, Keychain, storage, vault export. Used by both
+        // the menu bar app and the CLI.
+        .target(
+            name: "KeyholdrKit"
+        ),
+        // The menu bar app.
         .executableTarget(
             name: "keyholdr",
             dependencies: [
+                "KeyholdrKit",
                 .product(name: "MenuBarExtraAccess", package: "MenuBarExtraAccess")
+            ]
+        ),
+        // The terminal companion: keyholdr list / get / run.
+        .executableTarget(
+            name: "keyholdr-cli",
+            dependencies: [
+                "KeyholdrKit",
+                .product(name: "ArgumentParser", package: "swift-argument-parser")
             ]
         ),
         .testTarget(
             name: "keyholdrTests",
-            dependencies: ["keyholdr"]
+            dependencies: ["KeyholdrKit"]
         ),
     ],
     swiftLanguageModes: [.v6]

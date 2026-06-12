@@ -39,6 +39,8 @@ clipboard, and everything locks itself again.
 - **Featherweight** — pure SwiftUI. **~700 KB**.
 - **Strictly local** — no servers, no sync, no analytics, no network calls. Ever.
 - **Moves when you do** — export the vault to a single passphrase-encrypted file (PBKDF2 + AES-GCM) and import it on the new machine.
+- **Terminal native** — `keyholdr get openai` prints a secret after Touch ID; `keyholdr run` injects keys as env vars so they never touch your dotfiles.
+- **Rotation nudges** — a quiet `11MO · ROTATE?` hint appears on keys whose secret hasn't changed in six months.
 
 ## How secrets are stored
 
@@ -103,6 +105,26 @@ Or grab the [latest release](https://github.com/OlixIgnacious/keyholdr/releases/
 | `Esc` | Dismiss the add/edit form |
 | just type | Search is focused by default |
 
+## Terminal companion
+
+The app bundles a CLI. Homebrew links it onto your PATH automatically; for
+direct downloads, link it once:
+
+```bash
+ln -s /Applications/Keyholdr.app/Contents/MacOS/keyholdr-cli /usr/local/bin/keyholdr
+```
+
+```bash
+keyholdr list                                    # every key, with age — never the secrets
+keyholdr get openai                              # Touch ID → secret on stdout
+keyholdr get github --label work --copy          # to the clipboard instead
+keyholdr run -e OPENAI_API_KEY=openai -- npm start   # inject as env vars, nothing on stdout
+```
+
+The first time the CLI reads each key, macOS shows a one-time Keychain
+consent prompt (the CLI is a separate binary from the app) — choose
+**Always Allow**. This disappears once Keyholdr ships signed builds.
+
 ## Build from source
 
 **macOS** — needs Xcode Command Line Tools (`xcode-select --install`):
@@ -127,10 +149,12 @@ verified on real hardware.
 
 ```text
 keyholdr/
+├── Sources/KeyholdrKit/     shared core — model, Keychain, storage, vault export
 ├── Sources/keyholdr/        macOS app — Swift 6, SwiftUI
 │   ├── KeyholdrApp.swift      MenuBarExtra entry point
-│   ├── Models/                 Keychain, biometrics, JSON store
+│   ├── Models/                 login item, global hotkey
 │   └── Views/                  popover UI, monochrome theme
+├── Sources/keyholdr-cli/    terminal companion — list, get, run
 ├── windows/Keyholdr/        Windows app — C# 12, WPF, .NET 8
 │   ├── App.xaml.cs             tray icon + popup positioning
 │   ├── Models/                 Credential Locker, Windows Hello, JSON store

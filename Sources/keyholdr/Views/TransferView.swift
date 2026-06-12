@@ -1,4 +1,5 @@
 import SwiftUI
+import KeyholdrKit
 
 /// What the vault transfer form is collecting a passphrase for.
 enum TransferMode: Equatable {

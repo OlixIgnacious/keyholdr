@@ -1,4 +1,5 @@
 import SwiftUI
+import KeyholdrKit
 import AppKit
 
 @MainActor
@@ -25,11 +26,22 @@ struct KeyRowView: View {
 
             // Text details
             VStack(alignment: .leading, spacing: 3) {
-                Text(item.platform)
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundColor(KHTheme.ink)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
+                HStack(spacing: 6) {
+                    Text(item.platform)
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundColor(KHTheme.ink)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+
+                    // Quiet rotation nudge for secrets older than ~6 months
+                    if item.isStale {
+                        Text("\(item.compactAge.uppercased()) · ROTATE?")
+                            .font(.khMonoLabel)
+                            .tracking(0.5)
+                            .foregroundColor(KHTheme.ink40)
+                            .help("This secret hasn't changed in \(item.compactAge). Consider rotating it.")
+                    }
+                }
 
                 Text(revealedSecret ?? subtitle)
                     .font(.khMonoSub)

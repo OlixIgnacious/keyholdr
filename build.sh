@@ -10,9 +10,12 @@ rm -rf "$APP_DIR"
 mkdir -p "$APP_DIR/Contents/MacOS"
 mkdir -p "$APP_DIR/Contents/Resources"
 
-echo "✏️ Copying executable..."
+echo "✏️ Copying executables..."
 cp .build/release/keyholdr "$APP_DIR/Contents/MacOS/Keyholdr"
 chmod +x "$APP_DIR/Contents/MacOS/Keyholdr"
+# Terminal companion, shipped inside the bundle; brew symlinks it into PATH
+cp .build/release/keyholdr-cli "$APP_DIR/Contents/MacOS/keyholdr-cli"
+chmod +x "$APP_DIR/Contents/MacOS/keyholdr-cli"
 
 echo "📝 Creating Info.plist..."
 cat <<EOF > "$APP_DIR/Contents/Info.plist"
@@ -33,9 +36,9 @@ cat <<EOF > "$APP_DIR/Contents/Info.plist"
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.1.0</string>
+    <string>1.2.0</string>
     <key>CFBundleVersion</key>
-    <string>2</string>
+    <string>3</string>
     <key>LSMinimumSystemVersion</key>
     <string>13.0</string>
     <key>LSUIElement</key>
