@@ -123,6 +123,7 @@ keyholdr run -e OPENAI_API_KEY=openai -- npm start   # inject as env vars, nothi
 keyholdr add github --label work --tags dev,ci   # secret via hidden prompt — never argv
 pbpaste | keyholdr add openai                    # or piped straight from the clipboard
 keyholdr rm github --label work                  # confirms first; --force for scripts
+keyholdr rm                                      # multi-select: ⇥/space to mark, ⏎ deletes
 ```
 
 When several keys match (`keyholdr get aws` with a work and a personal key),

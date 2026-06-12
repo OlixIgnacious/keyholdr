@@ -73,11 +73,12 @@ struct Add: ParsableCommand {
 struct Remove: ParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "rm",
-        abstract: "Delete a key and its secret from the Keychain."
+        abstract: "Delete keys and their secrets from the Keychain.",
+        discussion: "With no platform argument, opens a multi-select picker — ⇥ or space to mark several keys, ⏎ to confirm."
     )
 
-    @Argument(help: "Platform name (case-insensitive).")
-    var platform: String
+    @Argument(help: "Platform name (case-insensitive). Omit to multi-select interactively.")
+    var platform: String?
 
     @Option(name: .shortAndLong, help: "Disambiguate when one platform has several keys.")
     var label: String?
@@ -86,23 +87,45 @@ struct Remove: ParsableCommand {
     var force = false
 
     func run() throws {
-        let key = try resolveKey(platform: platform, label: label, interactive: true)
+        let targets: [KeyItem]
+        if let platform {
+            targets = [try resolveKey(platform: platform, label: label, interactive: true)]
+        } else {
+            guard Picker.isInteractive else {
+                throw ValidationError("Provide a platform name, or run in a terminal to multi-select.")
+            }
+            let keys = StorageManager.loadKeys()
+                .sorted { $0.platform.localizedCaseInsensitiveCompare($1.platform) == .orderedAscending }
+            guard !keys.isEmpty else {
+                print("Vault is empty — nothing to delete.")
+                return
+            }
+            guard let picked = Picker.pickMany(from: keys, title: "Delete keys"), !picked.isEmpty else {
+                throw ExitCode(130) // cancelled
+            }
+            targets = picked
+        }
 
         if !force {
             guard Picker.isInteractive else {
                 throw ValidationError("Refusing to delete without confirmation — pass --force in scripts.")
             }
-            FileHandle.standardError.write(Data("Delete \(key.platform) (\(key.label)) and permanently erase its secret? [y/N] ".utf8))
+            let names = targets.map { "\($0.platform) (\($0.label))" }.joined(separator: ", ")
+            let what = targets.count == 1 ? names : "\(targets.count) keys — \(names) —"
+            FileHandle.standardError.write(Data("Delete \(what) and permanently erase the secret\(targets.count == 1 ? "" : "s")? [y/N] ".utf8))
             guard readLine()?.trimmingCharacters(in: .whitespaces).lowercased() == "y" else {
                 throw ExitCode(1)
             }
         }
 
-        KeychainHelper.delete(for: key.id)
+        let ids = Set(targets.map(\.id))
+        for id in ids { KeychainHelper.delete(for: id) }
         var keys = StorageManager.loadKeys()
-        keys.removeAll { $0.id == key.id }
+        keys.removeAll { ids.contains($0.id) }
         StorageManager.saveKeys(keys)
-        FileHandle.standardError.write(Data("Removed \(key.platform) (\(key.label)).\n".utf8))
+        for target in targets {
+            FileHandle.standardError.write(Data("Removed \(target.platform) (\(target.label)).\n".utf8))
+        }
     }
 }
 
