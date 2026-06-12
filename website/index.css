@@ -239,8 +239,8 @@ body[data-theme="dark"] .header-cta:hover { background: var(--bone); color: var(
   position: absolute;
   top: calc(100% + 0.6rem);
   left: 0;
-  min-width: 24rem;
-  max-width: min(26rem, calc(100vw - 2rem));
+  min-width: 28rem;
+  max-width: min(29rem, calc(100vw - 2rem));
   padding: 0.5rem;
   background: var(--paper);
   border: 1px solid var(--ink-12);
@@ -273,7 +273,7 @@ body[data-theme="dark"] .header-cta:hover { background: var(--bone); color: var(
 .dl-row {
   display: block;
   width: 100%;
-  padding: 0.9rem 1.1rem;
+  padding: 0.75rem 1.1rem;
   border: 0;
   border-radius: 0.7rem;
   background: none;
