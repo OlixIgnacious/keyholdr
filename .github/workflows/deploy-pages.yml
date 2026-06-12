@@ -32,6 +32,13 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
+      # Pages serves assets with max-age=600; versioned URLs make each deploy's
+      # HTML reference exactly the CSS/JS it shipped with, so styles are never stale.
+      - name: Stamp asset URLs for cache busting
+        run: |
+          V="${GITHUB_SHA::8}"
+          sed -i "s|\"index.css\"|\"index.css?v=$V\"|g; s|\"index.js\"|\"index.js?v=$V\"|g" website/index.html
+
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
