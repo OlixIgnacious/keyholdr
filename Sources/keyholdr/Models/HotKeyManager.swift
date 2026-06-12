@@ -1,9 +1,10 @@
 import AppKit
 import Carbon.HIToolbox
 
-/// Registers the system-wide summon hotkey (⌃⌥K) through Carbon's
+/// Registers the system-wide summon hotkey (⌃⌥⌘K) through Carbon's
 /// RegisterEventHotKey, which works without the Accessibility permission
-/// that NSEvent global monitors would require.
+/// that NSEvent global monitors would require. Three modifiers because
+/// two-modifier combos collide with other apps (⌃⌥K is taken by Notion).
 @MainActor
 final class HotKeyManager {
     static let shared = HotKeyManager()
@@ -30,13 +31,16 @@ final class HotKeyManager {
         }, 1, &eventType, nil, &handlerRef)
 
         let hotKeyID = EventHotKeyID(signature: OSType(0x4B48_4C44) /* "KHLD" */, id: 1)
-        RegisterEventHotKey(
+        let status = RegisterEventHotKey(
             UInt32(kVK_ANSI_K),
-            UInt32(controlKey | optionKey),
+            UInt32(controlKey | optionKey | cmdKey),
             hotKeyID,
             GetApplicationEventTarget(),
             0,
             &hotKeyRef
         )
+        if status != noErr {
+            print("Global hotkey registration failed (status \(status)) — another app may own the combo")
+        }
     }
 }

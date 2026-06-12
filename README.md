@@ -79,7 +79,7 @@ Grab the [latest release](https://github.com/OlixIgnacious/keyholdr/releases/lat
 
 | Keys | Action |
 |---|---|
-| `⌃⌥K` | Summon or dismiss Keyholdr — works system-wide |
+| `⌃⌥⌘K` | Summon or dismiss Keyholdr — works system-wide |
 | `⌘N` | Add a new key |
 | `Esc` | Dismiss the add/edit form |
 | just type | Search is focused by default |
