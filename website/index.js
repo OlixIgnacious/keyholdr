@@ -161,17 +161,18 @@ function initDownloadMenus() {
     }
   });
 
-  // Replay the roll-in on every open: re-matching a CSS selector doesn't
-  // reliably restart an animation, so toggle a class with a reflow between.
+  // Arm the animation in the click handler, which runs BEFORE the details
+  // element opens. The toggle event fires after a painted frame, which
+  // flashed the panel fully visible before the animation began.
   for (const menu of menus) {
     const pop = menu.querySelector('.dl-pop');
-    if (!pop) continue;
-    menu.addEventListener('toggle', () => {
+    const summary = menu.querySelector('summary');
+    if (!pop || !summary) continue;
+    summary.addEventListener('click', () => {
+      if (menu.open) return; // this click is closing the menu
       pop.classList.remove('is-rolling');
-      if (menu.open) {
-        void pop.offsetWidth;
-        pop.classList.add('is-rolling');
-      }
+      void pop.offsetWidth; // commit the removal so the animation restarts
+      pop.classList.add('is-rolling');
     });
   }
   document.addEventListener('keydown', (e) => {
