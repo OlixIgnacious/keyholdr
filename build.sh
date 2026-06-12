@@ -1,18 +1,18 @@
 #!/bin/bash
 set -e
 
-echo "🚀 Building KeyHolder in release mode..."
+echo "🚀 Building Keyholdr in release mode..."
 swift build -c release
 
 echo "📁 Creating App Bundle structure..."
-APP_DIR="build/KeyHolder.app"
+APP_DIR="build/Keyholdr.app"
 rm -rf "$APP_DIR"
 mkdir -p "$APP_DIR/Contents/MacOS"
 mkdir -p "$APP_DIR/Contents/Resources"
 
 echo "✏️ Copying executable..."
-cp .build/release/keyholder "$APP_DIR/Contents/MacOS/KeyHolder"
-chmod +x "$APP_DIR/Contents/MacOS/KeyHolder"
+cp .build/release/keyholdr "$APP_DIR/Contents/MacOS/Keyholdr"
+chmod +x "$APP_DIR/Contents/MacOS/Keyholdr"
 
 echo "📝 Creating Info.plist..."
 cat <<EOF > "$APP_DIR/Contents/Info.plist"
@@ -23,13 +23,13 @@ cat <<EOF > "$APP_DIR/Contents/Info.plist"
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
     <key>CFBundleExecutable</key>
-    <string>KeyHolder</string>
+    <string>Keyholdr</string>
     <key>CFBundleIdentifier</key>
-    <string>com.olixstudios.KeyHolder</string>
+    <string>com.olixstudios.Keyholdr</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
-    <string>KeyHolder</string>
+    <string>Keyholdr</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
@@ -46,9 +46,9 @@ cat <<EOF > "$APP_DIR/Contents/Info.plist"
 </plist>
 EOF
 
-echo "🛑 Stopping any running instances of KeyHolder..."
-pkill KeyHolder || true
+echo "🛑 Stopping any running instances of Keyholdr..."
+pkill Keyholdr || true
 
-echo "✨ Launching KeyHolder..."
+echo "✨ Launching Keyholdr..."
 open "$APP_DIR"
-echo "✅ Done! KeyHolder is running in the menu bar."
+echo "✅ Done! Keyholdr is running in the menu bar."

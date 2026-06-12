@@ -6,9 +6,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using KeyHolder.Models;
+using Keyholdr.Models;
 
-namespace KeyHolder.Views
+namespace Keyholdr.Views
 {
     public partial class MainWindow : Window
     {
@@ -135,11 +135,11 @@ namespace KeyHolder.Views
             {
                 _securityManager.Lock();
                 UpdateLockStatus();
-                MessageBox.Show(this, "Session auto-locked.", "KeyHolder", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(this, "Session auto-locked.", "Keyholdr", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else
             {
-                if (await _securityManager.AuthenticateAsync("unlock KeyHolder session"))
+                if (await _securityManager.AuthenticateAsync("unlock Keyholdr session"))
                 {
                     UpdateLockStatus();
                 }
@@ -174,7 +174,7 @@ namespace KeyHolder.Views
                     if (secret != null)
                     {
                         Clipboard.SetText(secret);
-                        MessageBox.Show(this, $"Key for {item.Platform} copied to clipboard!", "KeyHolder", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show(this, $"Key for {item.Platform} copied to clipboard!", "Keyholdr", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
                     {

@@ -1,7 +1,7 @@
 import SwiftUI
 import AppKit
 
-/// Monochrome palette matching the KeyHolder website: warm paper + near-black ink
+/// Monochrome palette matching the Keyholdr website: warm paper + near-black ink
 /// in light mode, inverted (coal + bone) in dark mode.
 enum KHTheme {
     /// Window / popover background.

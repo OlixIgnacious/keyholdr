@@ -1,5 +1,5 @@
 /* ============================================================
-   KeyHolder site — reveals, header theming, live demo
+   Keyholdr site — reveals, header theming, live demo
    ============================================================ */
 
 document.addEventListener('DOMContentLoaded', () => {

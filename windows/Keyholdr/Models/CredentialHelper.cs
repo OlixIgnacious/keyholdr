@@ -1,11 +1,11 @@
 using System;
 using Windows.Security.Credentials;
 
-namespace KeyHolder.Models
+namespace Keyholdr.Models
 {
     public static class CredentialHelper
     {
-        private const string ResourceName = "com.olixstudios.KeyHolder";
+        private const string ResourceName = "com.olixstudios.Keyholdr";
 
         public static bool Save(string secret, Guid id)
         {

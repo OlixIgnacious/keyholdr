@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
 
-namespace KeyHolder.Models
+namespace Keyholdr.Models
 {
     public class KeyItem
     {

@@ -2,7 +2,7 @@ import Foundation
 import Security
 
 public struct KeychainHelper {
-    private static let service = "com.olixstudios.KeyHolder"
+    private static let service = "com.olixstudios.Keyholdr"
     
     @discardableResult
     public static func save(secret: String, for id: UUID) -> Bool {

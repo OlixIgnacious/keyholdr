@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "keyholder",
+    name: "keyholdr",
     platforms: [
         .macOS(.v13)
     ],
@@ -12,11 +12,11 @@ let package = Package(
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .executableTarget(
-            name: "keyholder"
+            name: "keyholdr"
         ),
         .testTarget(
-            name: "keyholderTests",
-            dependencies: ["keyholder"]
+            name: "keyholdrTests",
+            dependencies: ["keyholdr"]
         ),
     ],
     swiftLanguageModes: [.v6]

@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Windows.Security.Credentials.UI;
 
-namespace KeyHolder.Models
+namespace Keyholdr.Models
 {
     public class SecurityManager
     {

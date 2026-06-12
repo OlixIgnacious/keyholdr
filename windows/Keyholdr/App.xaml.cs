@@ -2,9 +2,9 @@ using System;
 using System.Drawing;
 using System.Windows;
 using Forms = System.Windows.Forms;
-using KeyHolder.Views;
+using Keyholdr.Views;
 
-namespace KeyHolder
+namespace Keyholdr
 {
     public partial class App : Application
     {
@@ -22,7 +22,7 @@ namespace KeyHolder
             _notifyIcon = new Forms.NotifyIcon
             {
                 Icon = CreateDynamicIcon(),
-                Text = "KeyHolder",
+                Text = "Keyholdr",
                 Visible = true
             };
 
@@ -37,7 +37,7 @@ namespace KeyHolder
 
             // Set up context menu
             var contextMenu = new Forms.ContextMenuStrip();
-            contextMenu.Items.Add("Open KeyHolder", null, (s, args) => ShowWindow());
+            contextMenu.Items.Add("Open Keyholdr", null, (s, args) => ShowWindow());
             contextMenu.Items.Add("-");
             contextMenu.Items.Add("Exit", null, (s, args) => ShutdownApp());
             _notifyIcon.ContextMenuStrip = contextMenu;

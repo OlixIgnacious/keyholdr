@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 
-namespace KeyHolder.Models
+namespace Keyholdr.Models
 {
     public static class StorageManager
     {
         private static readonly string AppDataFolder = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "KeyHolder"
+            "Keyholdr"
         );
 
         private static readonly string FilePath = Path.Combine(AppDataFolder, "keys.json");
