@@ -9,10 +9,46 @@ struct KeyholdrCLI: ParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "keyholdr",
         abstract: "Your keys, one command away.",
-        discussion: "Reads the same vault as the Keyholdr menu bar app. Every secret access requires Touch ID (or your password).",
-        version: "1.2.0",
-        subcommands: [List.self, Get.self, Run.self]
+        discussion: "Reads the same vault as the Keyholdr menu bar app. Every secret access requires Touch ID (or your password). Run with no arguments to browse interactively.",
+        version: "1.3.0",
+        subcommands: [Pick.self, List.self, Get.self, Run.self],
+        defaultSubcommand: Pick.self
     )
+}
+
+// MARK: - pick (default)
+
+struct Pick: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        abstract: "Browse the vault interactively; ⏎ copies after Touch ID."
+    )
+
+    @Argument(help: "Optional initial filter, e.g. `keyholdr pick aws`.")
+    var filter: String = ""
+
+    func run() throws {
+        guard Picker.isInteractive else {
+            throw ValidationError("Interactive mode needs a terminal. Try `keyholdr list` or `keyholdr get <platform>`.")
+        }
+        let keys = StorageManager.loadKeys()
+            .sorted { $0.platform.localizedCaseInsensitiveCompare($1.platform) == .orderedAscending }
+        guard !keys.isEmpty else {
+            print("Vault is empty. Add keys from the menu bar app (⌃⌥⌘K).")
+            return
+        }
+        guard let choice = Picker.pick(from: keys, title: "Keyholdr", initialFilter: filter) else {
+            throw ExitCode(130) // cancelled
+        }
+
+        try authenticateOrExit(reason: "copy the secret for \(choice.platform)")
+        guard let secret = KeychainHelper.retrieve(for: choice.id) else {
+            throw ValidationError("No secret in the Keychain for \(choice.platform) (\(choice.label)).")
+        }
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setString(secret, forType: .string)
+        FileHandle.standardError.write(Data("Copied \(choice.platform) (\(choice.label)) to the clipboard.\n".utf8))
+    }
 }
 
 // MARK: - list
@@ -65,7 +101,7 @@ struct Get: ParsableCommand {
     var copy = false
 
     func run() throws {
-        let key = try resolveKey(platform: platform, label: label)
+        let key = try resolveKey(platform: platform, label: label, interactive: true)
         try authenticateOrExit(reason: "read the secret for \(key.platform)")
 
         guard let secret = KeychainHelper.retrieve(for: key.id) else {
@@ -147,7 +183,7 @@ struct Run: ParsableCommand {
 
 // MARK: - Shared helpers
 
-func resolveKey(platform: String, label: String?) throws -> KeyItem {
+func resolveKey(platform: String, label: String?, interactive: Bool = false) throws -> KeyItem {
     let keys = StorageManager.loadKeys()
     var matches = keys.filter { $0.platform.caseInsensitiveCompare(platform) == .orderedSame }
     if matches.isEmpty {
@@ -164,6 +200,12 @@ func resolveKey(platform: String, label: String?) throws -> KeyItem {
     case 0:
         throw ValidationError("No key matches '\(platform)'\(label.map { " with label '\($0)'" } ?? ""). Try `keyholdr list`.")
     default:
+        // In a terminal, ambiguity becomes a picker; in scripts it stays a
+        // hard error so automation never blocks on hidden interactivity.
+        if interactive, Picker.isInteractive,
+           let chosen = Picker.pick(from: matches, title: "\(matches.count) keys match '\(platform)'") {
+            return chosen
+        }
         let labels = matches.map { "--label \($0.label)" }.joined(separator: " | ")
         throw ValidationError("'\(platform)' is ambiguous — disambiguate with: \(labels)")
     }

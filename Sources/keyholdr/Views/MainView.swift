@@ -35,6 +35,7 @@ struct MainView: View {
 
             if showingAddSheet {
                 AddKeyView(
+                    existingKeys: keys,
                     onSave: { newItem, secret in
                         saveNewKey(newItem, secret: secret)
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
@@ -52,6 +53,7 @@ struct MainView: View {
                 AddKeyView(
                     editingItem: item,
                     existingSecret: editingSecret,
+                    existingKeys: keys,
                     onSave: { updatedItem, secret in
                         saveUpdatedKey(updatedItem, secret: secret)
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {

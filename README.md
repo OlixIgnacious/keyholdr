@@ -115,11 +115,18 @@ ln -s /Applications/Keyholdr.app/Contents/MacOS/keyholdr-cli /usr/local/bin/keyh
 ```
 
 ```bash
+keyholdr                                         # interactive: type to filter, ↑↓, ⏎ copies
 keyholdr list                                    # every key, with age — never the secrets
 keyholdr get openai                              # Touch ID → secret on stdout
 keyholdr get github --label work --copy          # to the clipboard instead
 keyholdr run -e OPENAI_API_KEY=openai -- npm start   # inject as env vars, nothing on stdout
 ```
+
+When several keys match (`keyholdr get aws` with a work and a personal key),
+the same picker opens to choose — in scripts and pipes it stays a hard error
+with `--label` hints instead, so automation never blocks. The app refuses to
+create two keys with an identical platform + label, so every key stays
+addressable.
 
 Two one-time prompts while builds are unsigned: Gatekeeper blocks the
 quarantined CLI (clear it with

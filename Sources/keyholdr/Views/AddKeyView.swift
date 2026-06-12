@@ -8,6 +8,7 @@ struct AddKeyView: View {
 
     var editingItem: KeyItem? = nil
     var existingSecret: String? = nil
+    var existingKeys: [KeyItem] = []
 
     @State private var platform = ""
     @State private var label = ""
@@ -17,9 +18,10 @@ struct AddKeyView: View {
 
     @FocusState private var isSecretFocused: Bool
 
-    init(editingItem: KeyItem? = nil, existingSecret: String? = nil, onSave: @escaping (KeyItem, String) -> Void, onCancel: @escaping () -> Void) {
+    init(editingItem: KeyItem? = nil, existingSecret: String? = nil, existingKeys: [KeyItem] = [], onSave: @escaping (KeyItem, String) -> Void, onCancel: @escaping () -> Void) {
         self.editingItem = editingItem
         self.existingSecret = existingSecret
+        self.existingKeys = existingKeys
         self.onSave = onSave
         self.onCancel = onCancel
 
@@ -117,6 +119,17 @@ struct AddKeyView: View {
                 }
             }
 
+            if let duplicateError {
+                HStack(spacing: 6) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .font(.system(size: 10, weight: .medium))
+                    Text(duplicateError)
+                        .font(.system(size: 12))
+                }
+                .foregroundColor(.red)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
             Spacer()
 
             // Action Buttons
@@ -157,7 +170,24 @@ struct AddKeyView: View {
 
     private var isSaveDisabled: Bool {
         platform.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
-        secret.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        secret.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+        duplicateError != nil
+    }
+
+    /// Same platform + same label would be impossible to tell apart in the
+    /// list and unresolvable for the CLI, so the form refuses to create one.
+    private var duplicateError: String? {
+        let cleanedPlatform = platform.trimmingCharacters(in: .whitespacesAndNewlines)
+        let cleanedLabel = label.trimmingCharacters(in: .whitespacesAndNewlines)
+        let effectiveLabel = cleanedLabel.isEmpty ? "default" : cleanedLabel
+        guard !cleanedPlatform.isEmpty else { return nil }
+
+        let clash = existingKeys.contains { key in
+            key.id != editingItem?.id &&
+            key.platform.caseInsensitiveCompare(cleanedPlatform) == .orderedSame &&
+            key.label.caseInsensitiveCompare(effectiveLabel) == .orderedSame
+        }
+        return clash ? "You already have a \(cleanedPlatform) key labeled “\(effectiveLabel)” — use a different label." : nil
     }
 
     @ViewBuilder
