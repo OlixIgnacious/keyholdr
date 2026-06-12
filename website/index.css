@@ -252,13 +252,14 @@ body[data-theme="dark"] .header-cta:hover { background: var(--bone); color: var(
 .dl-row {
   display: block;
   width: 100%;
-  padding: 0.7rem 0.85rem;
+  padding: 0.7rem 0.95rem;
   border: 0;
   border-radius: 0.7rem;
   background: none;
   font: inherit;
   color: var(--ink);
   text-decoration: none;
+  text-align: left; /* buttons center text by default */
   cursor: pointer;
 }
 .dl-row:hover { background: var(--ink-06); }
