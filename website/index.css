@@ -249,22 +249,22 @@ body[data-theme="dark"] .header-cta:hover { background: var(--bone); color: var(
   text-align: left;
   z-index: 50;
 }
-/* The standard menu animation (Radix/Headless UI/macOS): quick
-   scale-from-origin + fade. Fast on purpose — slow dropdowns feel broken. */
+/* Roll in: the panel sweeps open from its right edge toward the button.
+   No fade — the revealed part is at full strength, the sweep is the show. */
 .dl-pop {
   transform-origin: top left;
 }
 .dl-pop.is-rolling {
-  animation: dl-pop-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: dl-roll-in 0.35s cubic-bezier(0.2, 0.8, 0.3, 1);
 }
-@keyframes dl-pop-in {
+@keyframes dl-roll-in {
   from {
-    opacity: 0;
-    transform: scale(0.95) translateY(-4px);
+    clip-path: inset(0 0 0 100%);
+    transform: translateY(-4px);
   }
   to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
+    clip-path: inset(0 0 0 0);
+    transform: translateY(0);
   }
 }
 @media (prefers-reduced-motion: reduce) {
