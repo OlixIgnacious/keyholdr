@@ -70,11 +70,22 @@ the roadmap.)*
 
 ## Install
 
-Grab the [latest release](https://github.com/OlixIgnacious/keyholdr/releases/latest):
+**Homebrew** — the easy way:
+
+```bash
+brew install --cask olixignacious/tap/keyholdr
+```
+
+Or grab the [latest release](https://github.com/OlixIgnacious/keyholdr/releases/latest) directly:
 
 | Platform | Asset | Notes |
 |---|---|---|
-| macOS (Apple Silicon) | `Keyholdr-macOS-*.zip` | Unzip → move to /Applications. Unsigned for now: right-click → **Open** on first launch. |
+| macOS (Apple Silicon) | `Keyholdr-macOS-*.zip` | Unzip → move to /Applications. |
+
+> **Unsigned for now** — macOS blocks the first launch either way. On macOS 15
+> (Sequoia) and later: open the app once, then go to **System Settings →
+> Privacy & Security → "Open Anyway"**. On macOS 13–14: right-click the app →
+> **Open**. Notarized builds are on the roadmap.
 
 <!-- Windows is hidden until testing on real hardware completes:
 | Windows 10/11 (x64) | `Keyholdr-windows-x64-*.zip` | **Still in testing** — built on CI but not yet verified on real hardware. Self-contained single `.exe`, no .NET install needed. SmartScreen: **More info → Run anyway**. |
