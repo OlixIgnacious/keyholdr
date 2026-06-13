@@ -12,7 +12,7 @@ Hardware-backed storage. Biometric unlock. Zero Electron.
 [![Release](https://img.shields.io/github/v/release/OlixIgnacious/keyholdr?style=flat-square&color=121212&labelColor=121212)](https://github.com/OlixIgnacious/keyholdr/releases/latest)
 [![macOS](https://img.shields.io/badge/macOS-Swift%206%20·%20SwiftUI-121212?style=flat-square&logo=apple&logoColor=white)](https://github.com/OlixIgnacious/keyholdr/releases/latest)
 <!-- Windows is hidden until testing on real hardware completes:
-[![Windows](https://img.shields.io/badge/Windows-C%23%2012%20·%20WPF-121212?style=flat-square&logoColor=white)](https://github.com/OlixIgnacious/keyholdr/releases/latest)
+[![Windows](https://img.shields.io/badge/Windows-C%23%2012%20·%20WPF-121212?style=flat-square&logoColor=white)](https://github.com/OlixIgnacious/keyholdr-windows)
 -->
 [![License: Non-Commercial](https://img.shields.io/badge/license-Non--Commercial-121212?style=flat-square)](#license)
 
@@ -93,8 +93,9 @@ Or grab the [latest release](https://github.com/OlixIgnacious/keyholdr/releases/
 | Windows 10/11 (x64) | `Keyholdr-windows-x64-*.zip` | **Still in testing** — built on CI but not yet verified on real hardware. Self-contained single `.exe`, no .NET install needed. SmartScreen: **More info → Run anyway**. |
 -->
 
-> A native Windows build (C# 12, WPF) lives in [windows/](windows/) — it ships
-> once testing on real hardware wraps up.
+> A native Windows build (C# 12, WPF) lives in
+> [keyholdr-windows](https://github.com/OlixIgnacious/keyholdr-windows) — it
+> ships once testing on real hardware wraps up.
 
 ### Shortcuts (macOS)
 
@@ -153,10 +154,13 @@ Both disappear once Keyholdr ships signed builds.
 ./build.sh   # release build → app bundle → launches in your menu bar
 ```
 
-**Windows** *(source only while testing is pending)* — needs the [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0):
+**Windows** lives in its own repo,
+[keyholdr-windows](https://github.com/OlixIgnacious/keyholdr-windows)
+*(source only while testing is pending)* — needs the
+[.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0):
 
 ```cmd
-cd windows/Keyholdr
+cd Keyholdr
 dotnet run               # development
 dotnet publish -c Release   # self-contained single-file exe
 ```
@@ -175,13 +179,12 @@ keyholdr/
 │   ├── Models/                 login item, global hotkey
 │   └── Views/                  popover UI, monochrome theme
 ├── Sources/keyholdr-cli/    terminal companion — list, get, run
-├── windows/Keyholdr/        Windows app — C# 12, WPF, .NET 8
-│   ├── App.xaml.cs             tray icon + popup positioning
-│   ├── Models/                 Credential Locker, Windows Hello, JSON store
-│   └── Views/                  popover UI
 ├── website/                  landing page (GitHub Pages)
 └── build.sh                  macOS build + bundle script
 ```
+
+The Windows app (C# 12, WPF, .NET 8) lives in its own repo:
+[keyholdr-windows](https://github.com/OlixIgnacious/keyholdr-windows).
 
 ## License
 
