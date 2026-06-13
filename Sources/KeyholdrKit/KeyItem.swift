@@ -43,6 +43,50 @@ public struct KeyItem: Codable, Identifiable, Hashable {
         default: return "\(days / 365)y"
         }
     }
+
+    // MARK: - Env var naming
+
+    /// The conventional environment variable for this platform, mirroring the
+    /// icon smart-mapping: known platforms get their canonical names, the
+    /// rest fall back to PLATFORM_API_KEY.
+    public var suggestedEnvName: String {
+        let p = platform.lowercased()
+
+        // Platforms whose convention is not *_API_KEY
+        if p.contains("github") { return "GITHUB_TOKEN" }
+        if p.contains("gitlab") { return "GITLAB_TOKEN" }
+        if p.contains("huggingface") { return "HF_TOKEN" }
+        if p.contains("slack") { return "SLACK_TOKEN" }
+        if p.contains("discord") { return "DISCORD_TOKEN" }
+        if p.contains("telegram") { return "TELEGRAM_BOT_TOKEN" }
+        if p.contains("vercel") { return "VERCEL_TOKEN" }
+        if p.contains("netlify") { return "NETLIFY_AUTH_TOKEN" }
+        if p.contains("cloudflare") { return "CLOUDFLARE_API_TOKEN" }
+        if p.contains("twilio") { return "TWILIO_AUTH_TOKEN" }
+        if p.contains("npm") { return "NPM_TOKEN" }
+        if p.contains("sentry") { return "SENTRY_AUTH_TOKEN" }
+        if p.contains("claude") || p.contains("anthropic") { return "ANTHROPIC_API_KEY" }
+        if p.contains("chatgpt") || p.contains("openai") { return "OPENAI_API_KEY" }
+
+        return "\(Self.envSanitize(platform))_API_KEY"
+    }
+
+    /// Uppercases and reduces a string to a valid env var fragment.
+    public static func envSanitize(_ s: String) -> String {
+        var out = ""
+        for scalar in s.uppercased().unicodeScalars {
+            if (scalar >= "A" && scalar <= "Z") || (scalar >= "0" && scalar <= "9") {
+                out.append(Character(scalar))
+            } else if !out.hasSuffix("_") {
+                out.append("_")
+            }
+        }
+        out = out.trimmingCharacters(in: CharacterSet(charactersIn: "_"))
+        if let first = out.unicodeScalars.first, first >= "0" && first <= "9" {
+            out = "_" + out
+        }
+        return out.isEmpty ? "KEY" : out
+    }
     
     /// Two-letter tile monogram, e.g. "GitHub" → "GH", "OpenAI" → "OA", "AWS" → "AW".
     public var initials: String {

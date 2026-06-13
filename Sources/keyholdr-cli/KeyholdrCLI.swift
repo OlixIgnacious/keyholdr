@@ -11,9 +11,103 @@ struct KeyholdrCLI: ParsableCommand {
         abstract: "Your keys, one command away.",
         discussion: "Reads the same vault as the Keyholdr menu bar app. Every secret access requires Touch ID (or your password). Run with no arguments to browse interactively.",
         version: "1.4.0",
-        subcommands: [Pick.self, List.self, Get.self, Run.self, Add.self, Remove.self],
+        subcommands: [Pick.self, List.self, Get.self, Run.self, Env.self, Add.self, Remove.self],
         defaultSubcommand: Pick.self
     )
+}
+
+// MARK: - env
+
+struct Env: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        abstract: "Select keys and emit export lines for your shell.",
+        discussion: """
+        Designed for eval; nothing lands in files or history:
+
+            eval "$(keyholdr env)"                # multi-select picker
+            eval "$(keyholdr env openai github/work)"
+            keyholdr env --names                  # dry run: names only, no Touch ID
+        """
+    )
+
+    @Argument(help: "Key references (platform or platform/label). Omit to multi-select interactively.")
+    var keys: [String] = []
+
+    @Flag(name: .long, help: "Plain NAME=value lines (.env style) instead of export lines.")
+    var dotenv = false
+
+    @Flag(name: .long, help: "Show which env names the keys would get, without reading secrets.")
+    var names = false
+
+    func run() throws {
+        let selected = try selectKeys(refs: keys, purpose: "Export as env vars")
+        let assignments = envAssignments(for: selected)
+
+        if names {
+            for entry in assignments {
+                print("\(entry.name)  ←  \(entry.key.platform) (\(entry.key.label))")
+            }
+            return
+        }
+
+        let platforms = assignments.map { $0.key.platform }.joined(separator: ", ")
+        try authenticateOrExit(reason: "export secrets for \(platforms)")
+
+        for entry in assignments {
+            guard let secret = KeychainHelper.retrieve(for: entry.key.id) else {
+                throw ValidationError("No secret in the Keychain for \(entry.key.platform) (\(entry.key.label)).")
+            }
+            if dotenv {
+                print("\(entry.name)=\(secret)")
+            } else {
+                let escaped = secret.replacingOccurrences(of: "'", with: "'\\''")
+                print("export \(entry.name)='\(escaped)'")
+            }
+        }
+        let summary = assignments.map(\.name).joined(separator: ", ")
+        FileHandle.standardError.write(Data("Exported: \(summary)\n".utf8))
+    }
+}
+
+/// Resolves explicit platform[/label] references, or multi-selects when empty.
+func selectKeys(refs: [String], purpose: String) throws -> [KeyItem] {
+    if refs.isEmpty {
+        guard Picker.isInteractive else {
+            throw ValidationError("Name the keys (e.g. `openai github/work`), or run in a terminal to multi-select.")
+        }
+        let keys = StorageManager.loadKeys()
+            .sorted { $0.platform.localizedCaseInsensitiveCompare($1.platform) == .orderedAscending }
+        guard !keys.isEmpty else {
+            throw ValidationError("Vault is empty. Add keys with `keyholdr add` or the menu bar app.")
+        }
+        guard let picked = Picker.pickMany(from: keys, title: purpose), !picked.isEmpty else {
+            throw ExitCode(130) // cancelled
+        }
+        return picked
+    }
+    return try refs.map { ref in
+        let parts = ref.split(separator: "/", maxSplits: 1).map(String.init)
+        return try resolveKey(platform: parts[0], label: parts.count > 1 ? parts[1] : nil, interactive: true)
+    }
+}
+
+/// Pairs each key with its env var name, de-duplicating collisions by
+/// appending the label (then a counter).
+func envAssignments(for keys: [KeyItem]) -> [(name: String, key: KeyItem)] {
+    var used = Set<String>()
+    return keys.map { key in
+        var name = key.suggestedEnvName
+        if used.contains(name) {
+            name = "\(name)_\(KeyItem.envSanitize(key.label))"
+        }
+        var counter = 2
+        while used.contains(name) {
+            name = "\(name)_\(counter)"
+            counter += 1
+        }
+        used.insert(name)
+        return (name, key)
+    }
 }
 
 // MARK: - add
@@ -276,13 +370,22 @@ struct Run: ParsableCommand {
     var command: [String] = []
 
     func validate() throws {
-        guard !env.isEmpty else { throw ValidationError("Provide at least one -e ENV_VAR=key mapping.") }
+        guard env.isEmpty == false || Picker.isInteractive else {
+            throw ValidationError("Provide at least one -e ENV_VAR=key mapping (or run in a terminal to multi-select).")
+        }
         guard !command.isEmpty else { throw ValidationError("Provide a command after `--`.") }
     }
 
     func run() throws {
         // Resolve every mapping up front so typos fail before Touch ID.
         var injected: [(name: String, key: KeyItem)] = []
+        if env.isEmpty {
+            // No mappings: multi-select and derive conventional names.
+            let picked = try selectKeys(refs: [], purpose: "Inject as env vars")
+            injected = envAssignments(for: picked)
+            let summary = injected.map { "\($0.name) ← \($0.key.platform) (\($0.key.label))" }.joined(separator: ", ")
+            FileHandle.standardError.write(Data("Injecting: \(summary)\n".utf8))
+        }
         for mapping in env {
             guard let eq = mapping.firstIndex(of: "="), eq != mapping.startIndex else {
                 throw ValidationError("Mapping '\(mapping)' is not ENV_VAR=key.")
