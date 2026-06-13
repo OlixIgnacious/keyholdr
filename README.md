@@ -14,7 +14,7 @@ Hardware-backed storage. Biometric unlock. Zero Electron.
 <!-- Windows is hidden until testing on real hardware completes:
 [![Windows](https://img.shields.io/badge/Windows-C%23%2012%20·%20WPF-121212?style=flat-square&logoColor=white)](https://github.com/OlixIgnacious/keyholdr/releases/latest)
 -->
-[![License: MIT](https://img.shields.io/badge/license-MIT-121212?style=flat-square)](#license)
+[![License: Non-Commercial](https://img.shields.io/badge/license-Non--Commercial-121212?style=flat-square)](#license)
 
 <br>
 
@@ -136,6 +136,9 @@ with `--label` hints instead, so automation never blocks. The app refuses to
 create two keys with an identical platform + label, so every key stays
 addressable.
 
+See [docs/CLI.md](docs/CLI.md) for the full command reference, including
+`env`/`run` multi-select and env var naming conventions.
+
 Two one-time prompts while builds are unsigned: Gatekeeper blocks the
 quarantined CLI (clear it with
 `xattr -dr com.apple.quarantine /Applications/Keyholdr.app`), and the first
@@ -182,7 +185,9 @@ keyholdr/
 
 ## License
 
-MIT © Olix Studios
+Non-commercial use only. Free to copy, fork, and modify for personal or
+educational use — not for resale or commercial services. All copyright
+remains with Ashwini Sharma (Olix Studios). See [LICENSE](LICENSE).
 
 <div align="center">
 <sub>Built for developers who copy API keys forty times a day.</sub>
