@@ -9,7 +9,7 @@ struct KeyholdrCLI: ParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "keyholdr",
         abstract: "Your keys, one command away.",
-        discussion: "Reads the same vault as the Keyholdr menu bar app. Every secret access requires Touch ID (or your password). Run with no arguments to browse interactively.",
+        discussion: "Reads the same vault as the Keyholdr menu bar app. Every secret access requires Touch ID (or your password). Run with no arguments to browse interactively — ⇥ or space marks several keys.",
         version: "1.5.0",
         subcommands: [Pick.self, List.self, Get.self, Run.self, Env.self, Add.self, Remove.self],
         defaultSubcommand: Pick.self
@@ -65,7 +65,7 @@ struct Env: ParsableCommand {
             }
         }
         let summary = assignments.map(\.name).joined(separator: ", ")
-        FileHandle.standardError.write(Data("Exported: \(summary)\n".utf8))
+        FileHandle.standardError.write(Data(Ansi.style("Exported: \(summary)\n", Ansi.green).utf8))
     }
 }
 
@@ -158,7 +158,7 @@ struct Add: ParsableCommand {
             throw ValidationError("Couldn't write the secret to the Keychain.")
         }
         StorageManager.saveKeys(keys + [item])
-        FileHandle.standardError.write(Data("Added \(platform) (\(label)).\n".utf8))
+        FileHandle.standardError.write(Data(Ansi.style("Added \(platform) (\(label)).\n", Ansi.green).utf8))
     }
 }
 
@@ -206,7 +206,8 @@ struct Remove: ParsableCommand {
             }
             let names = targets.map { "\($0.platform) (\($0.label))" }.joined(separator: ", ")
             let what = targets.count == 1 ? names : "\(targets.count) keys — \(names) —"
-            FileHandle.standardError.write(Data("Delete \(what) and permanently erase the secret\(targets.count == 1 ? "" : "s")? [y/N] ".utf8))
+            let prompt = "Delete \(what) and permanently erase the secret\(targets.count == 1 ? "" : "s")? [y/N] "
+            FileHandle.standardError.write(Data(Ansi.style(prompt, Ansi.red).utf8))
             guard readLine()?.trimmingCharacters(in: .whitespaces).lowercased() == "y" else {
                 throw ExitCode(1)
             }
@@ -218,7 +219,7 @@ struct Remove: ParsableCommand {
         keys.removeAll { ids.contains($0.id) }
         StorageManager.saveKeys(keys)
         for target in targets {
-            FileHandle.standardError.write(Data("Removed \(target.platform) (\(target.label)).\n".utf8))
+            FileHandle.standardError.write(Data(Ansi.style("Removed \(target.platform) (\(target.label)).\n", Ansi.green).utf8))
         }
     }
 }
@@ -248,7 +249,8 @@ func readSecret(prompt: String) -> String? {
 
 struct Pick: ParsableCommand {
     static let configuration = CommandConfiguration(
-        abstract: "Browse the vault interactively; ⏎ copies after Touch ID."
+        abstract: "Browse the vault interactively; ⏎ copies after Touch ID.",
+        discussion: "⇥ or space marks several keys — their secrets are copied together, one per line."
     )
 
     @Argument(help: "Optional initial filter, e.g. `keyholdr pick aws`.")
@@ -264,18 +266,27 @@ struct Pick: ParsableCommand {
             print("Vault is empty. Add keys from the menu bar app (⌃⌥⌘K).")
             return
         }
-        guard let choice = Picker.pick(from: keys, title: "Keyholdr", initialFilter: filter) else {
+        guard let chosen = Picker.pickMany(from: keys, title: "Keyholdr", initialFilter: filter), !chosen.isEmpty else {
             throw ExitCode(130) // cancelled
         }
 
-        let context = try authenticateOrExit(reason: "copy the secret for \(choice.platform)")
-        guard let secret = KeychainHelper.retrieve(for: choice.id, context: context) else {
-            throw ValidationError("No secret in the Keychain for \(choice.platform) (\(choice.label)).")
+        let names = chosen.map { "\($0.platform) (\($0.label))" }.joined(separator: ", ")
+        let context = try authenticateOrExit(reason: chosen.count == 1 ? "copy the secret for \(names)" : "copy \(chosen.count) secrets")
+
+        var secrets: [String] = []
+        for key in chosen {
+            guard let secret = KeychainHelper.retrieve(for: key.id, context: context) else {
+                throw ValidationError("No secret in the Keychain for \(key.platform) (\(key.label)).")
+            }
+            secrets.append(secret)
         }
+
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
-        pasteboard.setString(secret, forType: .string)
-        FileHandle.standardError.write(Data("Copied \(choice.platform) (\(choice.label)) to the clipboard.\n".utf8))
+        pasteboard.setString(secrets.joined(separator: "\n"), forType: .string)
+
+        let what = chosen.count == 1 ? names : "\(chosen.count) secrets — \(names)"
+        FileHandle.standardError.write(Data(Ansi.style("Copied \(what) to the clipboard.\n", Ansi.green).utf8))
     }
 }
 
@@ -340,7 +351,7 @@ struct Get: ParsableCommand {
             let pasteboard = NSPasteboard.general
             pasteboard.clearContents()
             pasteboard.setString(secret, forType: .string)
-            FileHandle.standardError.write(Data("Copied \(key.platform) (\(key.label)) to the clipboard.\n".utf8))
+            FileHandle.standardError.write(Data(Ansi.style("Copied \(key.platform) (\(key.label)) to the clipboard.\n", Ansi.green).utf8))
         } else {
             print(secret)
         }
@@ -384,7 +395,7 @@ struct Run: ParsableCommand {
             let picked = try selectKeys(refs: [], purpose: "Inject as env vars")
             injected = envAssignments(for: picked)
             let summary = injected.map { "\($0.name) ← \($0.key.platform) (\($0.key.label))" }.joined(separator: ", ")
-            FileHandle.standardError.write(Data("Injecting: \(summary)\n".utf8))
+            FileHandle.standardError.write(Data(Ansi.style("Injecting: \(summary)\n", Ansi.dim).utf8))
         }
         for mapping in env {
             guard let eq = mapping.firstIndex(of: "="), eq != mapping.startIndex else {
@@ -465,7 +476,7 @@ func authenticateOrExit(reason: String) throws -> LAContext? {
     var error: NSError?
     guard context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) else { return nil }
 
-    FileHandle.standardError.write(Data("● Touch ID — \(reason)\n".utf8))
+    FileHandle.standardError.write(Data(Ansi.style("● Touch ID", Ansi.accent, Ansi.bold).appending(" — \(reason)\n").utf8))
     let box = ResultBox()
     let semaphore = DispatchSemaphore(value: 0)
     context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: reason) { ok, _ in
@@ -475,7 +486,7 @@ func authenticateOrExit(reason: String) throws -> LAContext? {
     semaphore.wait()
 
     guard box.success else {
-        FileHandle.standardError.write(Data("Authentication failed.\n".utf8))
+        FileHandle.standardError.write(Data(Ansi.style("Authentication failed.\n", Ansi.red).utf8))
         throw ExitCode(1)
     }
     return context

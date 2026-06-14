@@ -67,16 +67,27 @@ enum Picker {
             var out = ""
             if renderedLines > 0 { out += "\u{1B}[\(renderedLines)A" }
             out += "\r\u{1B}[J"
-            out += "\u{1B}[2m\(title)\(selection) — \(hints)\u{1B}[0m\n"
-            out += "› \(filter)\n"
+            out += Ansi.style(title, Ansi.bold, Ansi.accent)
+            out += Ansi.style("\(selection) — \(hints)", Ansi.dim) + "\n"
+            out += Ansi.style("›", Ansi.accent, Ansi.bold) + " \(filter)\n"
             for (i, key) in items.enumerated() {
                 let mark = multi ? (marked.contains(key.id) ? "◉ " : "○ ") : ""
                 let tags = key.tags.isEmpty ? "" : "  [\(key.tags.joined(separator: ","))]"
                 let age = key.isStale ? "  ⚠ \(key.compactAge)" : "  \(key.compactAge)"
                 let line = "  \(mark)\(key.platform) · \(key.label)\(tags)\(age)  "
-                out += i == index ? "\u{1B}[7m\(line)\u{1B}[0m\n" : "\(line)\n"
+                if i == index {
+                    // Embedded ANSI in the mark would reset the highlight
+                    // partway through, so the selected row is styled as one
+                    // plain string with no nested color codes.
+                    out += Ansi.style(line, Ansi.bold, Ansi.dark, Ansi.accentBg) + "\n"
+                } else if multi {
+                    let styledMark = marked.contains(key.id) ? Ansi.style("◉ ", Ansi.accent) : Ansi.style("○ ", Ansi.dim)
+                    out += "  \(styledMark)\(key.platform) · \(key.label)\(tags)\(age)  \n"
+                } else {
+                    out += "\(line)\n"
+                }
             }
-            if items.isEmpty { out += "\u{1B}[2m  no matches\u{1B}[0m\n" }
+            if items.isEmpty { out += Ansi.style("  no matches", Ansi.dim) + "\n" }
             renderedLines = 2 + max(items.count, 1)
             write(out)
         }

@@ -127,7 +127,7 @@ ln -s /Applications/Keyholdr.app/Contents/MacOS/keyholdr-cli /usr/local/bin/keyh
 ```
 
 ```bash
-keyholdr                                         # interactive: type to filter, ↑↓, ⏎ copies
+keyholdr                                         # interactive: type to filter, ↑↓, ⇥/space to mark, ⏎ copies
 keyholdr list                                    # every key, with age — never the secrets
 keyholdr get openai                              # Touch ID → secret on stdout
 keyholdr get github --label work --copy          # to the clipboard instead

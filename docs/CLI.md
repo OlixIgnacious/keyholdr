@@ -31,8 +31,9 @@ Run `keyholdr <command> --help` for full flag details.
 ### `keyholdr` / `keyholdr pick [filter]`
 
 Opens an inline picker: type to filter by platform, label, or tag, ↑↓ to
-move, **⏎** to select. After Touch ID, the secret is copied to the
-clipboard.
+move, **⇥** or **space** to mark several keys, **⏎** to confirm. After Touch
+ID, the marked secrets (or the highlighted one, if none are marked) are
+copied to the clipboard — one per line when there's more than one.
 
 ```bash
 keyholdr            # browse everything
@@ -196,6 +197,10 @@ and `GITHUB_TOKEN_WORK`.
 | ⇥ or space | mark/unmark an entry (multi-select only) |
 | ^U | clear the filter |
 | esc, ^C, ^D | cancel |
+
+`pick`, `rm`, `run`, and `env` all use the multi-select picker. The picker
+that resolves an ambiguous `--label`-less reference (e.g. `keyholdr get aws`
+matching two keys) is single-select — ⏎ just picks the highlighted entry.
 
 ---
 
