@@ -200,7 +200,8 @@ their own repo:
 Issues and pull requests are welcome — bug reports, platform/icon mappings,
 and CLI ergonomics are especially useful. By opening a PR you agree your
 contribution is provided under the same non-commercial license as the rest
-of the project.
+of the project. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, tests, and
+PR guidelines.
 
 ## License
 
