@@ -1,4 +1,6 @@
 import SwiftUI
+import Combine
+import KeyholdrKit
 import MenuBarExtraAccess
 
 @main
@@ -13,7 +15,7 @@ struct KeyholdrApp: App {
 
     var body: some Scene {
         MenuBarExtra("Keyholdr", systemImage: "key.fill") {
-            MainView()
+            MainView(securityManager: appState.securityManager)
         }
         // Must come before any other scene modifier — it extends MenuBarExtra itself.
         .menuBarExtraAccess(isPresented: $appState.isMenuPresented)
@@ -26,6 +28,13 @@ struct KeyholdrApp: App {
 final class AppState: ObservableObject {
     @Published var isMenuPresented = false
 
+    /// Shared across the popover's lifetime (unlike `MainView`, which is torn
+    /// down whenever the popover window closes), so an unlocked session
+    /// survives the popover being re-presented.
+    let securityManager = SecurityManager()
+
+    private var cancellables = Set<AnyCancellable>()
+
     init() {
         HotKeyManager.shared.onHotKey = { [weak self] in
             guard let self else { return }
@@ -36,5 +45,17 @@ final class AppState: ObservableObject {
             }
         }
         HotKeyManager.shared.register()
+
+        // The system Touch ID / password prompt steals focus, which causes
+        // MenuBarExtra's popover to auto-close as a side effect. Re-present
+        // it once the prompt is dismissed so the user sees the result.
+        securityManager.$isAuthenticating
+            .removeDuplicates()
+            .sink { [weak self] isAuthenticating in
+                guard let self, !isAuthenticating, !self.isMenuPresented else { return }
+                NSApp.activate(ignoringOtherApps: true)
+                self.isMenuPresented = true
+            }
+            .store(in: &cancellables)
     }
 }

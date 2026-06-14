@@ -10,6 +10,12 @@ public class SecurityManager: ObservableObject {
     /// user-presence check on the Keychain item passes without prompting again.
     public private(set) var context: LAContext?
 
+    /// True while a Touch ID / password prompt is in flight. The system prompt
+    /// steals focus from the menu bar popover, which causes it to auto-close;
+    /// observers can use this to know when to re-present the popover once the
+    /// prompt is dismissed.
+    @Published public private(set) var isAuthenticating: Bool = false
+
     public init() {}
 
     public func authenticate(reason: String = "access your secure keys") async -> Bool {
@@ -23,6 +29,8 @@ public class SecurityManager: ObservableObject {
         let policy: LAPolicy = .deviceOwnerAuthentication
 
         if context.canEvaluatePolicy(policy, error: &error) {
+            isAuthenticating = true
+            defer { isAuthenticating = false }
             do {
                 let success = try await context.evaluatePolicy(policy, localizedReason: reason)
                 self.isUnlocked = success

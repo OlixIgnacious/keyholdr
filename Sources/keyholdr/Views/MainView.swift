@@ -4,7 +4,7 @@ import UniformTypeIdentifiers
 
 @MainActor
 struct MainView: View {
-    @StateObject private var securityManager = SecurityManager()
+    @ObservedObject var securityManager: SecurityManager
     @State private var keys: [KeyItem] = []
 
     @State private var searchText = ""
