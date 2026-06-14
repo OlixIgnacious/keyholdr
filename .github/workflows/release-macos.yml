@@ -64,6 +64,8 @@ jobs:
           MACOS_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
         run: |
           codesign --force --options runtime --timestamp \
+            --sign "$MACOS_SIGNING_IDENTITY" build/Keyholdr.app/Contents/MacOS/keyholdr-cli
+          codesign --force --options runtime --timestamp \
             --sign "$MACOS_SIGNING_IDENTITY" build/Keyholdr.app
           codesign --verify --strict --verbose=2 build/Keyholdr.app
 
