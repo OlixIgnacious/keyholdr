@@ -83,22 +83,21 @@ the roadmap.)*
 
 ## Install
 
-**Homebrew** — the easy way:
+### Option A — Homebrew (recommended)
 
-```bash
-brew install --cask olixignacious/tap/keyholdr
-```
+1. `brew install --cask olixignacious/tap/keyholdr`
+2. Open **Keyholdr** — first launch is blocked by Gatekeeper since the build is unsigned.
+3. Let it through:
+   - **macOS 15 (Sequoia) and later** — go to **System Settings → Privacy & Security → "Open Anyway"**, then open Keyholdr again.
+   - **macOS 13–14** — right-click Keyholdr in `/Applications` → **Open**.
 
-Or grab the [latest release](https://github.com/OlixIgnacious/keyholdr/releases/latest) directly:
+### Option B — Manual download
 
-| Platform | Asset | Notes |
-|---|---|---|
-| macOS (Apple Silicon) | `Keyholdr-macOS-*.zip` | Unzip → move to /Applications. |
+1. Grab `Keyholdr-macOS-*.zip` from the [latest release](https://github.com/OlixIgnacious/keyholdr/releases/latest).
+2. Unzip and move `Keyholdr.app` to `/Applications`.
+3. Follow step 3 above to get past Gatekeeper.
 
-> **Unsigned for now** — macOS blocks the first launch either way. On macOS 15
-> (Sequoia) and later: open the app once, then go to **System Settings →
-> Privacy & Security → "Open Anyway"**. On macOS 13–14: right-click the app →
-> **Open**. Notarized builds are on the roadmap.
+Notarized (signed) builds are on the roadmap — once they ship, the Gatekeeper step goes away.
 
 <!-- Windows is hidden until testing on real hardware completes:
 | Windows 10/11 (x64) | `Keyholdr-windows-x64-*.zip` | **Still in testing** — built on CI but not yet verified on real hardware. Self-contained single `.exe`, no .NET install needed. SmartScreen: **More info → Run anyway**. |
@@ -159,22 +158,20 @@ Both disappear once Keyholdr ships signed builds.
 
 ## Build from source
 
-**macOS** — needs Xcode Command Line Tools (`xcode-select --install`):
+### macOS
 
-```bash
-./build.sh   # release build → app bundle → launches in your menu bar
-```
+1. Install Xcode Command Line Tools: `xcode-select --install`
+2. Run `./build.sh` — release build → app bundle → launches in your menu bar.
 
-**Windows** lives in its own repo,
+### Windows
+
+The Windows app lives in its own repo,
 [keyholdr-windows](https://github.com/OlixIgnacious/keyholdr-windows)
-*(source only while testing is pending)* — needs the
-[.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0):
+*(source only while testing is pending)*.
 
-```cmd
-cd Keyholdr
-dotnet run               # development
-dotnet publish -c Release   # self-contained single-file exe
-```
+1. Install the [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0).
+2. `cd Keyholdr`
+3. `dotnet run` for development, or `dotnet publish -c Release` for a self-contained single-file exe.
 
 Tagged releases (`v*`) automatically build the macOS app on CI and attach it
 to the GitHub release. The Windows build is manual-dispatch only until it is
