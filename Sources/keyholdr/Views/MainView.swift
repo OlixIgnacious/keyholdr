@@ -293,10 +293,6 @@ struct MainView: View {
         .onDisappear {
             removeKeyMonitor()
         }
-        // Auto-lock session when status bar popup is dismissed/closed
-        .onReceive(NotificationCenter.default.publisher(for: NSApplication.willResignActiveNotification)) { _ in
-            securityManager.lock()
-        }
     }
 
     private func deleteConfirmOverlay(for item: KeyItem) -> some View {

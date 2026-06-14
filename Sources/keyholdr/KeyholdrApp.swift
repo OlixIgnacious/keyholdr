@@ -26,7 +26,17 @@ struct KeyholdrApp: App {
 /// Owns the popover presentation state so the global hotkey can drive it.
 @MainActor
 final class AppState: ObservableObject {
-    @Published var isMenuPresented = false
+    @Published var isMenuPresented = false {
+        didSet {
+            // Auto-lock when the popover is dismissed by the user — but not
+            // when it's the Touch ID / password prompt that closed it
+            // (isAuthenticating is still true in that case), since the
+            // session should remain unlocked once that prompt succeeds.
+            if oldValue, !isMenuPresented, !securityManager.isAuthenticating {
+                securityManager.lock()
+            }
+        }
+    }
 
     /// Shared across the popover's lifetime (unlike `MainView`, which is torn
     /// down whenever the popover window closes), so an unlocked session
