@@ -190,12 +190,13 @@ keyholdr/
 │   ├── Models/                 login item, global hotkey
 │   └── Views/                  popover UI, monochrome theme
 ├── Sources/keyholdr-cli/    terminal companion — list, get, run
-├── website/                  landing page (GitHub Pages)
 └── build.sh                  macOS build + bundle script
 ```
 
-The Windows app (C# 12, WPF, .NET 8) lives in its own repo:
-[keyholdr-windows](https://github.com/OlixIgnacious/keyholdr-windows).
+The Windows app (C# 12, WPF, .NET 8) and the marketing site each live in
+their own repo:
+[keyholdr-windows](https://github.com/OlixIgnacious/keyholdr-windows) ·
+[keyholdr-site](https://github.com/OlixIgnacious/keyholdr-site).
 
 ## Contributing
 
