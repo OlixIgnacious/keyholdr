@@ -112,7 +112,7 @@ struct KeyRowView: View {
             Task {
                 let success = await securityManager.authenticate(reason: "reveal the secret for \(item.platform)")
                 if success {
-                    if let secret = KeychainHelper.retrieve(for: item.id) {
+                    if let secret = KeychainHelper.retrieve(for: item.id, context: securityManager.context) {
                         withAnimation {
                             self.revealedSecret = secret
                         }
@@ -126,7 +126,7 @@ struct KeyRowView: View {
         Task {
             let success = await securityManager.authenticate(reason: "copy the secret for \(item.platform)")
             if success {
-                if let secret = KeychainHelper.retrieve(for: item.id) {
+                if let secret = KeychainHelper.retrieve(for: item.id, context: securityManager.context) {
                     let pasteboard = NSPasteboard.general
                     pasteboard.clearContents()
                     pasteboard.setString(secret, forType: .string)

@@ -51,10 +51,10 @@ struct Env: ParsableCommand {
         }
 
         let platforms = assignments.map { $0.key.platform }.joined(separator: ", ")
-        try authenticateOrExit(reason: "export secrets for \(platforms)")
+        let context = try authenticateOrExit(reason: "export secrets for \(platforms)")
 
         for entry in assignments {
-            guard let secret = KeychainHelper.retrieve(for: entry.key.id) else {
+            guard let secret = KeychainHelper.retrieve(for: entry.key.id, context: context) else {
                 throw ValidationError("No secret in the Keychain for \(entry.key.platform) (\(entry.key.label)).")
             }
             if dotenv {
@@ -268,8 +268,8 @@ struct Pick: ParsableCommand {
             throw ExitCode(130) // cancelled
         }
 
-        try authenticateOrExit(reason: "copy the secret for \(choice.platform)")
-        guard let secret = KeychainHelper.retrieve(for: choice.id) else {
+        let context = try authenticateOrExit(reason: "copy the secret for \(choice.platform)")
+        guard let secret = KeychainHelper.retrieve(for: choice.id, context: context) else {
             throw ValidationError("No secret in the Keychain for \(choice.platform) (\(choice.label)).")
         }
         let pasteboard = NSPasteboard.general
@@ -330,9 +330,9 @@ struct Get: ParsableCommand {
 
     func run() throws {
         let key = try resolveKey(platform: platform, label: label, interactive: true)
-        try authenticateOrExit(reason: "read the secret for \(key.platform)")
+        let context = try authenticateOrExit(reason: "read the secret for \(key.platform)")
 
-        guard let secret = KeychainHelper.retrieve(for: key.id) else {
+        guard let secret = KeychainHelper.retrieve(for: key.id, context: context) else {
             throw ValidationError("No secret in the Keychain for \(key.platform) (\(key.label)).")
         }
 
@@ -398,11 +398,11 @@ struct Run: ParsableCommand {
         }
 
         let names = injected.map { $0.key.platform }.joined(separator: ", ")
-        try authenticateOrExit(reason: "inject secrets for \(names)")
+        let context = try authenticateOrExit(reason: "inject secrets for \(names)")
 
         var environment = ProcessInfo.processInfo.environment
         for entry in injected {
-            guard let secret = KeychainHelper.retrieve(for: entry.key.id) else {
+            guard let secret = KeychainHelper.retrieve(for: entry.key.id, context: context) else {
                 throw ValidationError("No secret in the Keychain for \(entry.key.platform) (\(entry.key.label)).")
             }
             environment[entry.name] = secret
@@ -450,12 +450,20 @@ func resolveKey(platform: String, label: String?, interactive: Bool = false) thr
 
 /// Blocks on a biometric (or password) check. Mirrors the app's behavior of
 /// passing automatically when LocalAuthentication is unavailable (CI, VMs).
-func authenticateOrExit(reason: String) throws {
+///
+/// Returns the authenticated `LAContext` so callers can pass it to
+/// `KeychainHelper.retrieve(for:context:)`, letting the OS-level
+/// user-presence check on the Keychain item pass without prompting again.
+/// Returns `nil` when LocalAuthentication is unavailable (CI/VM) — Keychain
+/// items saved on such machines have no access control, so retrieval works
+/// without a context, exactly as before.
+@discardableResult
+func authenticateOrExit(reason: String) throws -> LAContext? {
     final class ResultBox: @unchecked Sendable { var success = false }
 
     let context = LAContext()
     var error: NSError?
-    guard context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) else { return }
+    guard context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) else { return nil }
 
     FileHandle.standardError.write(Data("● Touch ID — \(reason)\n".utf8))
     let box = ResultBox()
@@ -470,4 +478,5 @@ func authenticateOrExit(reason: String) throws {
         FileHandle.standardError.write(Data("Authentication failed.\n".utf8))
         throw ExitCode(1)
     }
+    return context
 }

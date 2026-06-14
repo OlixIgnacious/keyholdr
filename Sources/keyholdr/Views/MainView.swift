@@ -410,7 +410,7 @@ struct MainView: View {
         Task {
             let success = await securityManager.authenticate(reason: "edit the details for \(item.platform)")
             if success {
-                self.editingSecret = KeychainHelper.retrieve(for: item.id) ?? ""
+                self.editingSecret = KeychainHelper.retrieve(for: item.id, context: securityManager.context) ?? ""
                 withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
                     self.editingItem = item
                 }
@@ -469,7 +469,7 @@ struct MainView: View {
 
             // Capture everything before the save panel: the popover may close
             // beneath us once the panel takes key focus.
-            let entries = keys.map { ExportedKey(item: $0, secret: KeychainHelper.retrieve(for: $0.id) ?? "") }
+            let entries = keys.map { ExportedKey(item: $0, secret: KeychainHelper.retrieve(for: $0.id, context: securityManager.context) ?? "") }
             do {
                 let data = try VaultExport.export(entries, passphrase: passphrase)
 
