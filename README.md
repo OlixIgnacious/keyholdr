@@ -7,7 +7,7 @@
 A native menu bar vault for API keys.<br>
 Hardware-backed storage. Biometric unlock. Zero Electron.
 
-[**Website**](https://olixignacious.github.io/keyholdr/) · [**Download**](https://github.com/OlixIgnacious/keyholdr/releases/latest) · [**Build from source**](#build-from-source)
+[**Website**](https://olixignacious.github.io/keyholdr-site/) · [**Download**](https://github.com/OlixIgnacious/keyholdr/releases/latest) · [**Build from source**](#build-from-source)
 
 [![Release](https://img.shields.io/github/v/release/OlixIgnacious/keyholdr?style=flat-square&color=121212&labelColor=121212)](https://github.com/OlixIgnacious/keyholdr/releases/latest)
 [![macOS](https://img.shields.io/badge/macOS-Swift%206%20·%20SwiftUI-121212?style=flat-square&logo=apple&logoColor=white)](https://github.com/OlixIgnacious/keyholdr/releases/latest)
