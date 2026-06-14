@@ -203,6 +203,9 @@ contribution is provided under the same non-commercial license as the rest
 of the project. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, tests, and
 PR guidelines.
 
+Found a security issue? See [SECURITY.md](SECURITY.md) for how to report it
+privately. See [CHANGELOG.md](CHANGELOG.md) for release history.
+
 ## License
 
 Non-commercial use only. Free to copy, fork, and modify for personal or

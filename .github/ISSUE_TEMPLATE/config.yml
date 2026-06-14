@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/OlixIgnacious/keyholdr/security/policy
+    about: Please report security issues privately — see SECURITY.md.
+  - name: Questions and discussion
+    url: https://github.com/OlixIgnacious/keyholdr/discussions
+    about: Ask questions or discuss ideas before opening an issue.
