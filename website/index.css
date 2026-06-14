@@ -113,7 +113,12 @@ body[data-theme="dark"] .site-header.is-scrolled {
   font-weight: 600;
   letter-spacing: -0.01em;
 }
-.brand-mark { width: 1.35rem; height: 1.35rem; }
+.brand-mark {
+  width: 1.6rem;
+  height: 1.6rem;
+  object-fit: contain;
+  transform: translateY(0.27rem);
+}
 
 .site-nav {
   display: flex;
@@ -693,6 +698,15 @@ body[data-theme="dark"] .header-cta:hover { background: var(--bone); color: var(
   font-weight: 500;
 }
 .cta-title em { color: var(--ink-40); }
+.cta-dot {
+  display: inline-block;
+  width: 0.3em;
+  height: 0.3em;
+  margin-left: 0.05em;
+  object-fit: contain;
+  vertical-align: baseline;
+  transform: translateY(0.164em);
+}
 .cta-actions {
   display: flex;
   flex-wrap: wrap;
@@ -707,6 +721,134 @@ body[data-theme="dark"] .header-cta:hover { background: var(--bone); color: var(
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-40);
+}
+
+/* ============ Docs page ============ */
+
+.docs {
+  padding: clamp(6.5rem, 13vh, 8.5rem) var(--gutter) 0;
+}
+.docs-shell {
+  display: grid;
+  grid-template-columns: 13rem 1fr;
+  gap: clamp(2rem, 5vw, 5rem);
+  max-width: 74rem;
+  margin: 0 auto;
+  padding-bottom: clamp(5rem, 10vh, 8rem);
+}
+.docs-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  position: sticky;
+  top: 6.5rem;
+  align-self: start;
+  font-size: 0.9rem;
+}
+.docs-nav a { color: var(--ink-60); padding: 0.15rem 0; transition: color 0.2s ease; }
+.docs-nav a:hover, .docs-nav a.is-active { color: var(--ink); }
+
+.docs-content { min-width: 0; }
+.docs-intro {
+  padding-bottom: clamp(2.5rem, 6vh, 4rem);
+}
+.docs-intro .eyebrow { margin-bottom: 1rem; }
+.docs-intro h1 {
+  font-size: clamp(2.6rem, 6vw, 4.5rem);
+  letter-spacing: -0.04em;
+  line-height: 1.04;
+  margin-bottom: 1rem;
+}
+.docs-intro .lede { max-width: 40rem; }
+
+.docs-section {
+  padding-block: clamp(2.5rem, 6vh, 4rem);
+  border-top: 1px solid var(--ink-12);
+}
+.docs-section h2 {
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
+  letter-spacing: -0.03em;
+  margin-bottom: 1rem;
+}
+.docs-section h3 {
+  font-size: 1.2rem;
+  letter-spacing: -0.01em;
+  margin: 2rem 0 0.75rem;
+}
+.docs-section h3:first-of-type { margin-top: 1.5rem; }
+.docs-section p, .docs-section li { color: var(--ink-60); font-size: 0.98rem; }
+.docs-section p { margin-bottom: 1rem; max-width: 42rem; }
+.docs-section ul, .docs-section ol { margin: 0 0 1rem 1.2rem; }
+.docs-section ul { list-style: disc; }
+.docs-section ol { list-style: decimal; }
+.docs-section li { margin-bottom: 0.35rem; }
+.docs-section strong { color: var(--ink); font-weight: 600; }
+
+.docs-section code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--ink-06);
+  padding: 0.15em 0.4em;
+  border-radius: 0.35em;
+}
+.docs-section pre {
+  font-family: var(--font-mono);
+  font-size: 0.83rem;
+  line-height: 1.65;
+  background: var(--coal);
+  color: var(--bone-60);
+  padding: 1.1rem 1.3rem;
+  border-radius: 0.85rem;
+  overflow-x: auto;
+  margin-bottom: 1.25rem;
+}
+.docs-section pre code {
+  background: none;
+  padding: 0;
+  color: var(--bone);
+  font-size: 1em;
+}
+.docs-section pre .c { color: var(--bone-40); }
+
+.docs-table-wrap { overflow-x: auto; margin-bottom: 1.5rem; }
+.docs-table {
+  width: 100%;
+  min-width: 28rem;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+.docs-table th, .docs-table td {
+  text-align: left;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--ink-12);
+  vertical-align: top;
+}
+.docs-table th {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-40);
+  font-weight: 500;
+}
+.docs-table td:first-child {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+@media (max-width: 860px) {
+  .docs-shell { grid-template-columns: 1fr; }
+  .docs-nav {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.85rem 1.5rem;
+    padding-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--ink-12);
+  }
 }
 
 /* ============ Footer ============ */

@@ -18,13 +18,24 @@ Hardware-backed storage. Biometric unlock. Zero Electron.
 
 <br>
 
-<img src="docs/preview.png" alt="Keyholdr popover — search, monogram tiles, one-click copy" width="640">
+<img src="docs/Gif.gif" alt="Keyholdr popover — search, monogram tiles, one-click copy" width="640">
 
 </div>
 
 ---
 
-## Why
+## Contents
+
+- [Features](#features)
+- [How secrets are stored](#how-secrets-are-stored)
+- [Install](#install)
+- [Terminal companion](#terminal-companion)
+- [Build from source](#build-from-source)
+- [Project layout](#project-layout)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Features
 
 API keys end up in dotfiles, Slack DMs, and `notes.txt`. Keyholdr gives them a
 proper home: a tiny native popover next to your clock. Open it, type two
@@ -185,6 +196,13 @@ keyholdr/
 
 The Windows app (C# 12, WPF, .NET 8) lives in its own repo:
 [keyholdr-windows](https://github.com/OlixIgnacious/keyholdr-windows).
+
+## Contributing
+
+Issues and pull requests are welcome — bug reports, platform/icon mappings,
+and CLI ergonomics are especially useful. By opening a PR you agree your
+contribution is provided under the same non-commercial license as the rest
+of the project.
 
 ## License
 

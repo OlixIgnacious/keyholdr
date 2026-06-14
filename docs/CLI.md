@@ -1,5 +1,8 @@
 # keyholdr-cli usage
 
+> Also available as a browsable page, alongside the architecture and install
+> docs: [olixignacious.github.io/keyholdr/docs.html](https://olixignacious.github.io/keyholdr/docs.html)
+
 The terminal companion to the Keyholdr menu bar app. It reads the same vault
 — the same key list and the same macOS Keychain entries — so anything you add
 in the app shows up in the CLI and vice versa. Every secret access requires

@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Docs — Keyholdr</title>
+  <meta name="description" content="Keyholdr documentation: architecture, install, keyboard shortcuts, and the full keyholdr-cli command reference.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="index.css">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Keyholdr — Documentation">
+  <meta property="og:description" content="Architecture, install, shortcuts, and the full keyholdr-cli command reference.">
+</head>
+<body data-theme="light">
+
+  <!-- ============ Header ============ -->
+  <header class="site-header" id="site-header">
+    <a class="brand" href="index.html" aria-label="Keyholdr home">
+      <img class="brand-mark" src="key-balloon.gif" alt="" aria-hidden="true">
+      <span class="brand-name">Keyholdr</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="index.html#product">Product</a>
+      <a href="index.html#security">Security</a>
+      <a href="index.html#specs">Specs</a>
+      <a href="docs.html" aria-current="page">Docs</a>
+      <a href="index.html#download">Download</a>
+    </nav>
+    <a class="header-cta" href="https://github.com/OlixIgnacious/keyholdr" target="_blank" rel="noopener">GitHub</a>
+  </header>
+
+  <main class="docs" data-section-theme="light">
+    <div class="docs-shell">
+
+      <nav class="docs-nav" aria-label="Documentation sections">
+        <a href="#overview">Overview</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#install">Install</a>
+        <a href="#shortcuts">Shortcuts</a>
+        <a href="#cli">CLI reference</a>
+        <a href="#env-vars">Env var naming</a>
+        <a href="#picker">Picker controls</a>
+        <a href="#exit-codes">Exit codes</a>
+        <a href="#build">Build from source</a>
+      </nav>
+
+      <div class="docs-content">
+
+        <div class="docs-intro">
+          <p class="eyebrow">Documentation</p>
+          <h1>Everything Keyholdr does,<br>in one place.</h1>
+          <p class="lede">
+            How secrets are stored, how to install the app and CLI, and the
+            full <code>keyholdr</code> command reference — including
+            multi-select <code>run</code>/<code>env</code> and env var naming
+            conventions.
+          </p>
+        </div>
+
+        <!-- ============ Overview ============ -->
+        <section class="docs-section" id="overview">
+          <h2>Overview</h2>
+          <p>
+            Keyholdr is a native macOS menu bar vault for API keys, plus a
+            terminal companion that reads the same vault. The app stores
+            non-secret metadata (platform, label, tags) in a local JSON file
+            and writes the actual secrets straight into the OS's
+            hardware-backed Keychain — they're never on disk in cleartext and
+            every read requires Touch ID or Apple Watch.
+          </p>
+          <p>
+            There's no dock icon, no server, no sync, and no analytics.
+            Everything happens locally, gated by biometrics.
+          </p>
+        </section>
+
+        <!-- ============ Architecture ============ -->
+        <section class="docs-section" id="architecture">
+          <h2>Architecture</h2>
+          <p>
+            Metadata and secrets never travel together. Names, labels, and
+            tags live in a local file; the secrets themselves live in the
+            operating system's secure vault and are only pulled out — after
+            biometric verification — at the moment you copy them.
+          </p>
+
+          <div class="docs-table-wrap">
+            <table class="docs-table">
+              <thead>
+                <tr><th>Layer</th><th>Where it lives</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Metadata</td>
+                  <td><code>~/Library/Application Support/com.olixstudios.Keyholdr/keys.json</code> — platform, label, tags, and age only</td>
+                </tr>
+                <tr>
+                  <td>Secrets</td>
+                  <td>macOS Keychain Services (<code>Security</code> API)</td>
+                </tr>
+                <tr>
+                  <td>Unlock</td>
+                  <td>Touch ID / Apple Watch (<code>LocalAuthentication</code>)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Self-healing</h3>
+          <p>
+            Every save also mirrors the (non-secret) metadata into a Keychain
+            item. If <code>keys.json</code> is ever deleted or corrupted, the
+            app silently restores it from that mirror — and since secrets
+            already live in the Keychain, deleting the app or its files loses
+            nothing.
+          </p>
+
+          <h3>Vault export</h3>
+          <p>
+            Export the whole vault to a single passphrase-encrypted file
+            (PBKDF2 + AES-256-GCM) and import it on another machine. No cloud
+            account required.
+          </p>
+        </section>
+
+        <!-- ============ Install ============ -->
+        <section class="docs-section" id="install">
+          <h2>Install</h2>
+          <p>The easy way, via Homebrew:</p>
+          <pre><code>brew install --cask olixignacious/tap/keyholdr</code></pre>
+          <p>
+            Or grab the <a href="https://github.com/OlixIgnacious/keyholdr/releases/latest" target="_blank" rel="noopener">latest release</a>
+            directly — unzip <code>Keyholdr-macOS-*.zip</code> and move
+            <strong>Keyholdr.app</strong> to <code>/Applications</code>.
+            Requires Apple Silicon.
+          </p>
+
+          <h3>First launch (unsigned builds)</h3>
+          <p>
+            Builds aren't notarized yet, so macOS blocks the first launch:
+          </p>
+          <ul>
+            <li><strong>macOS 15 (Sequoia) and later</strong> — open the app once, then go to <strong>System Settings → Privacy &amp; Security → "Open Anyway"</strong>.</li>
+            <li><strong>macOS 13–14</strong> — right-click the app → <strong>Open</strong>.</li>
+          </ul>
+
+          <h3>CLI link</h3>
+          <p>
+            Homebrew links <code>keyholdr</code> onto your PATH
+            automatically. For direct downloads, link it once:
+          </p>
+          <pre><code>ln -s /Applications/Keyholdr.app/Contents/MacOS/keyholdr-cli /usr/local/bin/keyholdr</code></pre>
+          <p>
+            Two one-time prompts while builds are unsigned: Gatekeeper blocks
+            the quarantined CLI binary (clear it with
+            <code>xattr -dr com.apple.quarantine /Applications/Keyholdr.app</code>),
+            and the first read of each key shows a macOS Keychain consent
+            dialog — choose <strong>Always Allow</strong>. Both disappear once
+            Keyholdr ships signed builds.
+          </p>
+        </section>
+
+        <!-- ============ Shortcuts ============ -->
+        <section class="docs-section" id="shortcuts">
+          <h2>Shortcuts</h2>
+          <div class="docs-table-wrap">
+            <table class="docs-table">
+              <thead>
+                <tr><th>Keys</th><th>Action</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>⌃⌥⌘K</td><td>Summon or dismiss Keyholdr — works system-wide</td></tr>
+                <tr><td>⌘N</td><td>Add a new key</td></tr>
+                <tr><td>Esc</td><td>Dismiss the add/edit form</td></tr>
+                <tr><td>just type</td><td>Search is focused by default</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ============ CLI reference ============ -->
+        <section class="docs-section" id="cli">
+          <h2>CLI reference</h2>
+          <p>
+            The terminal companion reads the same vault as the app — the same
+            key list and the same macOS Keychain entries. Every secret access
+            requires Touch ID (or your account password as a fallback).
+          </p>
+
+          <div class="docs-table-wrap">
+            <table class="docs-table">
+              <thead>
+                <tr><th>Command</th><th>What it does</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>keyholdr</td><td>Interactive picker (default subcommand)</td></tr>
+                <tr><td>keyholdr list</td><td>List every key (never the secrets)</td></tr>
+                <tr><td>keyholdr get &lt;platform&gt;</td><td>Print or copy a secret</td></tr>
+                <tr><td>keyholdr run</td><td>Run a command with secrets injected as env vars</td></tr>
+                <tr><td>keyholdr env</td><td>Emit export / .env lines for eval</td></tr>
+                <tr><td>keyholdr add &lt;platform&gt;</td><td>Add a new key</td></tr>
+                <tr><td>keyholdr rm [platform]</td><td>Delete one or more keys</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Run <code>keyholdr &lt;command&gt; --help</code> for full flag details.</p>
+
+          <h3>keyholdr / keyholdr pick [filter]</h3>
+          <p>
+            Opens an inline picker: type to filter by platform, label, or tag,
+            ↑↓ to move, <strong>⏎</strong> to select. After Touch ID, the
+            secret is copied to the clipboard.
+          </p>
+          <pre><code><span class="c"># browse everything</span>
+keyholdr
+
+<span class="c"># start pre-filtered to "aws"</span>
+keyholdr aws</code></pre>
+          <p>
+            Needs a real terminal (stdin and stderr must both be a tty). In
+            scripts or pipes, use <code>list</code>, <code>get</code>,
+            <code>run</code>, or <code>env</code> instead.
+          </p>
+
+          <h3>keyholdr list</h3>
+          <p>
+            Prints every key — platform, label, tags, and age — without ever
+            touching the Keychain or prompting for Touch ID.
+          </p>
+          <pre><code>keyholdr list
+<span class="c"># PLATFORM   LABEL     TAGS      AGE
+# github     work      dev,ci    14d
+# openai     default             3mo ⚠</span></code></pre>
+          <p>
+            A <code>⚠</code> next to the age means the key is old enough that
+            Keyholdr suggests rotating it.
+          </p>
+
+          <h3>keyholdr get &lt;platform&gt;</h3>
+          <p>
+            Resolves <code>&lt;platform&gt;</code> (case-insensitive,
+            substring match — <code>keyholdr get open</code> finds
+            <code>openai</code>), prompts for Touch ID, then prints the secret
+            to stdout.
+          </p>
+          <pre><code><span class="c"># prints to stdout</span>
+keyholdr get openai
+
+<span class="c"># disambiguate when one platform has multiple keys</span>
+keyholdr get github --label work
+
+<span class="c"># clipboard instead of stdout</span>
+keyholdr get github --label work --copy</code></pre>
+          <p>
+            If a platform has more than one matching key and
+            <code>--label</code> isn't given, the picker opens to choose — but
+            only in an interactive terminal. In scripts, ambiguity is a hard
+            error listing the <code>--label</code> values to disambiguate
+            with, so automation never blocks on hidden interactivity.
+          </p>
+
+          <h3>keyholdr run</h3>
+          <p>
+            Runs a command with secrets injected as environment variables in
+            the child process only — they never touch stdout, files, or shell
+            history.
+          </p>
+          <p><strong>Explicit mappings</strong>, one or more <code>-e ENV_VAR=platform[/label]</code>:</p>
+          <pre><code>keyholdr run -e OPENAI_API_KEY=openai -e GITHUB_TOKEN=github/work -- npm start</code></pre>
+          <p><strong>Multi-select</strong>, with no <code>-e</code> flags, in an interactive terminal:</p>
+          <pre><code>keyholdr run -- npm start</code></pre>
+          <p>
+            This opens the multi-select picker (<strong>⇥</strong> or
+            <strong>space</strong> to mark, <strong>⏎</strong> to confirm) and
+            derives conventional env var names automatically — e.g.
+            <code>GITHUB_TOKEN</code>, <code>OPENAI_API_KEY</code> (see
+            <a href="#env-vars">env var naming</a> below).
+          </p>
+
+          <h3>keyholdr env</h3>
+          <p>
+            Selects keys and prints <code>export NAME='value'</code> lines (or
+            <code>NAME=value</code> with <code>--dotenv</code>) designed to be
+            <code>eval</code>'d into your <em>current</em> shell — nothing
+            lands in files or history.
+          </p>
+          <pre><code><span class="c"># multi-select picker</span>
+eval "$(keyholdr env)"
+
+<span class="c"># name keys directly</span>
+eval "$(keyholdr env openai github/work)"
+
+<span class="c"># .env-style NAME=value</span>
+eval "$(keyholdr env --dotenv openai)"
+
+<span class="c"># dry run: shows the name mapping only,
+# no Touch ID, nothing exported</span>
+keyholdr env --names</code></pre>
+          <p>
+            <code>eval</code> is required — without it, the
+            <code>export</code> lines just print to your terminal and don't
+            affect your shell's environment. <code>--names</code> is a
+            preview: it never reads secrets or requires Touch ID, and on its
+            own doesn't export anything.
+          </p>
+
+          <h3>keyholdr add &lt;platform&gt;</h3>
+          <p>
+            Adds a key. The secret is <strong>never</strong> an argument
+            (arguments are visible to every process via <code>ps</code>) —
+            it's read from a hidden prompt, or piped on stdin.
+          </p>
+          <pre><code><span class="c"># hidden prompt</span>
+keyholdr add github --label work --tags dev,ci
+
+<span class="c"># piped from the clipboard</span>
+pbpaste | keyholdr add openai</code></pre>
+          <p>
+            <code>--label</code> defaults to <code>default</code>. An
+            identical platform + label pair is rejected — use a different
+            <code>--label</code> to keep keys addressable.
+          </p>
+
+          <h3>keyholdr rm [platform]</h3>
+          <p>Deletes one or more keys and their Keychain secrets.</p>
+          <pre><code><span class="c"># confirms, then deletes</span>
+keyholdr rm github --label work
+
+<span class="c"># skip the confirmation prompt (scripts)</span>
+keyholdr rm github --force
+
+<span class="c"># multi-select: ⇥/space to mark, ⏎ deletes</span>
+keyholdr rm</code></pre>
+          <p>
+            With no <code>platform</code>, opens the multi-select picker
+            (interactive terminals only). Without <code>--force</code>,
+            deletion always asks for confirmation — and refuses outright in
+            non-interactive contexts so scripts can't silently wipe keys.
+          </p>
+
+          <p>
+            When several keys match (<code>keyholdr get aws</code> with a work
+            and a personal key), the same picker opens to choose — in scripts
+            and pipes it stays a hard error with <code>--label</code> hints
+            instead, so automation never blocks. The app refuses to create two
+            keys with an identical platform + label, so every key stays
+            addressable.
+          </p>
+        </section>
+
+        <!-- ============ Env var naming ============ -->
+        <section class="docs-section" id="env-vars">
+          <h2>Env var naming</h2>
+          <p>
+            <code>keyholdr run</code> (multi-select) and
+            <code>keyholdr env</code> derive a conventional environment
+            variable name per platform:
+          </p>
+          <div class="docs-table-wrap">
+            <table class="docs-table">
+              <thead>
+                <tr><th>Platform contains</th><th>Env var</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>github</td><td>GITHUB_TOKEN</td></tr>
+                <tr><td>gitlab</td><td>GITLAB_TOKEN</td></tr>
+                <tr><td>huggingface</td><td>HF_TOKEN</td></tr>
+                <tr><td>slack</td><td>SLACK_TOKEN</td></tr>
+                <tr><td>discord</td><td>DISCORD_TOKEN</td></tr>
+                <tr><td>telegram</td><td>TELEGRAM_BOT_TOKEN</td></tr>
+                <tr><td>vercel</td><td>VERCEL_TOKEN</td></tr>
+                <tr><td>netlify</td><td>NETLIFY_AUTH_TOKEN</td></tr>
+                <tr><td>cloudflare</td><td>CLOUDFLARE_API_TOKEN</td></tr>
+                <tr><td>twilio</td><td>TWILIO_AUTH_TOKEN</td></tr>
+                <tr><td>npm</td><td>NPM_TOKEN</td></tr>
+                <tr><td>sentry</td><td>SENTRY_AUTH_TOKEN</td></tr>
+                <tr><td>claude / anthropic</td><td>ANTHROPIC_API_KEY</td></tr>
+                <tr><td>chatgpt / openai</td><td>OPENAI_API_KEY</td></tr>
+                <tr><td>anything else</td><td>&lt;PLATFORM&gt;_API_KEY</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            If selecting multiple keys would produce the same env var name,
+            the label is appended (then a numeric counter) to keep names
+            unique — e.g. <code>GITHUB_TOKEN</code> and
+            <code>GITHUB_TOKEN_WORK</code>.
+          </p>
+        </section>
+
+        <!-- ============ Picker controls ============ -->
+        <section class="docs-section" id="picker">
+          <h2>Picker controls</h2>
+          <div class="docs-table-wrap">
+            <table class="docs-table">
+              <thead>
+                <tr><th>Key</th><th>Action</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>type</td><td>filter by platform, label, or tag</td></tr>
+                <tr><td>↑ / ↓</td><td>move selection</td></tr>
+                <tr><td>⏎</td><td>select (single) / confirm (multi)</td></tr>
+                <tr><td>⇥ or space</td><td>mark/unmark an entry (multi-select only)</td></tr>
+                <tr><td>^U</td><td>clear the filter</td></tr>
+                <tr><td>esc, ^C, ^D</td><td>cancel</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ============ Exit codes ============ -->
+        <section class="docs-section" id="exit-codes">
+          <h2>Exit codes</h2>
+          <div class="docs-table-wrap">
+            <table class="docs-table">
+              <thead>
+                <tr><th>Code</th><th>Meaning</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>0</td><td>Success</td></tr>
+                <tr><td>1</td><td>Validation error or declined confirmation</td></tr>
+                <tr><td>130</td><td>Picker cancelled (esc / ^C / ^D)</td></tr>
+                <tr><td>other</td><td>Forwarded from the child process for <code>keyholdr run</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ============ Build from source ============ -->
+        <section class="docs-section" id="build">
+          <h2>Build from source</h2>
+          <p>
+            macOS needs Xcode Command Line Tools
+            (<code>xcode-select --install</code>):
+          </p>
+          <pre><code><span class="c"># release build → app bundle → launches in your menu bar</span>
+./build.sh</code></pre>
+          <p>
+            Tagged releases (<code>v*</code>) automatically build the macOS
+            app on CI and attach it to the GitHub release.
+          </p>
+          <p>
+            The Windows app (C# 12, WPF, .NET 8) lives in its own repo:
+            <a href="https://github.com/OlixIgnacious/keyholdr-windows" target="_blank" rel="noopener">keyholdr-windows</a>.
+          </p>
+          <p>
+            For the full project layout and contribution notes, see the
+            <a href="https://github.com/OlixIgnacious/keyholdr" target="_blank" rel="noopener">README on GitHub</a>.
+          </p>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ============ Footer ============ -->
+  <footer class="footer" data-section-theme="dark">
+    <div class="footer-top">
+      <div class="footer-col">
+        <span class="footer-label">Project</span>
+        <a href="https://github.com/OlixIgnacious/keyholdr" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/OlixIgnacious/keyholdr/releases" target="_blank" rel="noopener">Releases</a>
+        <a href="https://github.com/OlixIgnacious/keyholdr/issues" target="_blank" rel="noopener">Issues</a>
+      </div>
+      <div class="footer-col">
+        <span class="footer-label">Site</span>
+        <a href="index.html#product">Product</a>
+        <a href="index.html#security">Security</a>
+        <a href="index.html#specs">Specs</a>
+        <a href="docs.html">Docs</a>
+      </div>
+      <p class="footer-note">
+        A source-available desktop vault for developers.<br>
+        Non-commercial license. © 2026 Ashwini Sharma (Olix Studios).
+      </p>
+    </div>
+    <div class="footer-wordmark" aria-hidden="true">Keyholdr</div>
+  </footer>
+
+  <script src="index.js"></script>
+</body>
+</html>

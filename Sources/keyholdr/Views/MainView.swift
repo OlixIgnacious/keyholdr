@@ -15,9 +15,8 @@ struct MainView: View {
     @State private var editingItem: KeyItem? = nil
     @State private var editingSecret: String? = nil
 
-    // Delete states
+    // Delete state
     @State private var itemToDelete: KeyItem? = nil
-    @State private var showingDeleteAlert = false
 
     // Vault export/import states
     @State private var transferMode: TransferMode? = nil
@@ -220,7 +219,6 @@ struct MainView: View {
                                         },
                                         onDelete: {
                                             itemToDelete = item
-                                            showingDeleteAlert = true
                                         }
                                     )
                                 }
@@ -277,6 +275,13 @@ struct MainView: View {
                 }
                 .transition(.asymmetric(insertion: .move(edge: .leading), removal: .move(edge: .leading)))
             }
+
+            // Delete confirmation — `.alert` doesn't reliably present inside a
+            // MenuBarExtra(.window) popover, so this is a custom in-view modal.
+            if let item = itemToDelete {
+                deleteConfirmOverlay(for: item)
+                    .transition(.opacity)
+            }
         }
         .frame(width: 360, height: 440)
         .onAppear {
@@ -292,22 +297,49 @@ struct MainView: View {
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.willResignActiveNotification)) { _ in
             securityManager.lock()
         }
-        // Delete Confirmation Alert
-        .alert("Delete Key?", isPresented: $showingDeleteAlert) {
-            Button("Cancel", role: .cancel) {
-                itemToDelete = nil
-            }
-            Button("Delete", role: .destructive) {
-                if let item = itemToDelete {
-                    deleteKey(item)
+    }
+
+    private func deleteConfirmOverlay(for item: KeyItem) -> some View {
+        ZStack {
+            Color.black.opacity(0.25)
+                .ignoresSafeArea()
+                .onTapGesture { itemToDelete = nil }
+
+            VStack(alignment: .leading, spacing: 14) {
+                Text("Delete \(item.platform) (\(item.label))?")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(KHTheme.ink)
+
+                Text("This permanently erases the secret from your macOS Keychain. This action cannot be undone.")
+                    .font(.system(size: 12))
+                    .foregroundColor(KHTheme.ink60)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                HStack(spacing: 8) {
+                    Spacer()
+                    Button("Cancel") {
+                        itemToDelete = nil
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundColor(KHTheme.ink60)
+
+                    Button("Delete") {
+                        deleteKey(item)
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundColor(.red)
+                    .fontWeight(.semibold)
                 }
             }
-        } message: {
-            if let item = itemToDelete {
-                Text("Are you sure you want to delete the key for \(item.platform)? This will permanently erase the secret from your macOS Keychain.")
-            } else {
-                Text("This action cannot be undone.")
-            }
+            .padding(16)
+            .frame(width: 280)
+            .background(KHTheme.paper)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .strokeBorder(KHTheme.ink12, lineWidth: 1)
+            )
+            .shadow(color: .black.opacity(0.2), radius: 16, y: 4)
         }
     }
 
