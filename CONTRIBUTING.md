@@ -49,9 +49,8 @@ behavioral change to `KeyholdrKit`.
 ## Project layout
 
 See [Project layout](README.md#project-layout) in the README for an overview
-of where things live. The Windows app and the marketing site are in their own
-repos: [keyholdr-windows](https://github.com/OlixIgnacious/keyholdr-windows)
-and [keyholdr-site](https://github.com/OlixIgnacious/keyholdr-site).
+of where things live. The Windows app is in its own repo:
+[keyholdr-windows](https://github.com/OlixIgnacious/keyholdr-windows).
 
 ## Pull requests
 
