@@ -18,7 +18,7 @@ Hardware-backed storage. Biometric unlock. Zero Electron.
 
 <br>
 
-<img src="docs/Gif.gif" alt="Keyholdr popover — search, monogram tiles, one-click copy" width="640">
+<img src="docs/Gif2.gif" alt="Keyholdr popover — search, monogram tiles, one-click copy" width="640">
 
 </div>
 
