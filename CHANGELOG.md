@@ -5,7 +5,18 @@ All notable changes to Keyholdr are documented here. Format follows
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-07-09
+
 ### Added
+- **Onboarding overlay** — shown once on first launch: hotkey, Touch ID/Always
+  Allow note, and strictly-local guarantee.
+- **CLI install button** — a "CLI" button in the footer copies `keyholdr-cli`
+  to `~/.local/bin/keyholdr` and patches `~/.zshrc` / `~/.bash_profile` so
+  it's immediately on PATH. No admin password needed.
+- **CLI install banner** — a dismissible bar above the footer prompts first-time
+  users to install the CLI (auto-dismisses once installed).
+- **Empty state hints** — ⌘N shortcut shown inline on the "Add your first key"
+  button; Touch ID/Always Allow note shown below it.
 - `keyholdr pick` (and the default no-argument picker) is now multi-select —
   ⇥/space marks several keys, ⏎ copies them all, one per line.
 - Claude-style terracotta color theme across the CLI (skipped automatically
@@ -13,9 +24,11 @@ All notable changes to Keyholdr are documented here. Format follows
 - `CONTRIBUTING.md` with dev setup, test, and PR guidelines.
 
 ### Changed
+- App is now **signed, notarized, and sandboxed** — no Gatekeeper prompt on
+  install, MAS-ready entitlements.
 - Marketing site moved to its own repo:
   [keyholdr-site](https://github.com/OlixIgnacious/keyholdr-site).
-- README install and build instructions restructured as numbered steps.
+- README install steps cleaned up (no more Gatekeeper workaround instructions).
 
 ## [1.5.0] - 2026-06-13
 
@@ -79,7 +92,8 @@ keys.
 - Touch ID / Windows Hello required to copy or reveal any key.
 - macOS: ⌘N to add a key, Escape to dismiss, instant search.
 
-[Unreleased]: https://github.com/OlixIgnacious/keyholdr/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/OlixIgnacious/keyholdr/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/OlixIgnacious/keyholdr/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/OlixIgnacious/keyholdr/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/OlixIgnacious/keyholdr/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/OlixIgnacious/keyholdr/compare/v1.2.0...v1.3.0
