@@ -27,11 +27,14 @@ struct MainView: View {
     @State private var keyMonitor: Any? = nil
 
     @State private var launchAtLogin = LaunchAtLogin.isEnabled
-    @State private var cliInstalled = CLIInstaller.isInstalled
-    @State private var cliInstallResult: String? = nil
 
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
+
+    #if !MAS_BUILD
+    @State private var cliInstalled = CLIInstaller.isInstalled
+    @State private var cliInstallResult: String? = nil
     @AppStorage("hasDismissedCLIBanner") private var hasDismissedCLIBanner = false
+    #endif
 
     var body: some View {
         ZStack {
@@ -253,6 +256,7 @@ struct MainView: View {
                         .frame(maxHeight: .infinity)
                     }
 
+                    #if !MAS_BUILD
                     // CLI install banner — shown once to users without the CLI
                     if !cliInstalled && !hasDismissedCLIBanner {
                         HStack(spacing: 8) {
@@ -286,6 +290,7 @@ struct MainView: View {
                         }
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
+                    #endif
 
                     // Footer
                     HStack {
@@ -312,6 +317,7 @@ struct MainView: View {
                         .buttonStyle(.plain)
                         .help(launchAtLogin ? "Keyholdr starts at login — click to disable" : "Start Keyholdr at login")
 
+                        #if !MAS_BUILD
                         Spacer().frame(width: 12)
 
                         Button(action: installCLI) {
@@ -340,6 +346,7 @@ struct MainView: View {
                         }
 
                         Spacer().frame(width: 12)
+                        #endif
 
                         HStack(spacing: 5) {
                             Image(systemName: "lock")
@@ -585,6 +592,7 @@ struct MainView: View {
         }
     }
 
+    #if !MAS_BUILD
     private func installCLI() {
         guard !cliInstalled else {
             cliInstallResult = "Already installed at\n~/.local/bin/keyholdr"
@@ -606,6 +614,7 @@ struct MainView: View {
             cliInstallResult = "Install failed:\n\(reason)"
         }
     }
+    #endif
 
     private func deleteKey(_ item: KeyItem) {
         KeychainHelper.delete(for: item.id)
