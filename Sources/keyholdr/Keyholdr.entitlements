@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- App Sandbox — required for Mac App Store distribution. -->
+    <key>com.apple.security.app-sandbox</key>
+    <true/>
+
+    <!-- Allows reading and writing files the user explicitly selects via
+         NSOpenPanel / NSSavePanel (vault export/import). -->
+    <key>com.apple.security.files.user-selected.read-write</key>
+    <true/>
+
+    <!-- Allows writing to the user's home directory subtree. Required for
+         CLIInstaller (~/.local/bin/keyholdr, ~/.zshrc / ~/.bash_profile). -->
+    <key>com.apple.security.temporary-exception.files.home-relative-path.read-write</key>
+    <array>
+        <string>/.local/bin/</string>
+        <string>/.zshrc</string>
+        <string>/.zprofile</string>
+        <string>/.bash_profile</string>
+        <string>/.bashrc</string>
+    </array>
+
+    <!-- Keychain access group so SecItem calls work in the sandbox.
+         The group must match the bundle ID prefix + ".keychain". -->
+    <key>keychain-access-groups</key>
+    <array>
+        <string>$(AppIdentifierPrefix)com.olixstudios.Keyholdr</string>
+    </array>
+</dict>
+</plist>

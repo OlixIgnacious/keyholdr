@@ -25,7 +25,8 @@ let package = Package(
             dependencies: [
                 "KeyholdrKit",
                 .product(name: "MenuBarExtraAccess", package: "MenuBarExtraAccess")
-            ]
+            ],
+            exclude: ["Keyholdr.entitlements"]
         ),
         // The terminal companion: keyholdr list / get / run.
         .executableTarget(

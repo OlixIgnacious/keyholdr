@@ -49,6 +49,17 @@ cat <<EOF > "$APP_DIR/Contents/Info.plist"
 </plist>
 EOF
 
+echo "🔏 Signing with sandbox entitlements..."
+ENTITLEMENTS="Sources/keyholdr/Keyholdr.entitlements"
+codesign --force --options runtime --timestamp \
+    --entitlements "$ENTITLEMENTS" \
+    --sign "${SIGNING_IDENTITY:-"-"}" \
+    "$APP_DIR/Contents/MacOS/keyholdr-cli"
+codesign --force --options runtime --timestamp \
+    --entitlements "$ENTITLEMENTS" \
+    --sign "${SIGNING_IDENTITY:-"-"}" \
+    "$APP_DIR"
+
 # CI mode: produce the bundle and stop, don't touch running processes
 if [[ "${1:-}" == "--no-launch" ]]; then
     echo "📦 Bundle ready at $APP_DIR (skipping launch)"
