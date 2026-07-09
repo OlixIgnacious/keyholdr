@@ -86,18 +86,13 @@ the roadmap.)*
 ### Option A — Homebrew (recommended)
 
 1. `brew install --cask olixignacious/tap/keyholdr`
-2. Open **Keyholdr** — first launch is blocked by Gatekeeper since the build is unsigned.
-3. Let it through:
-   - **macOS 15 (Sequoia) and later** — go to **System Settings → Privacy & Security → "Open Anyway"**, then open Keyholdr again.
-   - **macOS 13–14** — right-click Keyholdr in `/Applications` → **Open**.
+2. Open **Keyholdr** from Spotlight or `/Applications` — it's signed and notarized, so it opens without any Gatekeeper prompt.
 
 ### Option B — Manual download
 
 1. Grab `Keyholdr-macOS-*.zip` from the [latest release](https://github.com/OlixIgnacious/keyholdr/releases/latest).
 2. Unzip and move `Keyholdr.app` to `/Applications`.
-3. Follow step 3 above to get past Gatekeeper.
-
-Notarized (signed) builds are on the roadmap — once they ship, the Gatekeeper step goes away.
+3. Open it — no Gatekeeper workaround needed.
 
 <!-- Windows is hidden until testing on real hardware completes:
 | Windows 10/11 (x64) | `Keyholdr-windows-x64-*.zip` | **Still in testing** — built on CI but not yet verified on real hardware. Self-contained single `.exe`, no .NET install needed. SmartScreen: **More info → Run anyway**. |
@@ -150,11 +145,8 @@ addressable.
 See [docs/CLI.md](docs/CLI.md) for the full command reference, including
 `env`/`run` multi-select and env var naming conventions.
 
-Two one-time prompts while builds are unsigned: Gatekeeper blocks the
-quarantined CLI (clear it with
-`xattr -dr com.apple.quarantine /Applications/Keyholdr.app`), and the first
-read of each key shows a macOS Keychain consent — choose **Always Allow**.
-Both disappear once Keyholdr ships signed builds.
+The first read of each key shows a one-time macOS Keychain consent — choose
+**Always Allow** and it won't ask again.
 
 ## Build from source
 
