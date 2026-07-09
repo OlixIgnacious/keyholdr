@@ -27,6 +27,8 @@ struct MainView: View {
     @State private var keyMonitor: Any? = nil
 
     @State private var launchAtLogin = LaunchAtLogin.isEnabled
+    @State private var cliInstalled = CLIInstaller.isInstalled
+    @State private var cliInstallResult: String? = nil
 
     var body: some View {
         ZStack {
@@ -253,6 +255,33 @@ struct MainView: View {
                         }
                         .buttonStyle(.plain)
                         .help(launchAtLogin ? "Keyholdr starts at login — click to disable" : "Start Keyholdr at login")
+
+                        Spacer().frame(width: 12)
+
+                        Button(action: installCLI) {
+                            HStack(spacing: 4) {
+                                Image(systemName: cliInstalled ? "checkmark.circle.fill" : "terminal")
+                                    .font(.system(size: 9, weight: .medium))
+                                Text("CLI")
+                                    .font(.khMonoLabel)
+                                    .tracking(0.5)
+                            }
+                            .foregroundColor(cliInstalled ? KHTheme.ink60 : KHTheme.ink40)
+                        }
+                        .buttonStyle(.plain)
+                        .help(cliInstalled
+                              ? "keyholdr CLI is installed at ~/.local/bin/keyholdr"
+                              : "Install the keyholdr CLI to ~/.local/bin")
+                        .popover(isPresented: Binding(
+                            get: { cliInstallResult != nil },
+                            set: { if !$0 { cliInstallResult = nil } }
+                        )) {
+                            Text(cliInstallResult ?? "")
+                                .font(.khMonoSub)
+                                .foregroundColor(KHTheme.ink60)
+                                .padding(12)
+                                .frame(maxWidth: 260)
+                        }
 
                         Spacer().frame(width: 12)
 
@@ -497,6 +526,27 @@ struct MainView: View {
             transferError = "Wrong passphrase for this file."
         } catch {
             transferError = "That file doesn't look like a Keyholdr vault export."
+        }
+    }
+
+    private func installCLI() {
+        guard !cliInstalled else {
+            cliInstallResult = "Already installed at\n~/.local/bin/keyholdr"
+            return
+        }
+        switch CLIInstaller.install() {
+        case .alreadyInstalled:
+            cliInstalled = true
+            cliInstallResult = "Already installed at\n~/.local/bin/keyholdr"
+        case .installed(let patched):
+            cliInstalled = true
+            if patched {
+                cliInstallResult = "Installed ✓\n~/.local/bin added to PATH.\nRestart Terminal to pick it up."
+            } else {
+                cliInstallResult = "Installed ✓\n~/.local/bin/keyholdr\nMake sure ~/.local/bin is in your PATH."
+            }
+        case .failed(let reason):
+            cliInstallResult = "Install failed:\n\(reason)"
         }
     }
 
