@@ -22,11 +22,8 @@
         <string>/.bashrc</string>
     </array>
 
-    <!-- Keychain access group so SecItem calls work in the sandbox.
-         The group must match the bundle ID prefix + ".keychain". -->
-    <key>keychain-access-groups</key>
-    <array>
-        <string>$(AppIdentifierPrefix)com.olixstudios.Keyholdr</string>
-    </array>
+    <!-- Keychain items are accessed by kSecAttrService (not by group), so
+         no explicit keychain-access-groups entitlement is needed. The sandbox
+         grants the app implicit read/write access to its own Keychain items. -->
 </dict>
 </plist>

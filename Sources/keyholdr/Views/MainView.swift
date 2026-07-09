@@ -30,11 +30,22 @@ struct MainView: View {
     @State private var cliInstalled = CLIInstaller.isInstalled
     @State private var cliInstallResult: String? = nil
 
+    @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
+    @AppStorage("hasDismissedCLIBanner") private var hasDismissedCLIBanner = false
+
     var body: some View {
         ZStack {
             KHTheme.paper.ignoresSafeArea()
 
-            if showingAddSheet {
+            if !hasSeenOnboarding {
+                OnboardingView {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
+                        hasSeenOnboarding = true
+                        showingAddSheet = true
+                    }
+                }
+                .transition(.opacity)
+            } else if showingAddSheet {
                 AddKeyView(
                     existingKeys: keys,
                     onSave: { newItem, secret in
@@ -196,15 +207,26 @@ struct MainView: View {
                                         showingAddSheet = true
                                     }
                                 }) {
-                                    Text("Add your first key")
-                                        .font(.system(size: 12, weight: .medium))
-                                        .foregroundColor(KHTheme.paper)
-                                        .padding(.horizontal, 16)
-                                        .padding(.vertical, 8)
-                                        .background(KHTheme.ink)
-                                        .clipShape(Capsule())
+                                    HStack(spacing: 6) {
+                                        Text("Add your first key")
+                                            .font(.system(size: 12, weight: .medium))
+                                        Text("⌘N")
+                                            .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                            .opacity(0.6)
+                                    }
+                                    .foregroundColor(KHTheme.paper)
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 8)
+                                    .background(KHTheme.ink)
+                                    .clipShape(Capsule())
                                 }
                                 .buttonStyle(.plain)
+
+                                Text("First copy requires Touch ID — choose Always Allow on the Keychain prompt.")
+                                    .font(.system(size: 10))
+                                    .foregroundColor(KHTheme.ink40)
+                                    .multilineTextAlignment(.center)
+                                    .frame(maxWidth: 220)
                             }
                             Spacer()
                         }
@@ -229,6 +251,40 @@ struct MainView: View {
                             .padding(.vertical, 6)
                         }
                         .frame(maxHeight: .infinity)
+                    }
+
+                    // CLI install banner — shown once to users without the CLI
+                    if !cliInstalled && !hasDismissedCLIBanner {
+                        HStack(spacing: 8) {
+                            Image(systemName: "terminal")
+                                .font(.system(size: 10, weight: .medium))
+                                .foregroundColor(KHTheme.ink40)
+                            Text("Want Keyholdr in your terminal?")
+                                .font(.khMonoLabel)
+                                .tracking(0.3)
+                                .foregroundColor(KHTheme.ink60)
+                            Spacer()
+                            Button(action: installCLI) {
+                                Text("INSTALL CLI")
+                                    .font(.khMonoLabel)
+                                    .tracking(0.5)
+                                    .foregroundColor(KHTheme.ink)
+                            }
+                            .buttonStyle(.plain)
+                            Button(action: { hasDismissedCLIBanner = true }) {
+                                Image(systemName: "xmark")
+                                    .font(.system(size: 9, weight: .medium))
+                                    .foregroundColor(KHTheme.ink40)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(KHTheme.paperSoft)
+                        .overlay(alignment: .top) {
+                            Rectangle().fill(KHTheme.ink06).frame(height: 1)
+                        }
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
 
                     // Footer
@@ -540,6 +596,7 @@ struct MainView: View {
             cliInstallResult = "Already installed at\n~/.local/bin/keyholdr"
         case .installed(let patched):
             cliInstalled = true
+            hasDismissedCLIBanner = true
             if patched {
                 cliInstallResult = "Installed ✓\n~/.local/bin added to PATH.\nRestart Terminal to pick it up."
             } else {

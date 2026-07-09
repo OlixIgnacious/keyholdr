@@ -51,13 +51,16 @@ EOF
 
 echo "🔏 Signing with sandbox entitlements..."
 ENTITLEMENTS="Sources/keyholdr/Keyholdr.entitlements"
+# Use the installed Developer ID cert if available, otherwise ad-hoc (no sandbox for local dev).
+IDENTITY="${SIGNING_IDENTITY:-$(security find-identity -v -p codesigning 2>/dev/null | grep 'Developer ID Application' | head -1 | awk -F'"' '{print $2}')}"
+IDENTITY="${IDENTITY:--}"
 codesign --force --options runtime --timestamp \
     --entitlements "$ENTITLEMENTS" \
-    --sign "${SIGNING_IDENTITY:-"-"}" \
+    --sign "$IDENTITY" \
     "$APP_DIR/Contents/MacOS/keyholdr-cli"
 codesign --force --options runtime --timestamp \
     --entitlements "$ENTITLEMENTS" \
-    --sign "${SIGNING_IDENTITY:-"-"}" \
+    --sign "$IDENTITY" \
     "$APP_DIR"
 
 # CI mode: produce the bundle and stop, don't touch running processes
