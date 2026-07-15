@@ -19,6 +19,14 @@ All notable changes to Keyholdr are documented here. Format follows
 - "How Keyholdr Works…" and "Visit Website…" entries in the "⋯" menu, so
   onboarding is revisitable and the site is reachable from the app.
 
+### Fixed
+- One-time cleanup on launch that unregisters any login item silently
+  created by pre-1.6.0(9) builds. SMAppService registrations are keyed to
+  the bundle identifier, not the build, so upgrading alone didn't clear a
+  registration an old build had already made without consent — this was
+  why App Review continued to flag 2.4.5(iii) even after autostart became
+  opt-in.
+
 ## [1.6.0] - 2026-07-09
 
 ### Added
