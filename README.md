@@ -52,6 +52,7 @@ clipboard, and everything locks itself again.
 - **Moves when you do** — export the vault to a single passphrase-encrypted file (PBKDF2 + AES-GCM) and import it on the new machine.
 - **Terminal native** — `keyholdr get aws` prints a secret after Touch ID; `keyholdr run` injects keys as env vars so they never touch your dotfiles.
 - **Rotation nudges** — a quiet `11MO · ROTATE?` hint appears on keys whose secret hasn't changed in six months.
+- **Onboarding, on demand** — revisit the first-launch tour any time from the `⋯` menu ("How Keyholdr Works…"), which also links out to the website.
 
 ## How secrets are stored
 
@@ -179,7 +180,8 @@ keyholdr/
 │   ├── Models/                 login item, global hotkey
 │   └── Views/                  popover UI, monochrome theme
 ├── Sources/keyholdr-cli/    terminal companion — list, get, run
-└── build.sh                  macOS build + bundle script
+├── build.sh                  macOS build + bundle script (direct distribution)
+└── build-mas.sh               Mac App Store build + signed installer .pkg
 ```
 
 The Windows app (C# 12, WPF, .NET 8) and the marketing site each live in
