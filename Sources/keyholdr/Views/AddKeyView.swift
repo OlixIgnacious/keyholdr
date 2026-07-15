@@ -55,7 +55,7 @@ struct AddKeyView: View {
             // Input Fields
             VStack(spacing: 14) {
                 field(label: "PLATFORM") {
-                    TextField("e.g. GitHub, OpenAI, AWS", text: $platform)
+                    TextField("e.g. GitHub, AWS, Stripe", text: $platform)
                         .textFieldStyle(.plain)
                         .font(.system(size: 13))
                         .textContentType(.none)

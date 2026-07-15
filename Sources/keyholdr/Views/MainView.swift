@@ -29,6 +29,10 @@ struct MainView: View {
     @State private var launchAtLogin = LaunchAtLogin.isEnabled
 
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
+    @State private var showingHelp = false
+
+    @Environment(\.openURL) private var openURL
+    private static let websiteURL = URL(string: "https://olixignacious.github.io/keyholdr-site/")!
 
     #if !MAS_BUILD
     @State private var cliInstalled = CLIInstaller.isInstalled
@@ -47,6 +51,17 @@ struct MainView: View {
                         showingAddSheet = true
                     }
                 }
+                .transition(.opacity)
+            } else if showingHelp {
+                OnboardingView(
+                    onDismiss: {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
+                            showingHelp = false
+                        }
+                    },
+                    ctaTitle: "Got it",
+                    ctaShortcut: nil
+                )
                 .transition(.opacity)
             } else if showingAddSheet {
                 AddKeyView(
@@ -149,6 +164,15 @@ struct MainView: View {
                         .help("Add new key (⌘N)")
 
                         Menu {
+                            Button("How Keyholdr Works…") {
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
+                                    showingHelp = true
+                                }
+                            }
+                            Button("Visit Website…") {
+                                openURL(Self.websiteURL)
+                            }
+                            Divider()
                             Button("Export Vault…") { beginExport() }
                                 .disabled(keys.isEmpty)
                             Button("Import Vault…") { beginImport() }
@@ -375,7 +399,7 @@ struct MainView: View {
                     .transition(.opacity)
             }
         }
-        .frame(width: 360, height: 440)
+        .frame(width: 360, height: 480)
         .onAppear {
             loadKeysData()
             installKeyMonitor()

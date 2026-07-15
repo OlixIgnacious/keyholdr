@@ -2,6 +2,8 @@ import SwiftUI
 
 struct OnboardingView: View {
     let onDismiss: () -> Void
+    var ctaTitle: String = "Add your first key"
+    var ctaShortcut: String? = "⌘N"
 
     var body: some View {
         ZStack {
@@ -12,9 +14,9 @@ struct OnboardingView: View {
 
                 // Logo mark
                 Image(systemName: "key.fill")
-                    .font(.system(size: 32, weight: .light))
+                    .font(.system(size: 26, weight: .light))
                     .foregroundColor(KHTheme.ink)
-                    .padding(.bottom, 16)
+                    .padding(.bottom, 10)
 
                 Text("Keyholdr")
                     .font(.system(size: 18, weight: .semibold))
@@ -24,7 +26,7 @@ struct OnboardingView: View {
                     .font(.system(size: 12))
                     .foregroundColor(KHTheme.ink40)
                     .padding(.top, 3)
-                    .padding(.bottom, 28)
+                    .padding(.bottom, 18)
 
                 // Three key facts
                 VStack(spacing: 0) {
@@ -45,6 +47,12 @@ struct OnboardingView: View {
                         title: "Strictly local",
                         detail: "No servers, no sync, no analytics. Your keys never leave your Keychain."
                     )
+                    Divider().background(KHTheme.ink06)
+                    OnboardingRow(
+                        icon: "power",
+                        title: "Off at login by default",
+                        detail: "Flip the AUTOSTART toggle in the footer if you want Keyholdr to survive reboots."
+                    )
                 }
                 .background(KHTheme.field)
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
@@ -59,11 +67,13 @@ struct OnboardingView: View {
                 // CTA
                 Button(action: onDismiss) {
                     HStack(spacing: 6) {
-                        Text("Add your first key")
+                        Text(ctaTitle)
                             .font(.system(size: 13, weight: .medium))
-                        Text("⌘N")
-                            .font(.system(size: 11, weight: .medium, design: .monospaced))
-                            .opacity(0.6)
+                        if let ctaShortcut {
+                            Text(ctaShortcut)
+                                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                .opacity(0.6)
+                        }
                     }
                     .foregroundColor(KHTheme.paper)
                     .frame(maxWidth: .infinity)
@@ -103,6 +113,6 @@ private struct OnboardingRow: View {
             }
         }
         .padding(.horizontal, 14)
-        .padding(.vertical, 12)
+        .padding(.vertical, 9)
     }
 }

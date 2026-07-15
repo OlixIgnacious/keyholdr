@@ -5,6 +5,20 @@ All notable changes to Keyholdr are documented here. Format follows
 
 ## [Unreleased]
 
+### Changed
+- **Autostart is now opt-in** — the app no longer registers itself as a login
+  item on first launch. Use the AUTOSTART toggle in the footer (called out in
+  onboarding) to enable it. Fixes an App Review rejection under Mac App Store
+  guideline 2.4.5(iii).
+- Replaced OpenAI/ChatGPT example text in the Add Key placeholder and docs
+  with neutral examples (AWS, Stripe).
+- Onboarding popover resized and re-spaced to fit its new fourth fact about
+  autostart being off by default.
+
+### Added
+- "How Keyholdr Works…" and "Visit Website…" entries in the "⋯" menu, so
+  onboarding is revisitable and the site is reachable from the app.
+
 ## [1.6.0] - 2026-07-09
 
 ### Added

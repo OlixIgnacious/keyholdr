@@ -43,14 +43,14 @@ letters, hit copy — Touch ID verifies it's you, the secret lands on your
 clipboard, and everything locks itself again.
 
 - **Out of sight, never out of reach** — no dock icon, no window. A key icon in the menu bar, summoned with a click or `⌃⌥⌘K` from anywhere.
-- **Survives reboots** — starts at login, with a one-click toggle to opt out.
+- **Survives reboots** — one-click AUTOSTART toggle to start at login, opt-in.
 - **Hardware-backed, nothing in cleartext** — secrets live in the macOS Keychain, never on disk.
 - **Biometric gate** — every copy and reveal requires Touch ID or Apple Watch.
 - **Auto-lock** — click away and the popover vanishes and locks. Nothing lingers.
 - **Featherweight** — pure SwiftUI. **~700 KB**.
 - **Strictly local** — no servers, no sync, no analytics, no network calls. Ever.
 - **Moves when you do** — export the vault to a single passphrase-encrypted file (PBKDF2 + AES-GCM) and import it on the new machine.
-- **Terminal native** — `keyholdr get openai` prints a secret after Touch ID; `keyholdr run` injects keys as env vars so they never touch your dotfiles.
+- **Terminal native** — `keyholdr get aws` prints a secret after Touch ID; `keyholdr run` injects keys as env vars so they never touch your dotfiles.
 - **Rotation nudges** — a quiet `11MO · ROTATE?` hint appears on keys whose secret hasn't changed in six months.
 
 ## How secrets are stored
@@ -123,15 +123,15 @@ ln -s /Applications/Keyholdr.app/Contents/MacOS/keyholdr-cli /usr/local/bin/keyh
 ```bash
 keyholdr                                         # interactive: type to filter, ↑↓, ⇥/space to mark, ⏎ copies
 keyholdr list                                    # every key, with age — never the secrets
-keyholdr get openai                              # Touch ID → secret on stdout
+keyholdr get aws                                 # Touch ID → secret on stdout
 keyholdr get github --label work --copy          # to the clipboard instead
-keyholdr run -e OPENAI_API_KEY=openai -- npm start   # inject as env vars, nothing on stdout
+keyholdr run -e AWS_ACCESS_KEY_ID=aws -- npm start   # inject as env vars, nothing on stdout
 keyholdr run -- npm start                        # multi-select, conventional names guessed
 eval "$(keyholdr env)"                           # multi-select, export lines for your shell
-eval "$(keyholdr env openai github/work)"        # or name the keys directly
+eval "$(keyholdr env aws github/work)"           # or name the keys directly
 keyholdr env --names                             # dry run: names only, no Touch ID
 keyholdr add github --label work --tags dev,ci   # secret via hidden prompt — never argv
-pbpaste | keyholdr add openai                    # or piped straight from the clipboard
+pbpaste | keyholdr add aws                       # or piped straight from the clipboard
 keyholdr rm github --label work                  # confirms first; --force for scripts
 keyholdr rm                                      # multi-select: ⇥/space to mark, ⏎ deletes
 ```

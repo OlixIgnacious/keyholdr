@@ -54,7 +54,7 @@ Keychain or prompting for Touch ID.
 keyholdr list
 # PLATFORM   LABEL     TAGS      AGE
 # github     work      dev,ci    14d
-# openai     default             3mo ⚠
+# aws        default             3mo ⚠
 ```
 
 A `⚠` next to the age means the key is old enough that Keyholdr suggests
@@ -65,11 +65,11 @@ rotating it.
 ### `keyholdr get <platform>`
 
 Resolves `<platform>` (case-insensitive, substring match — `keyholdr get
-open` finds `openai`), prompts for Touch ID, then prints the secret to
+git` finds `github`), prompts for Touch ID, then prints the secret to
 stdout.
 
 ```bash
-keyholdr get openai                    # prints to stdout
+keyholdr get aws                       # prints to stdout
 keyholdr get github --label work       # disambiguate when one platform
                                         # has multiple keys
 keyholdr get github --label work --copy  # clipboard instead of stdout
@@ -90,7 +90,7 @@ process only — they never touch stdout, files, or shell history.
 **Explicit mappings**, one or more `-e ENV_VAR=platform[/label]`:
 
 ```bash
-keyholdr run -e OPENAI_API_KEY=openai -e GITHUB_TOKEN=github/work -- npm start
+keyholdr run -e AWS_ACCESS_KEY_ID=aws -e GITHUB_TOKEN=github/work -- npm start
 ```
 
 **Multi-select**, with no `-e` flags, in an interactive terminal:
@@ -101,7 +101,7 @@ keyholdr run -- npm start
 
 This opens the multi-select picker (**⇥** or **space** to mark, **⏎** to
 confirm) and derives conventional env var names automatically — e.g.
-`GITHUB_TOKEN`, `OPENAI_API_KEY` (see [naming conventions](#env-var-naming)
+`GITHUB_TOKEN`, `AWS_ACCESS_KEY_ID` (see [naming conventions](#env-var-naming)
 below).
 
 ---
@@ -114,8 +114,8 @@ in files or history.
 
 ```bash
 eval "$(keyholdr env)"                  # multi-select picker
-eval "$(keyholdr env openai github/work)"   # name keys directly
-eval "$(keyholdr env --dotenv openai)"  # .env-style NAME=value
+eval "$(keyholdr env aws github/work)"  # name keys directly
+eval "$(keyholdr env --dotenv aws)"     # .env-style NAME=value
 keyholdr env --names                    # dry run: shows the name mapping
                                          # only, no Touch ID, nothing exported
 ```
@@ -134,7 +134,7 @@ every process via `ps`) — it's read from a hidden prompt, or piped on stdin.
 
 ```bash
 keyholdr add github --label work --tags dev,ci   # hidden prompt
-pbpaste | keyholdr add openai                    # piped from the clipboard
+pbpaste | keyholdr add aws                       # piped from the clipboard
 ```
 
 `--label` defaults to `default`. An identical platform + label pair is
