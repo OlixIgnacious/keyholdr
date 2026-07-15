@@ -15,7 +15,7 @@ set -e
 # CFBundleVersion in build.sh — App Store Connect needs a new BUILD for
 # every resubmission.
 VERSION="1.6.0"
-BUILD="8"
+BUILD="9"
 
 echo "🚀 Building Keyholdr (MAS) in release mode..."
 swift build -c release -Xswiftc -DMAS_BUILD
@@ -79,6 +79,12 @@ if [[ ! -f "$PROFILE" ]]; then
     exit 1
 fi
 cp "$PROFILE" "$APP_DIR/Contents/embedded.provisionprofile"
+
+# Files copied in from outside the build tree (the provisioning profile,
+# downloaded via a browser) can carry com.apple.quarantine, which App Store
+# Connect rejects with ITMS-91109. Strip all extended attributes before signing.
+echo "🧹 Clearing extended attributes..."
+xattr -cr "$APP_DIR"
 
 echo "🔏 Signing with MAS entitlements..."
 APP_IDENTITY="${MAS_APP_SIGNING_IDENTITY:-$(security find-identity -v -p codesigning 2>/dev/null | grep 'Apple Distribution' | head -1 | awk -F'"' '{print $2}')}"
