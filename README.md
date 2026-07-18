@@ -7,7 +7,7 @@
 A native menu bar vault for API keys.<br>
 Hardware-backed storage. Biometric unlock. Zero Electron.
 
-[**Website**](https://olixignacious.github.io/keyholdr-site/) · [**Download**](https://github.com/OlixIgnacious/keyholdr/releases/latest) · [**Build from source**](#build-from-source)
+[**Website**](https://olixignacious.github.io/keyholdr-site/) · [**Mac App Store**](https://apps.apple.com/in/app/keyholdr/id6789253781?mt=12) · [**Direct download**](https://github.com/OlixIgnacious/keyholdr/releases/latest) · [**Build from source**](#build-from-source)
 
 [![Release](https://img.shields.io/github/v/release/OlixIgnacious/keyholdr?style=flat-square&color=121212&labelColor=121212)](https://github.com/OlixIgnacious/keyholdr/releases/latest)
 [![macOS](https://img.shields.io/badge/macOS-Swift%206%20·%20SwiftUI-121212?style=flat-square&logo=apple&logoColor=white)](https://github.com/OlixIgnacious/keyholdr/releases/latest)
@@ -84,12 +84,18 @@ the roadmap.)*
 
 ## Install
 
-### Option A — Homebrew (recommended)
+### Option A — Mac App Store
+
+[Download Keyholdr](https://apps.apple.com/in/app/keyholdr/id6789253781?mt=12).
+Sandboxed, so the CLI needs a manual one-time link (see
+[Terminal companion](#terminal-companion) below) instead of the in-app installer.
+
+### Option B — Homebrew
 
 1. `brew install --cask olixignacious/tap/keyholdr`
 2. Open **Keyholdr** from Spotlight or `/Applications` — it's signed and notarized, so it opens without any Gatekeeper prompt.
 
-### Option B — Manual download
+### Option C — Manual download
 
 1. Grab `Keyholdr-macOS-*.zip` from the [latest release](https://github.com/OlixIgnacious/keyholdr/releases/latest).
 2. Unzip and move `Keyholdr.app` to `/Applications`.
@@ -114,12 +120,22 @@ the roadmap.)*
 
 ## Terminal companion
 
-The app bundles a CLI. Homebrew links it onto your PATH automatically; for
-direct downloads, link it once:
+The app bundles a CLI. Homebrew links it onto your PATH automatically; for a
+direct download, link it once:
 
 ```bash
-ln -s /Applications/Keyholdr.app/Contents/MacOS/keyholdr-cli /usr/local/bin/keyholdr
+mkdir -p ~/.local/bin
+ln -sf /Applications/Keyholdr.app/Contents/MacOS/keyholdr-cli ~/.local/bin/keyholdr
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
 ```
+
+(`/usr/local/bin` isn't user-writable by default on modern macOS, hence
+`~/.local/bin` — the in-app **CLI** footer button does this same thing
+automatically on a direct-download install.)
+
+**Mac App Store build:** sandboxing means there's no in-app installer at all.
+Run the same three commands above, or open the app and go to **⋯ menu →
+Terminal Setup…** for a ready-to-paste copy of them.
 
 ```bash
 keyholdr                                         # interactive: type to filter, ↑↓, ⇥/space to mark, ⏎ copies
