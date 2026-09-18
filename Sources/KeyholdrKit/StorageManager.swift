@@ -1,7 +1,7 @@
 import Foundation
 
 public struct StorageManager {
-    private static var directoryURL: URL {
+    static var directoryURL: URL {
         let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
         let appSupportDir = paths[0]
         return appSupportDir.appendingPathComponent("com.olixstudios.Keyholdr", isDirectory: true)

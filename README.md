@@ -28,6 +28,7 @@ Hardware-backed storage. Biometric unlock. Zero Electron.
 
 - [Features](#features)
 - [How secrets are stored](#how-secrets-are-stored)
+- [Scratch notes](#scratch-notes-in-development)
 - [Install](#install)
 - [Terminal companion](#terminal-companion)
 - [Build from source](#build-from-source)
@@ -53,6 +54,7 @@ clipboard, and everything locks itself again.
 - **Terminal native** — `keyholdr get aws` prints a secret after Touch ID; `keyholdr run` injects keys as env vars so they never touch your dotfiles.
 - **Rotation nudges** — a quiet `11MO · ROTATE?` hint appears on keys whose secret hasn't changed in six months.
 - **Onboarding, on demand** — revisit the first-launch tour any time from the `⋯` menu ("How Keyholdr Works…"), which also links out to the website.
+- **Scratch notes** *(in development)* — a **Notes** tab next to **Keys** for jotting or pasting throwaway text without opening Notes.app. Autosaves, plain text, one click to copy. See [Scratch notes](#scratch-notes-in-development).
 
 ## How secrets are stored
 
@@ -81,6 +83,29 @@ into a Keychain item. If `keys.json` is ever deleted or corrupted, the app
 silently restores it from the mirror — and since secrets already live in the
 Keychain, deleting the app or its files loses nothing. *(Windows parity is on
 the roadmap.)*
+
+## Scratch notes (in development)
+
+A **KEYS | NOTES** switcher at the top of the popover flips between the vault
+and a scrap pad for the text you'd otherwise open Notes.app for: a command to
+re-run, a link to paste later, a half-formed thought.
+
+- **Fast** — `⌘N` on the Notes tab starts a new note; type or paste, and it
+  autosaves as you go (also when the popover closes mid-sentence). No save
+  button, no Touch ID.
+- **Searchable** — filter the list by title or body; one click on `COPY`
+  puts the whole note on the clipboard.
+- **Empty notes discard themselves** — back out of a blank note and it's gone.
+
+**Notes are plain text and are not encrypted.** Unlike keys, they live in a
+regular file and are *not* protected by the Keychain or Touch ID, so keep
+secrets in **Keys**. Notes are also not included in vault export/import.
+
+| | |
+|---|---|
+| **Storage** | `~/Library/Application Support/com.olixstudios.Keyholdr/notes.json` |
+| **Encryption** | None — plain JSON, readable by any process running as you |
+| **Vault export** | Not included |
 
 ## Install
 
@@ -114,8 +139,8 @@ Sandboxed, so the CLI needs a manual one-time link (see
 | Keys | Action |
 |---|---|
 | `⌃⌥⌘K` | Summon or dismiss Keyholdr — works system-wide |
-| `⌘N` | Add a new key |
-| `Esc` | Dismiss the add/edit form |
+| `⌘N` | Add a new key (a new note, on the Notes tab — *in development*) |
+| `Esc` | Dismiss the add/edit form (or leave the note editor) |
 | just type | Search is focused by default |
 
 ## Terminal companion
@@ -190,7 +215,7 @@ verified on real hardware.
 
 ```text
 keyholdr/
-├── Sources/KeyholdrKit/     shared core — model, Keychain, storage, vault export
+├── Sources/KeyholdrKit/     shared core — model, Keychain, storage, vault export, notes
 ├── Sources/keyholdr/        macOS app — Swift 6, SwiftUI
 │   ├── KeyholdrApp.swift      MenuBarExtra entry point
 │   ├── Models/                 login item, global hotkey
