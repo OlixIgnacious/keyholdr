@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(expect /tmp/test_picker.exp)",
+      "Bash(echo \"exit=$?\")"
+    ]
+  }
+}

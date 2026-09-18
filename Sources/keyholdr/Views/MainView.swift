@@ -34,6 +34,10 @@ struct MainView: View {
     @Environment(\.openURL) private var openURL
     private static let websiteURL = URL(string: "https://olixignacious.github.io/keyholdr-site/")!
 
+    #if MAS_BUILD
+    @State private var showingTerminalSetup = false
+    #endif
+
     #if !MAS_BUILD
     @State private var cliInstalled = CLIInstaller.isInstalled
     @State private var cliInstallResult: String? = nil
@@ -172,6 +176,11 @@ struct MainView: View {
                             Button("Visit Website…") {
                                 openURL(Self.websiteURL)
                             }
+                            #if MAS_BUILD
+                            Button("Terminal Setup…") {
+                                showingTerminalSetup = true
+                            }
+                            #endif
                             Divider()
                             Button("Export Vault…") { beginExport() }
                                 .disabled(keys.isEmpty)
@@ -192,6 +201,11 @@ struct MainView: View {
                         .menuIndicator(.hidden)
                         .frame(width: 30, height: 30)
                         .help("Export or import the vault")
+                        #if MAS_BUILD
+                        .popover(isPresented: $showingTerminalSetup) {
+                            TerminalSetupView()
+                        }
+                        #endif
                     }
                     .padding(.horizontal, 14)
                     .padding(.top, 14)
