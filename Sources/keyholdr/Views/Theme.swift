@@ -28,6 +28,12 @@ enum KHTheme {
         dark: NSColor(srgbRed: 1, green: 1, blue: 1, alpha: 0.06)
     )
 
+    /// Raised pill behind the selected segment of the KEYS | NOTES switcher.
+    static let segment = dynamicColor(
+        light: NSColor(srgbRed: 1, green: 1, blue: 1, alpha: 0.9),
+        dark: NSColor(srgbRed: 1, green: 1, blue: 1, alpha: 0.17)
+    )
+
     static let ink60 = ink.opacity(0.6)
     static let ink40 = ink.opacity(0.4)
     static let ink12 = ink.opacity(0.12)
@@ -45,4 +51,20 @@ extension Font {
     static let khMonoLabel = Font.system(size: 10, weight: .medium, design: .monospaced)
     /// Monospaced secondary line under each platform name.
     static let khMonoSub = Font.system(size: 11, design: .monospaced)
+}
+
+extension View {
+    /// A raised control surface: Liquid Glass on macOS 26+, and the flat
+    /// `field` fill with a hairline stroke everywhere else — which is exactly
+    /// how these controls looked before glass, so older systems are unchanged.
+    @ViewBuilder
+    func khGlass<S: InsettableShape>(_ shape: S, interactive: Bool = false) -> some View {
+        if #available(macOS 26, *) {
+            self.glassEffect(interactive ? .regular.interactive() : .regular, in: shape)
+        } else {
+            self
+                .background(KHTheme.field, in: shape)
+                .overlay(shape.strokeBorder(KHTheme.ink12, lineWidth: 1).allowsHitTesting(false))
+        }
+    }
 }

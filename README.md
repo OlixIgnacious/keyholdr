@@ -28,7 +28,7 @@ Hardware-backed storage. Biometric unlock. Zero Electron.
 
 - [Features](#features)
 - [How secrets are stored](#how-secrets-are-stored)
-- [Scratch notes](#scratch-notes-in-development)
+- [Scratch notes](#scratch-notes)
 - [Install](#install)
 - [Terminal companion](#terminal-companion)
 - [Build from source](#build-from-source)
@@ -54,7 +54,8 @@ clipboard, and everything locks itself again.
 - **Terminal native** — `keyholdr get aws` prints a secret after Touch ID; `keyholdr run` injects keys as env vars so they never touch your dotfiles.
 - **Rotation nudges** — a quiet `11MO · ROTATE?` hint appears on keys whose secret hasn't changed in six months.
 - **Onboarding, on demand** — revisit the first-launch tour any time from the `⋯` menu ("How Keyholdr Works…"), which also links out to the website.
-- **Scratch notes** *(in development)* — a **Notes** tab next to **Keys** for jotting or pasting throwaway text without opening Notes.app. Autosaves, plain text, one click to copy. See [Scratch notes](#scratch-notes-in-development).
+- **Scratch notes** — a **Notes** tab next to **Keys** for jotting or pasting throwaway text without opening Notes.app. Autosaves, plain text, one click to copy. See [Scratch notes](#scratch-notes).
+- **Liquid Glass on macOS 26** — the switcher, search fields and buttons use the system glass material on macOS 26 and later, and the flat paper look on older releases.
 
 ## How secrets are stored
 
@@ -84,7 +85,7 @@ silently restores it from the mirror — and since secrets already live in the
 Keychain, deleting the app or its files loses nothing. *(Windows parity is on
 the roadmap.)*
 
-## Scratch notes (in development)
+## Scratch notes
 
 A **KEYS | NOTES** switcher at the top of the popover flips between the vault
 and a scrap pad for the text you'd otherwise open Notes.app for: a command to
@@ -139,7 +140,7 @@ Sandboxed, so the CLI needs a manual one-time link (see
 | Keys | Action |
 |---|---|
 | `⌃⌥⌘K` | Summon or dismiss Keyholdr — works system-wide |
-| `⌘N` | Add a new key (a new note, on the Notes tab — *in development*) |
+| `⌘N` | Add a new key (a new note, on the Notes tab) |
 | `Esc` | Dismiss the add/edit form (or leave the note editor) |
 | just type | Search is focused by default |
 

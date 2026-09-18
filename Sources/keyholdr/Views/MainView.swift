@@ -7,6 +7,10 @@ struct MainView: View {
     @ObservedObject var securityManager: SecurityManager
     @State private var keys: [KeyItem] = []
 
+    // Scratch notes live beside the vault, behind a KEYS | NOTES switcher.
+    @StateObject private var notesStore = NotesStore()
+    @AppStorage("selectedTab") private var selectedTab: VaultTab = .keys
+
     @State private var searchText = ""
     @State private var selectedTag: String? = nil
 
@@ -118,185 +122,23 @@ struct MainView: View {
                     onCancel: { closeTransfer() }
                 )
                 .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .trailing)))
+            } else if let noteID = notesStore.editingID {
+                NoteEditorView(store: notesStore, noteID: noteID)
+                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .trailing)))
             } else {
                 // Primary Key List Interface
                 VStack(spacing: 0) {
-                    // Search + Add
-                    HStack(spacing: 8) {
-                        HStack(spacing: 7) {
-                            Image(systemName: "magnifyingglass")
-                                .font(.system(size: 11, weight: .medium))
-                                .foregroundColor(KHTheme.ink40)
+                    tabSwitcher
 
-                            TextField("Search keys…", text: $searchText)
-                                .textFieldStyle(.plain)
-                                .font(.system(size: 13))
-                                .foregroundColor(KHTheme.ink)
-
-                            if !searchText.isEmpty {
-                                Button(action: { searchText = "" }) {
-                                    Image(systemName: "xmark.circle.fill")
-                                        .font(.system(size: 11))
-                                        .foregroundColor(KHTheme.ink40)
-                                }
-                                .buttonStyle(.plain)
-                            }
-                        }
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 8)
-                        .background(KHTheme.field)
-                        .clipShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 9, style: .continuous)
-                                .strokeBorder(KHTheme.ink12, lineWidth: 1)
-                        )
-
-                        Button(action: {
-                            withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
-                                showingAddSheet = true
-                            }
-                        }) {
-                            Image(systemName: "plus")
-                                .font(.system(size: 12, weight: .medium))
-                                .foregroundColor(KHTheme.paper)
-                                .frame(width: 30, height: 30)
-                                .background(KHTheme.ink)
-                                .clipShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
-                        }
-                        .buttonStyle(.plain)
-                        .keyboardShortcut("n", modifiers: .command)
-                        .help("Add new key (⌘N)")
-
-                        Menu {
-                            Button("How Keyholdr Works…") {
-                                withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
-                                    showingHelp = true
-                                }
-                            }
-                            Button("Visit Website…") {
-                                openURL(Self.websiteURL)
-                            }
-                            #if MAS_BUILD
-                            Button("Terminal Setup…") {
-                                showingTerminalSetup = true
-                            }
-                            #endif
-                            Divider()
-                            Button("Export Vault…") { beginExport() }
-                                .disabled(keys.isEmpty)
-                            Button("Import Vault…") { beginImport() }
-                        } label: {
-                            Image(systemName: "ellipsis")
-                                .font(.system(size: 12, weight: .medium))
-                                .foregroundColor(KHTheme.ink60)
-                                .frame(width: 30, height: 30)
-                                .background(KHTheme.field)
-                                .clipShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 9, style: .continuous)
-                                        .strokeBorder(KHTheme.ink12, lineWidth: 1)
-                                )
-                        }
-                        .menuStyle(.borderlessButton)
-                        .menuIndicator(.hidden)
-                        .frame(width: 30, height: 30)
-                        .help("Export or import the vault")
-                        #if MAS_BUILD
-                        .popover(isPresented: $showingTerminalSetup) {
-                            TerminalSetupView()
-                        }
-                        #endif
-                    }
-                    .padding(.horizontal, 14)
-                    .padding(.top, 14)
-                    .padding(.bottom, 10)
-
-                    // Tag filter pills
-                    if !allTags.isEmpty {
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 5) {
-                                TagPill(title: "ALL", isSelected: selectedTag == nil) {
-                                    withAnimation(.easeOut(duration: 0.2)) { selectedTag = nil }
-                                }
-
-                                ForEach(allTags, id: \.self) { tag in
-                                    TagPill(title: tag.uppercased(), isSelected: selectedTag == tag) {
-                                        withAnimation(.easeOut(duration: 0.2)) { selectedTag = tag }
-                                    }
-                                }
-                            }
-                            .padding(.horizontal, 14)
-                        }
-                        .padding(.bottom, 10)
-                    }
-
-                    // Main Keys List
-                    if filteredKeys.isEmpty {
-                        VStack(spacing: 14) {
-                            Spacer()
-                            Image(systemName: searchText.isEmpty ? "key" : "magnifyingglass")
-                                .font(.system(size: 28, weight: .light))
-                                .foregroundColor(KHTheme.ink40)
-
-                            Text(searchText.isEmpty ? "No keys yet." : "No matching keys.")
-                                .font(.system(size: 13))
-                                .foregroundColor(KHTheme.ink60)
-
-                            if searchText.isEmpty {
-                                Button(action: {
-                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
-                                        showingAddSheet = true
-                                    }
-                                }) {
-                                    HStack(spacing: 6) {
-                                        Text("Add your first key")
-                                            .font(.system(size: 12, weight: .medium))
-                                        Text("⌘N")
-                                            .font(.system(size: 11, weight: .medium, design: .monospaced))
-                                            .opacity(0.6)
-                                    }
-                                    .foregroundColor(KHTheme.paper)
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 8)
-                                    .background(KHTheme.ink)
-                                    .clipShape(Capsule())
-                                }
-                                .buttonStyle(.plain)
-
-                                Text("First copy requires Touch ID — choose Always Allow on the Keychain prompt.")
-                                    .font(.system(size: 10))
-                                    .foregroundColor(KHTheme.ink40)
-                                    .multilineTextAlignment(.center)
-                                    .frame(maxWidth: 220)
-                            }
-                            Spacer()
-                        }
-                        .frame(maxHeight: .infinity)
+                    if selectedTab == .notes {
+                        NotesListView(store: notesStore)
                     } else {
-                        ScrollView {
-                            LazyVStack(spacing: 2) {
-                                ForEach(filteredKeys) { item in
-                                    KeyRowView(
-                                        item: item,
-                                        securityManager: securityManager,
-                                        onEdit: {
-                                            startEditing(item)
-                                        },
-                                        onDelete: {
-                                            itemToDelete = item
-                                        }
-                                    )
-                                }
-                            }
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 6)
-                        }
-                        .frame(maxHeight: .infinity)
+                        keysTab
                     }
 
                     #if !MAS_BUILD
                     // CLI install banner — shown once to users without the CLI
-                    if !cliInstalled && !hasDismissedCLIBanner {
+                    if selectedTab == .keys && !cliInstalled && !hasDismissedCLIBanner {
                         HStack(spacing: 8) {
                             Image(systemName: "terminal")
                                 .font(.system(size: 10, weight: .medium))
@@ -332,7 +174,7 @@ struct MainView: View {
 
                     // Footer
                     HStack {
-                        Text("\(keys.count) \(keys.count == 1 ? "KEY" : "KEYS")")
+                        Text(footerCount)
                             .font(.khMonoLabel)
                             .tracking(0.5)
                             .foregroundColor(KHTheme.ink40)
@@ -387,9 +229,9 @@ struct MainView: View {
                         #endif
 
                         HStack(spacing: 5) {
-                            Image(systemName: "lock")
+                            Image(systemName: selectedTab == .notes ? "lock.open" : "lock")
                                 .font(.system(size: 9, weight: .medium))
-                            Text("LOCKED AT REST")
+                            Text(selectedTab == .notes ? "PLAIN TEXT" : "LOCKED AT REST")
                                 .font(.khMonoLabel)
                                 .tracking(0.5)
                         }
@@ -422,6 +264,201 @@ struct MainView: View {
         }
         .onDisappear {
             removeKeyMonitor()
+            // The popover closing tears this view down; don't lose a pending autosave.
+            notesStore.closeEditor()
+        }
+    }
+
+    private var footerCount: String {
+        switch selectedTab {
+        case .keys: return "\(keys.count) \(keys.count == 1 ? "KEY" : "KEYS")"
+        case .notes: return "\(notesStore.notes.count) \(notesStore.notes.count == 1 ? "NOTE" : "NOTES")"
+        }
+    }
+
+    private var tabSwitcher: some View {
+        HStack(spacing: 2) {
+            TabSegment(title: "KEYS", symbol: "key", count: keys.count, isSelected: selectedTab == .keys) {
+                withAnimation(.easeOut(duration: 0.2)) { selectedTab = .keys }
+            }
+            TabSegment(title: "NOTES", symbol: "note.text", count: notesStore.notes.count, isSelected: selectedTab == .notes) {
+                withAnimation(.easeOut(duration: 0.2)) { selectedTab = .notes }
+            }
+        }
+        .padding(3)
+        .background(KHTheme.field)
+        .clipShape(Capsule())
+        .overlay(Capsule().strokeBorder(KHTheme.ink12, lineWidth: 1).allowsHitTesting(false))
+        .padding(.horizontal, 14)
+        .padding(.top, 14)
+        .padding(.bottom, 10)
+    }
+
+    /// The KEYS tab: search, tag filters and the key list.
+    private var keysTab: some View {
+        VStack(spacing: 0) {
+            // Search + Add
+            HStack(spacing: 8) {
+                HStack(spacing: 7) {
+                    Image(systemName: "magnifyingglass")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(KHTheme.ink40)
+
+                    TextField("Search keys…", text: $searchText)
+                        .textFieldStyle(.plain)
+                        .font(.system(size: 13))
+                        .foregroundColor(KHTheme.ink)
+
+                    if !searchText.isEmpty {
+                        Button(action: { searchText = "" }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.system(size: 11))
+                                .foregroundColor(KHTheme.ink40)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .khGlass(Capsule())
+
+                Button(action: {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
+                        showingAddSheet = true
+                    }
+                }) {
+                    Image(systemName: "plus")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(KHTheme.paper)
+                        .frame(width: 30, height: 30)
+                        .background(KHTheme.ink)
+                        .clipShape(Circle())
+                }
+                .buttonStyle(.plain)
+                .keyboardShortcut("n", modifiers: .command)
+                .help("Add new key (⌘N)")
+
+                Menu {
+                    Button("How Keyholdr Works…") {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
+                            showingHelp = true
+                        }
+                    }
+                    Button("Visit Website…") {
+                        openURL(Self.websiteURL)
+                    }
+                    #if MAS_BUILD
+                    Button("Terminal Setup…") {
+                        showingTerminalSetup = true
+                    }
+                    #endif
+                    Divider()
+                    Button("Export Vault…") { beginExport() }
+                        .disabled(keys.isEmpty)
+                    Button("Import Vault…") { beginImport() }
+                } label: {
+                    Image(systemName: "ellipsis")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(KHTheme.ink60)
+                        .frame(width: 30, height: 30)
+                        .khGlass(Circle(), interactive: true)
+                }
+                .menuStyle(.borderlessButton)
+                .menuIndicator(.hidden)
+                .frame(width: 30, height: 30)
+                .help("Export or import the vault")
+                #if MAS_BUILD
+                .popover(isPresented: $showingTerminalSetup) {
+                    TerminalSetupView()
+                }
+                #endif
+            }
+            .padding(.horizontal, 14)
+            .padding(.top, 14)
+            .padding(.bottom, 10)
+
+            // Tag filter pills
+            if !allTags.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 5) {
+                        TagPill(title: "ALL", isSelected: selectedTag == nil) {
+                            withAnimation(.easeOut(duration: 0.2)) { selectedTag = nil }
+                        }
+
+                        ForEach(allTags, id: \.self) { tag in
+                            TagPill(title: tag.uppercased(), isSelected: selectedTag == tag) {
+                                withAnimation(.easeOut(duration: 0.2)) { selectedTag = tag }
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 14)
+                }
+                .padding(.bottom, 10)
+            }
+
+            // Main Keys List
+            if filteredKeys.isEmpty {
+                VStack(spacing: 14) {
+                    Spacer()
+                    Image(systemName: searchText.isEmpty ? "key" : "magnifyingglass")
+                        .font(.system(size: 28, weight: .light))
+                        .foregroundColor(KHTheme.ink40)
+
+                    Text(searchText.isEmpty ? "No keys yet." : "No matching keys.")
+                        .font(.system(size: 13))
+                        .foregroundColor(KHTheme.ink60)
+
+                    if searchText.isEmpty {
+                        Button(action: {
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
+                                showingAddSheet = true
+                            }
+                        }) {
+                            HStack(spacing: 6) {
+                                Text("Add your first key")
+                                    .font(.system(size: 12, weight: .medium))
+                                Text("⌘N")
+                                    .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                    .opacity(0.6)
+                            }
+                            .foregroundColor(KHTheme.paper)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(KHTheme.ink)
+                            .clipShape(Capsule())
+                        }
+                        .buttonStyle(.plain)
+
+                        Text("First copy requires Touch ID — choose Always Allow on the Keychain prompt.")
+                            .font(.system(size: 10))
+                            .foregroundColor(KHTheme.ink40)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: 220)
+                    }
+                    Spacer()
+                }
+                .frame(maxHeight: .infinity)
+            } else {
+                ScrollView {
+                    LazyVStack(spacing: 2) {
+                        ForEach(filteredKeys) { item in
+                            KeyRowView(
+                                item: item,
+                                securityManager: securityManager,
+                                onEdit: {
+                                    startEditing(item)
+                                },
+                                onDelete: {
+                                    itemToDelete = item
+                                }
+                            )
+                        }
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 6)
+                }
+                .frame(maxHeight: .infinity)
+            }
         }
     }
 
@@ -505,8 +542,25 @@ struct MainView: View {
             return true
         }
 
+        // Escape — leave the note editor
+        if keyCode == 53, notesStore.editingID != nil {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
+                notesStore.closeEditor()
+            }
+            return true
+        }
+
+        // ⌘N — new note on the Notes tab
+        if modifiers == .command, characters == "n", selectedTab == .notes, !isFormOpen, transferMode == nil {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
+                if notesStore.editingID != nil { notesStore.closeEditor() }
+                notesStore.newNote()
+            }
+            return true
+        }
+
         // ⌘N — new key
-        if modifiers == .command, characters == "n", !isFormOpen {
+        if modifiers == .command, characters == "n", selectedTab == .keys, !isFormOpen {
             withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
                 showingAddSheet = true
             }
@@ -700,5 +754,58 @@ struct TagPill: View {
             )
             .contentShape(Capsule())
             .onTapGesture(perform: action)
+    }
+}
+
+enum VaultTab: String {
+    case keys, notes
+}
+
+private struct TabSegment: View {
+    let title: String
+    let symbol: String
+    let count: Int
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            if isSelected {
+                selectedPill
+            } else {
+                content
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+
+    private var content: some View {
+        HStack(spacing: 6) {
+            Image(systemName: symbol)
+                .font(.system(size: 10, weight: .medium))
+            Text(title)
+                .font(.khMonoLabel)
+                .tracking(0.5)
+            Text("\(count)")
+                .font(.khMonoLabel)
+                .foregroundColor(KHTheme.ink40)
+        }
+        .foregroundColor(isSelected ? KHTheme.ink : KHTheme.ink60)
+        .frame(maxWidth: .infinity)
+        .frame(height: 26)
+        .contentShape(Capsule())
+    }
+
+    /// The raised bubble behind the active segment: Liquid Glass on macOS 26+.
+    @ViewBuilder
+    private var selectedPill: some View {
+        if #available(macOS 26, *) {
+            content.glassEffect(.regular, in: Capsule())
+        } else {
+            content
+                .background(KHTheme.segment, in: Capsule())
+                .shadow(color: .black.opacity(0.10), radius: 2, y: 1)
+        }
     }
 }

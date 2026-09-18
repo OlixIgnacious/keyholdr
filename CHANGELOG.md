@@ -16,6 +16,12 @@ All notable changes to Keyholdr are documented here. Format follows
   autostart being off by default.
 
 ### Added
+- **Notes tab** — a `KEYS | NOTES` switcher and quick, autosaving, plain-text
+  scratch notes for text you'd otherwise open Notes.app for. Searchable, one-click
+  copy, empty notes discard themselves. Stored unencrypted in `notes.json`, never
+  in the Keychain, and not part of vault export.
+- Liquid Glass styling for the switcher, search fields and buttons on macOS 26+,
+  with the previous flat look kept on older systems.
 - "How Keyholdr Works…" and "Visit Website…" entries in the "⋯" menu, so
   onboarding is revisitable and the site is reachable from the app.
 
