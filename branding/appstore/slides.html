@@ -203,7 +203,7 @@
     <div class="win" style="left:30px;top:70px;width:470px;height:420px">
       <div class="bar"><i></i><i></i><i></i></div>
 <pre><span class="k3"># .env.local</span>
-<span class="k1">OPENAI_API_KEY</span>=<span class="k2">▮▮▮▮▮▮▮▮▮▮▮▮</span>
+<span class="k1">TWILIO_AUTH_TOKEN</span>=<span class="k2">▮▮▮▮▮▮▮▮▮▮▮▮</span>
 <span class="k1">STRIPE_SECRET</span>=
 <span class="k1">SUPABASE_URL</span>=https://acme.supabase.co
 <span class="k1">GITHUB_TOKEN</span>=
@@ -253,11 +253,11 @@ const I = {
   I.print=`<svg viewBox="0 0 100 100"><path d="${d}" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"/></svg>`;
 })();
 const KEYS = [
-  ['AW','AWS','personal',''],['GI','GitHub','work',''],['OP','OpenAI','default',''],
+  ['AW','AWS','personal',''],['GI','GitHub','work',''],['TW','Twilio','default',''],
   ['ST','Stripe','live','11MO · ROTATE?'],['CL','Claude','learn',''],['VE','Vercel','production',''],['SU','Supabase','staging','']
 ];
 const NOTES = [
-  ['Deploy steps','git tag v1.7.0 && git push --tags','2H AGO'],
+  ['Deploy steps','git tag v1.7.1 && git push --tags','2H AGO'],
   ['Staging URL','https://staging.acme.dev/api/v2','YESTERDAY'],
   ['Webhook test','curl -X POST localhost:3000/hook -d @body.json','THU'],
   ['Standup — Thursday','Ship notes tab, review PR #142','THU'],
@@ -283,7 +283,7 @@ function editorPop(id){
   <div class="cmd">swift test
 ./build.sh --no-launch</div>
   Then tag and push:
-  <div class="cmd">git tag v1.7.0 && git push --tags</div>
+  <div class="cmd">git tag v1.7.1 && git push --tags</div>
   Bump the Homebrew tap, then submit for review.<span class="caret"></span></div>${footer('','PLAIN TEXT',I.unlock).replace('<span></span>','<span></span>')}</div>`;
 }
 keysPop('pop1',{hover:1,copied:true});
