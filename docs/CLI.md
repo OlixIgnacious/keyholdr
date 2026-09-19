@@ -86,18 +86,29 @@ an odd state (for example after a crash), `reset` restores it.
 |---|---|
 | type | filter the current tab (^U clears it, ^W deletes a word) |
 | ↑ / ↓, PgUp / PgDn, Home / End | move the selection |
-| ⏎ | copy the selection (or every marked key) |
+| ⏎ | copy the selection (or every marked key). When nothing matches what you typed, create a new note (or key) from that text |
 | space | mark / unmark a key (keys tab) |
 | ⌃R | reveal / hide the secret (keys tab, Touch ID) |
-| ⌃N | new key (keys tab) or new note (notes tab) |
+| ⌃N (Ctrl+N) | new key (keys tab) or new note (notes tab) |
 | ⌃E | edit the selected note (notes tab) |
 | ⌃X | delete the selection or marked keys, after a `y` confirmation |
-| ⇥ / ⇧⇥ | switch between KEYS and NOTES |
+| ⇥ / ⇧⇥ / ← / → | switch between KEYS and NOTES |
 | esc | clear the filter; quit when it is already empty (saves and closes the note editor) |
 | ^C, ^D | quit |
 
 The UI exits with code `0`. The other commands, and the inline picker, are
 unchanged.
+
+**⌘ shortcuts never reach a terminal.** The terminal app (VS Code, iTerm,
+Terminal) handles ⌘ keys itself — ⌘N in VS Code opens a new file — so the UI
+uses **Ctrl** combinations instead. Two ways around it: type the note's text and
+press **⏎** when nothing matches (it becomes a new note), or, in VS Code, forward
+⌘N to the terminal as Ctrl+N with this `keybindings.json` entry:
+
+```json
+{ "key": "cmd+n", "command": "workbench.action.terminal.sendSequence",
+  "args": { "text": "\u000e" }, "when": "terminalFocus" }
+```
 
 ---
 

@@ -34,27 +34,49 @@ import Foundation
         #expect(parse([0x1B, 0x62]) == [.wordLeft])                          // ESC b
     }
 
+    @Test func kittyCSIuEncodings() {
+        #expect(parse([0x1B, 0x5B, 0x39, 0x75]) == [.tab])                       // CSI 9 u
+        #expect(parse([0x1B, 0x5B, 0x39, 0x3B, 0x32, 0x75]) == [.backTab])       // CSI 9;2 u  (shift)
+        #expect(parse([0x1B, 0x5B, 0x31, 0x33, 0x75]) == [.enter])                // CSI 13 u
+        #expect(parse([0x1B, 0x5B, 0x32, 0x37, 0x75]) == [.escape])               // CSI 27 u
+        #expect(parse([0x1B, 0x5B, 0x31, 0x32, 0x37, 0x75]) == [.backspace])      // CSI 127 u
+        #expect(parse(Array("\u{1B}[104u".utf8)) == [.char("h")])
+        #expect(parse(Array("\u{1B}[104;2u".utf8)) == [.char("H")])              // shift + h
+        #expect(parse(Array("\u{1B}[49:33;2u".utf8)) == [.char("!")])            // shift + 1 with the shifted key
+        #expect(parse(Array("\u{1B}[110;5u".utf8)) == [.ctrl("n")])              // ctrl + n
+        #expect(parse(Array("\u{1B}[110;3u".utf8)).isEmpty)                      // alt + n is ignored
+        #expect(parse(Array("\u{1B}[27;5;9~".utf8)) == [.tab])                   // modifyOtherKeys
+        #expect(parse(Array("\u{1B}[104;1:3u".utf8)) == [.char("h")])            // event-type suffix
+    }
+
     @Test func loneEscapeNeedsAFlush() {
         var parser = KeyParser()
-        #expect(parser.feed([0x1B]).isEmpty)
+        let result1 = parser.feed([0x1B])
+        #expect(result1.isEmpty)
         #expect(parser.hasPendingEscape)
-        #expect(parser.flush() == [.escape])
+        let result2 = parser.flush()
+        #expect(result2 == [.escape])
         #expect(!parser.hasPendingEscape)
     }
 
     @Test func sequencesSplitAcrossReadsAreReassembled() {
         var parser = KeyParser()
-        #expect(parser.feed([0x1B]).isEmpty)
-        #expect(parser.feed([0x5B]).isEmpty)
-        #expect(parser.feed([0x41]) == [.up])
+        let result3 = parser.feed([0x1B])
+        #expect(result3.isEmpty)
+        let result4 = parser.feed([0x5B])
+        #expect(result4.isEmpty)
+        let result5 = parser.feed([0x41])
+        #expect(result5 == [.up])
     }
 
     @Test func utf8CharactersAndSplitBytes() {
         #expect(parse(Array("é✓".utf8)) == [.char("é"), .char("✓")])
         var parser = KeyParser()
         let bytes = Array("✓".utf8)
-        #expect(parser.feed(Array(bytes[0..<2])).isEmpty)
-        #expect(parser.feed(Array(bytes[2...])) == [.char("✓")])
+        let result6 = parser.feed(Array(bytes[0..<2]))
+        #expect(result6.isEmpty)
+        let result7 = parser.feed(Array(bytes[2...]))
+        #expect(result7 == [.char("✓")])
     }
 
     @Test func bracketedPasteArrivesAsOneEventWithNewlines() {
@@ -70,9 +92,12 @@ import Foundation
         let start: [UInt8] = [0x1B, 0x5B, 0x32, 0x30, 0x30, 0x7E]
         let end: [UInt8] = [0x1B, 0x5B, 0x32, 0x30, 0x31, 0x7E]
         var parser = KeyParser()
-        #expect(parser.feed(start + Array("abc".utf8)).isEmpty)
-        #expect(parser.feed(Array("def".utf8) + Array(end[0..<3])).isEmpty)
-        #expect(parser.feed(Array(end[3...]) + [0x0D]) == [.paste("abcdef"), .enter])
+        let result8 = parser.feed(start + Array("abc".utf8))
+        #expect(result8.isEmpty)
+        let result9 = parser.feed(Array("def".utf8) + Array(end[0..<3]))
+        #expect(result9.isEmpty)
+        let result10 = parser.feed(Array(end[3...]) + [0x0D])
+        #expect(result10 == [.paste("abcdef"), .enter])
     }
 }
 
@@ -118,7 +143,8 @@ import Foundation
         var buffer = TextBuffer()
         buffer.insert("a\nb\r\nc")
         #expect(buffer.string == "a b c")
-        #expect(!buffer.apply(.enter))
+        let result11 = buffer.apply(.enter)
+        #expect(!result11)
     }
 
     @Test func multilineNavigationKeepsDesiredColumn() {
@@ -152,8 +178,10 @@ import Foundation
         buffer.apply(.enter)
         buffer.apply(.paste("x\ny"))
         #expect(buffer.string == "hi\nx\ny")
-        #expect(!buffer.apply(.escape))
-        #expect(!buffer.apply(.ctrl("n")))
+        let result12 = buffer.apply(.escape)
+        #expect(!result12)
+        let result13 = buffer.apply(.ctrl("n"))
+        #expect(!result13)
     }
 
     @Test func controlCharactersAreDropped() {

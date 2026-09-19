@@ -33,6 +33,13 @@ All notable changes to Keyholdr are documented here. Format follows
   onboarding is revisitable and the site is reachable from the app.
 
 ### Fixed
+- **The terminal UI and the inline picker ignored the keyboard** in the
+  sandboxed direct-download CLI: the app sandbox forbids switching a terminal to
+  raw mode, so the screen drew but keystrokes never arrived (and Esc didn't quit).
+  The CLI is now signed with its own entitlements (`Keyholdr-CLI.entitlements`)
+  that allow ioctl on terminals only; the app keeps its original entitlements.
+  Should a build still lack that permission, `keyholdr` now says so and exits
+  instead of drawing a UI that can't be used.
 - **`keyholdr` crashed on launch on macOS 27** (`zsh: trace trap`) for the
   sandboxed direct-download CLI: the system's sandbox setup refused an executable
   with no bundle identity. The CLI now embeds an Info.plist carrying the app's

@@ -1,5 +1,6 @@
 import Testing
 import Foundation
+import Security
 @testable import KeyholdrKit
 
 @Test func example() async throws {
@@ -38,6 +39,24 @@ import Foundation
         #expect(label(secondsAgo: 10) == "NOW")
         #expect(label(secondsAgo: 5 * 60) == "5M AGO")
         #expect(label(secondsAgo: 3 * 3_600) == "3H AGO")
+    }
+}
+
+@Suite struct KeychainExplainTests {
+    @Test func explainsTheCommonFailures() {
+        #expect(KeychainHelper.explain(errSecItemNotFound).contains("other build"))
+        #expect(KeychainHelper.explain(errSecMissingEntitlement).contains("other build"))
+        #expect(KeychainHelper.explain(errSecUserCanceled).contains("Always Allow"))
+        #expect(KeychainHelper.explain(errSecAuthFailed).contains("Always Allow"))
+        #expect(KeychainHelper.explain(-1).contains("Keychain error -1"))
+    }
+
+    @Test func lookupOfAnUnknownItemReportsNotFound() {
+        // No such account exists, so this must fail cleanly (the exact status
+        // can vary on machines without a usable Keychain, e.g. CI).
+        let result = KeychainHelper.lookup(for: UUID())
+        #expect(result.secret == nil)
+        #expect(result.status != errSecSuccess)
     }
 }
 

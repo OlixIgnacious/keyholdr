@@ -121,6 +121,10 @@ send(fd, scr, " "); check("1 MARKED" in scr.text(), "space marks a key")
 send(fd, scr, " "); check("2 MARKED" in scr.text(), "marking advances and stacks")
 
 # ── 4. tabs + notes ──────────────────────────────────────────────────────────
+print("switching tabs")
+for label, seq in (("→", ESC + "[C"), ("←", ESC + "[D"), ("⇥ as kitty CSI-u", ESC + "[9u"), ("⇧⇥", ESC + "[Z")):
+    send(fd, scr, seq); check("PLAIN TEXT" in scr.text(), f"{label} switches to the Notes tab")
+    send(fd, scr, "\t"); check("LOCKED AT REST" in scr.text(), "⇥ switches back to the Keys tab")
 print("notes tab")
 send(fd, scr, "\t"); t = scr.text()
 check("PLAIN TEXT" in t and "Standup notes" in t and "curl staging" in t, "Notes tab lists notes, footer says PLAIN TEXT")
@@ -148,6 +152,14 @@ check(len(json.load(open(f"{SUPPORT}/notes.json"))) == 3, "cancelled delete remo
 send(fd, scr, "\x18"); send(fd, scr, "y", 0.8)
 check(len(json.load(open(f"{SUPPORT}/notes.json"))) == 2, "y deleted the selected note")
 
+# ⏎ with nothing matched creates a note from the typed text (a modifier-free way to add one)
+send(fd, scr, "qqq")
+check("save “qqq” as a new note" in scr.text(), "no match: the empty state offers to save the text as a note")
+send(fd, scr, "\r"); check("New note" in scr.text() and "qqq" in scr.text(), "⏎ opens the editor pre-filled with the typed text")
+send(fd, scr, ESC, 0.8)
+check(any(n["text"] == "qqq" for n in json.load(open(f"{SUPPORT}/notes.json"))), "the note was saved")
+check("qqq" in scr.text() and "No matching" not in scr.text(), "the filter was cleared so the new note is visible")
+
 # ── 5. add-key form validation (never saves) ─────────────────────────────────
 print("add-key form")
 send(fd, scr, "\t"); send(fd, scr, "\x0e")
@@ -157,6 +169,9 @@ send(fd, scr, "Test"); check("Platform is required." not in scr.text(), "typing 
 send(fd, scr, "\r\r\r"); send(fd, scr, "s3cret")
 check("••••••" in scr.text() and "s3cret" not in scr.text(), "secret field is masked")
 send(fd, scr, ESC); check("New key" not in scr.text(), "Esc cancels the form without saving")
+send(fd, scr, "zzzz"); send(fd, scr, "\r")
+check("New key" in scr.text() and "zzzz" in scr.text(), "keys tab: ⏎ with no match opens the add form pre-filled with the typed text")
+send(fd, scr, ESC); send(fd, scr, ESC)
 check(len(json.load(open(f"{SUPPORT}/keys.json"))) == 4, "keys.json unchanged (nothing saved)")
 
 # ── 6. resize ────────────────────────────────────────────────────────────────

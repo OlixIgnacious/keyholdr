@@ -126,8 +126,8 @@ extension Dashboard {
         switch modal {
         case .none:
             return tab == .keys
-                ? "⏎ copy · ␣ mark · ⌃R reveal · ⌃N new · ⌃X delete · ⇥ notes · esc quit"
-                : "⏎ copy · ⌃E edit · ⌃N new · ⌃X delete · ⇥ keys · esc quit"
+                ? "⏎ copy · ␣ mark · ⌃R reveal · ^N new (Ctrl+N) · ⌃X delete · ⇥/←/→ notes · esc quit"
+                : "⏎ copy · ⌃E edit · ^N new (Ctrl+N) · ⌃X delete · ⇥/←/→ keys · esc quit"
         case .confirm:
             return "y confirm · n / esc cancel"
         case .addKey:
@@ -218,8 +218,10 @@ extension Dashboard {
         let keys = visibleKeys
         guard !keys.isEmpty else {
             let message = keyFilter.isEmpty
-                ? [sty("No keys yet.", Ansi.dim), "", "Press " + sty("⌃N", Ansi.bold, Ansi.accent) + " to add your first key."]
-                : [sty("No matching keys.", Ansi.dim)]
+                ? [sty("No keys yet.", Ansi.dim), "",
+                   "Press " + sty("⏎", Ansi.bold, Ansi.accent) + " or " + sty("⌃N", Ansi.bold, Ansi.accent) + " to add your first key."]
+                : [sty("No matching keys.", Ansi.dim), "",
+                   "Press " + sty("⏎", Ansi.bold, Ansi.accent) + " to add “" + Text.truncate(keyFilter.string, to: 24) + "” as a new key."]
             return centered(message, width: width, height: height)
         }
 
@@ -305,8 +307,10 @@ extension Dashboard {
         let notes = visibleNotes
         guard !notes.isEmpty else {
             let message = noteFilter.isEmpty
-                ? [sty("No notes yet.", Ansi.dim), "", "Press " + sty("⌃N", Ansi.bold, Ansi.accent) + " to write one."]
-                : [sty("No matching notes.", Ansi.dim)]
+                ? [sty("No notes yet.", Ansi.dim), "",
+                   "Press " + sty("⏎", Ansi.bold, Ansi.accent) + " or " + sty("⌃N", Ansi.bold, Ansi.accent) + " to write one."]
+                : [sty("No matching notes.", Ansi.dim), "",
+                   "Press " + sty("⏎", Ansi.bold, Ansi.accent) + " to save “" + Text.truncate(noteFilter.string, to: 24) + "” as a new note."]
             return centered(message, width: width, height: height)
         }
 

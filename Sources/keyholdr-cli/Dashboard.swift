@@ -191,7 +191,7 @@ final class Dashboard {
             } else {
                 return true
             }
-        case .tab, .backTab:
+        case .tab, .backTab, .left, .right:
             switchTab()
         case .up: move(by: -1)
         case .down: move(by: 1)
@@ -270,10 +270,15 @@ final class Dashboard {
 
     // MARK: - Actions
 
+    /// ⏎ copies the selection. When nothing matches what was typed, it instead
+    /// creates something from that text — a modifier-free way to add a key or
+    /// note, since ⌘N belongs to the terminal app (VS Code opens a new file).
     private func copySelection() {
         switch tab {
-        case .keys: copyKeys()
-        case .notes: copyNote()
+        case .keys:
+            if visibleKeys.isEmpty { openAddForm(platform: keyFilter.string) } else { copyKeys() }
+        case .notes:
+            if visibleNotes.isEmpty { openEditor(for: nil, initialText: noteFilter.string) } else { copyNote() }
         }
     }
 
@@ -288,20 +293,46 @@ final class Dashboard {
             reason: targets.count == 1 ? "copy the secret for \(names)" : "copy \(targets.count) secrets"
         ) else { return }
 
+        // Each Keychain item has its own access list, so macOS may ask for the
+        // login password once per key until "Always Allow" is chosen. Say so
+        // while those dialogs are up, so they aren't a surprise.
+        busy = "macOS may ask for your login password — choose Always Allow"
+        draw()
+        defer { busy = nil }
+
+        // Copy every secret that can be read, and say precisely which can't —
+        // one unreadable key must not sink the rest of a multi-select.
         var secrets: [String] = []
+        var failed: [(key: KeyItem, status: OSStatus)] = []
         for key in targets {
-            guard let secret = KeychainHelper.retrieve(for: key.id, context: context.context) else {
-                showToast("No secret in the Keychain for \(key.platform) (\(key.label)).", isError: true)
-                return
-            }
-            secrets.append(secret)
+            let result = KeychainHelper.lookup(for: key.id, context: context.context)
+            if let secret = result.secret { secrets.append(secret) } else { failed.append((key, result.status)) }
+        }
+
+        func label(_ key: KeyItem) -> String { "\(key.platform) (\(key.label))" }
+
+        guard !secrets.isEmpty else {
+            let reason = KeychainHelper.explain(failed[0].status)
+            showToast(targets.count == 1
+                      ? "Couldn't read \(label(failed[0].key)): \(reason)"
+                      : "Couldn't read any of the \(targets.count) secrets: \(reason)", isError: true)
+            return
         }
         setClipboard(secrets.joined(separator: "\n"))
 
-        let what = targets.count == 1 ? names : "\(targets.count) secrets — \(names)"
-        lastCopy = "Copied \(what) to the clipboard."
-        showToast("Copied \(what)", isError: false)
-        marked.removeAll()
+        if failed.isEmpty {
+            let what = targets.count == 1 ? names : "\(targets.count) secrets — \(names)"
+            lastCopy = "Copied \(what) to the clipboard."
+            showToast("Copied \(what)", isError: false)
+            marked.removeAll()
+        } else {
+            let skipped = failed.map { label($0.key) }.joined(separator: ", ")
+            lastCopy = "Copied \(secrets.count) of \(targets.count) secrets to the clipboard. "
+                + "Couldn't read: " + failed.map { "\(label($0.key)) — \(KeychainHelper.explain($0.status))" }.joined(separator: "; ") + "."
+            showToast("Copied \(secrets.count) of \(targets.count) · couldn't read: \(skipped)", isError: true)
+            // Leave the unreadable ones marked, so it's clear which they are.
+            marked = Set(failed.map(\.key.id))
+        }
     }
 
     private func copyNote() {
@@ -315,8 +346,9 @@ final class Dashboard {
         if reveal?.id == key.id { reveal = nil; return } // toggle off
 
         guard let context = authenticateInUI(reason: "reveal the secret for \(key.platform)") else { return }
-        guard let secret = KeychainHelper.retrieve(for: key.id, context: context.context) else {
-            showToast("No secret in the Keychain for \(key.platform) (\(key.label)).", isError: true)
+        let result = KeychainHelper.lookup(for: key.id, context: context.context)
+        guard let secret = result.secret else {
+            showToast("Couldn't read \(key.platform) (\(key.label)): \(KeychainHelper.explain(result.status))", isError: true)
             return
         }
         reveal = Reveal(id: key.id, secret: secret, until: Date().addingTimeInterval(Self.revealSeconds))
@@ -362,8 +394,12 @@ final class Dashboard {
 
     // MARK: - Add-key form
 
-    private func openAddForm() {
-        modal = .addKey(AddForm())
+    private func openAddForm(platform: String = "") {
+        var form = AddForm()
+        form.fields[0] = TextBuffer(platform.trimmingCharacters(in: .whitespaces))
+        // Land on the first empty field.
+        form.focus = platform.trimmingCharacters(in: .whitespaces).isEmpty ? 0 : 3
+        modal = .addKey(form)
     }
 
     /// Returns true while the form should stay open.
@@ -418,9 +454,11 @@ final class Dashboard {
 
     // MARK: - Note editor
 
-    private func openEditor(for note: NoteItem?) {
+    private func openEditor(for note: NoteItem?, initialText: String = "") {
         let target = note ?? NoteItem()
-        modal = .editNote(NoteEditor(note: target, buffer: TextBuffer(target.text, multiline: true), isNew: note == nil))
+        let text = note == nil ? initialText : target.text
+        if note == nil, !initialText.isEmpty { noteFilter.setText("") } // the new note must be visible afterwards
+        modal = .editNote(NoteEditor(note: target, buffer: TextBuffer(text, multiline: true), isNew: note == nil))
     }
 
     /// Returns true while the editor should stay open.
@@ -460,7 +498,8 @@ final class Dashboard {
     // MARK: - Helpers
 
     func showToast(_ text: String, isError: Bool) {
-        toast = Toast(text: text, isError: isError, until: Date().addingTimeInterval(Self.toastSeconds))
+        // Errors stay longer: they carry names and reasons worth reading.
+        toast = Toast(text: text, isError: isError, until: Date().addingTimeInterval(isError ? 8 : Self.toastSeconds))
     }
 
     private func setClipboard(_ text: String) {

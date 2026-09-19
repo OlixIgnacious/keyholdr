@@ -125,7 +125,15 @@ public struct KeyParser: Sendable {
             case 0x48: return .consumed(consumed, .home)
             case 0x46: return .consumed(consumed, .end)
             case 0x5A: return .consumed(consumed, .backTab)
+            case 0x75: // CSI u — kitty keyboard protocol (Ghostty, kitty, WezTerm, iTerm2…)
+                return .consumed(consumed, Self.decodeCSIu(params))
             case 0x7E:
+                if params.hasPrefix("27;") { // xterm modifyOtherKeys: CSI 27 ; mods ; code ~
+                    let parts = params.split(separator: ";").compactMap { Int($0) }
+                    if parts.count == 3 {
+                        return .consumed(consumed, Self.decodeKey(code: parts[2], modifiers: parts[1] - 1, shifted: nil))
+                    }
+                }
                 switch params.split(separator: ";").first.flatMap({ Int($0) }) {
                 case 1, 7: return .consumed(consumed, .home)
                 case 4, 8: return .consumed(consumed, .end)
@@ -161,6 +169,45 @@ public struct KeyParser: Sendable {
         case 0x66: return .consumed(2, .wordRight)  // ESC f (Option-→)
         default:
             return .consumed(2, nil) // other Alt-combos are ignored
+        }
+    }
+
+    // MARK: - Modified-key encodings
+
+    /// `code[:shifted[:base]] ; modifiers[:event] ; text`, from CSI u.
+    private static func decodeCSIu(_ params: String) -> Key? {
+        let fields = params.split(separator: ";", omittingEmptySubsequences: false)
+        guard let first = fields.first else { return nil }
+        let codes = first.split(separator: ":", omittingEmptySubsequences: false).map { Int($0) }
+        guard let code = codes.first ?? nil else { return nil }
+        let shifted = codes.count > 1 ? codes[1] : nil
+        var modifiers = 0
+        if fields.count > 1, let value = Int(fields[1].split(separator: ":").first ?? "") {
+            modifiers = max(value - 1, 0) // the wire value is 1 + the bitmask
+        }
+        return decodeKey(code: code, modifiers: modifiers, shifted: shifted)
+    }
+
+    /// Modifier bits: 1 shift, 2 alt, 4 ctrl.
+    private static func decodeKey(code: Int, modifiers: Int, shifted: Int?) -> Key? {
+        let shift = modifiers & 1 != 0, alt = modifiers & 2 != 0, ctrl = modifiers & 4 != 0
+        switch code {
+        case 9: return shift ? .backTab : .tab
+        case 13: return .enter
+        case 27: return .escape
+        case 8, 127: return .backspace
+        case 32...0x10FFFF:
+            guard !alt, let scalar = UnicodeScalar(shift ? (shifted ?? code) : code) else { return nil }
+            let character = Character(scalar)
+            if ctrl {
+                guard let ascii = character.asciiValue, character.isLetter else { return nil }
+                return .ctrl(Character(UnicodeScalar(ascii | 0x20)))
+            }
+            // Terminals report the unshifted key plus a shift flag.
+            if shift, shifted == nil, character.isLetter { return .char(Character(character.uppercased())) }
+            return .char(character)
+        default:
+            return nil
         }
     }
 
