@@ -42,7 +42,7 @@ let package = Package(
                 "KeyholdrKit",
                 .product(name: "MenuBarExtraAccess", package: "MenuBarExtraAccess")
             ],
-            exclude: ["Keyholdr.entitlements"]
+            exclude: ["Keyholdr.entitlements", "Keyholdr-CLI.entitlements"]
         ),
         // The terminal companion: keyholdr list / get / run.
         .executableTarget(

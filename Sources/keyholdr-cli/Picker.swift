@@ -1,6 +1,7 @@
 import Darwin
 import Foundation
 import KeyholdrKit
+import KeyholdrTUI
 
 /// An fzf-style inline picker: type to filter, ↑↓ to move, ⏎ to select,
 /// esc to cancel. In multi mode, tab/space mark entries. Renders on stderr
@@ -8,7 +9,7 @@ import KeyholdrKit
 enum Picker {
     /// Interactive UI is only possible when a human is on both ends.
     static var isInteractive: Bool {
-        isatty(STDIN_FILENO) != 0 && isatty(STDERR_FILENO) != 0
+        isatty(STDIN_FILENO) != 0 && isatty(STDERR_FILENO) != 0 && Terminal.canChangeMode
     }
 
     static func pick(from all: [KeyItem], title: String, initialFilter: String = "") -> KeyItem? {

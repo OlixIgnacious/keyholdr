@@ -64,8 +64,9 @@ jobs:
           MACOS_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
         run: |
           ENTITLEMENTS="Sources/keyholdr/Keyholdr.entitlements"
+          CLI_ENTITLEMENTS="Sources/keyholdr/Keyholdr-CLI.entitlements"
           codesign --force --options runtime --timestamp \
-            --entitlements "$ENTITLEMENTS" \
+            --entitlements "$CLI_ENTITLEMENTS" \
             --sign "$MACOS_SIGNING_IDENTITY" build/Keyholdr.app/Contents/MacOS/keyholdr-cli
           codesign --force --options runtime --timestamp \
             --entitlements "$ENTITLEMENTS" \

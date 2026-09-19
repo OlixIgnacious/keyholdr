@@ -51,11 +51,14 @@ EOF
 
 echo "🔏 Signing with sandbox entitlements..."
 ENTITLEMENTS="Sources/keyholdr/Keyholdr.entitlements"
+# The CLI additionally needs terminal ioctl access: the sandbox otherwise forbids
+# switching the tty to raw mode, so keystrokes never reach the UI.
+CLI_ENTITLEMENTS="Sources/keyholdr/Keyholdr-CLI.entitlements"
 # Use the installed Developer ID cert if available, otherwise ad-hoc (no sandbox for local dev).
 IDENTITY="${SIGNING_IDENTITY:-$(security find-identity -v -p codesigning 2>/dev/null | grep 'Developer ID Application' | head -1 | awk -F'"' '{print $2}')}"
 IDENTITY="${IDENTITY:--}"
 codesign --force --options runtime --timestamp \
-    --entitlements "$ENTITLEMENTS" \
+    --entitlements "$CLI_ENTITLEMENTS" \
     --sign "$IDENTITY" \
     "$APP_DIR/Contents/MacOS/keyholdr-cli"
 codesign --force --options runtime --timestamp \

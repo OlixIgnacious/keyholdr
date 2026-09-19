@@ -247,6 +247,10 @@ struct Pick: ParsableCommand {
 
     func run() throws {
         guard Picker.isInteractive else {
+            if isatty(STDIN_FILENO) != 0, isatty(STDERR_FILENO) != 0 {
+                // A real terminal, but this process may not change its mode.
+                throw ValidationError("This copy of keyholdr isn't allowed to control the terminal (it runs in the app sandbox), so it can't read keystrokes. Try `keyholdr list` or `keyholdr get <platform>`.")
+            }
             throw ValidationError("Interactive mode needs a terminal. Try `keyholdr list` or `keyholdr get <platform>`.")
         }
 

@@ -34,11 +34,23 @@ public final class Terminal: @unchecked Sendable {
     public static let minimumSize = TerminalSize(columns: 60, rows: 16)
 
     /// A full-screen UI needs a human on both ends and a terminal that
-    /// understands cursor addressing.
+    /// understands cursor addressing — and permission to change the terminal's
+    /// mode at all.
     public static var isSupported: Bool {
         guard isatty(STDIN_FILENO) != 0, isatty(STDERR_FILENO) != 0 else { return false }
         let term = ProcessInfo.processInfo.environment["TERM"] ?? ""
-        return !term.isEmpty && term != "dumb"
+        return !term.isEmpty && term != "dumb" && canChangeMode
+    }
+
+    /// False when the process isn't allowed to change the tty's mode — a
+    /// sandboxed process without terminal ioctl access gets EPERM. Every
+    /// interactive screen depends on raw mode, so without it they would draw
+    /// but never receive a keystroke. Re-applying the current settings is a
+    /// no-op when it is permitted.
+    public static var canChangeMode: Bool {
+        var current = termios()
+        guard tcgetattr(STDIN_FILENO, &current) == 0 else { return false }
+        return tcsetattr(STDIN_FILENO, TCSANOW, &current) == 0
     }
 
     private var original = termios()
