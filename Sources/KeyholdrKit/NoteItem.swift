@@ -89,6 +89,33 @@ public enum NoteStorage {
         saveNotes(notes, to: fileURL)
     }
 
+    /// Inserts or replaces one note, re-reading the file first so an edit
+    /// made here doesn't overwrite notes another process (the menu bar app)
+    /// wrote in the meantime.
+    public static func upsert(_ note: NoteItem) {
+        upsert(note, at: fileURL)
+    }
+
+    public static func remove(id: UUID) {
+        remove(id: id, at: fileURL)
+    }
+
+    static func upsert(_ note: NoteItem, at url: URL) {
+        var notes = loadNotes(from: url)
+        if let index = notes.firstIndex(where: { $0.id == note.id }) {
+            notes[index] = note
+        } else {
+            notes.append(note)
+        }
+        saveNotes(notes, to: url)
+    }
+
+    static func remove(id: UUID, at url: URL) {
+        var notes = loadNotes(from: url)
+        notes.removeAll { $0.id == id }
+        saveNotes(notes, to: url)
+    }
+
     static func loadNotes(from url: URL) -> [NoteItem] {
         guard FileManager.default.fileExists(atPath: url.path) else { return [] }
         do {

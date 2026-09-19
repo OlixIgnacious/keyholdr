@@ -19,6 +19,11 @@ let package = Package(
         .target(
             name: "KeyholdrKit"
         ),
+        // Terminal UI primitives (raw mode, key parsing, text width, editing
+        // buffer). Dependency-free, and a library so the tests can reach it.
+        .target(
+            name: "KeyholdrTUI"
+        ),
         // The menu bar app.
         .executableTarget(
             name: "keyholdr",
@@ -33,12 +38,13 @@ let package = Package(
             name: "keyholdr-cli",
             dependencies: [
                 "KeyholdrKit",
+                "KeyholdrTUI",
                 .product(name: "ArgumentParser", package: "swift-argument-parser")
             ]
         ),
         .testTarget(
             name: "keyholdrTests",
-            dependencies: ["KeyholdrKit"]
+            dependencies: ["KeyholdrKit", "KeyholdrTUI"]
         ),
     ],
     swiftLanguageModes: [.v6]

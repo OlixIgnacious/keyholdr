@@ -44,7 +44,19 @@ swift test
 ```
 
 Add or update tests in [Tests/keyholdrTests](Tests/keyholdrTests) for any
-behavioral change to `KeyholdrKit`.
+behavioral change to `KeyholdrKit` or `KeyholdrTUI`.
+
+`swift test` needs the `Testing` module that ships with Xcode. If you only have
+the Command Line Tools (`no such module 'Testing'`), run the same tests without
+Xcode:
+
+```bash
+python3 scripts/run-tests-harness.py     # compiles the tests into a plain executable
+python3 scripts/tui-smoke-test.py        # drives the full-screen UI through a pty
+```
+
+The smoke test uses a throwaway vault in a temp directory, so it never touches
+your real keys, notes or Keychain.
 
 ## Project layout
 

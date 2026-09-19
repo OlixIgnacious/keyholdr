@@ -71,4 +71,38 @@ import Foundation
         try Data("not json".utf8).write(to: url)
         #expect(NoteStorage.loadNotes(from: url).isEmpty)
     }
+
+    @Test func upsertReplacesByIdAndPreservesOtherNotes() {
+        let url = tempURL()
+        defer { try? FileManager.default.removeItem(at: url.deletingLastPathComponent()) }
+
+        let keep = NoteItem(text: "keep", createdAt: Date(timeIntervalSince1970: 1_700_000_000))
+        var edit = NoteItem(text: "v1", createdAt: Date(timeIntervalSince1970: 1_700_000_100))
+        NoteStorage.saveNotes([keep, edit], to: url)
+
+        // Another process adds a note between our load and our write.
+        let other = NoteItem(text: "from the app", createdAt: Date(timeIntervalSince1970: 1_700_000_200))
+        NoteStorage.upsert(other, at: url)
+
+        edit.text = "v2"
+        edit.updatedAt = Date(timeIntervalSince1970: 1_700_000_300)
+        NoteStorage.upsert(edit, at: url)
+
+        let loaded = NoteStorage.loadNotes(from: url)
+        #expect(loaded.count == 3)
+        #expect(loaded.first { $0.id == edit.id }?.text == "v2")
+        #expect(loaded.contains { $0.text == "from the app" })
+        #expect(loaded.contains { $0.text == "keep" })
+    }
+
+    @Test func removeDeletesOnlyThatNote() {
+        let url = tempURL()
+        defer { try? FileManager.default.removeItem(at: url.deletingLastPathComponent()) }
+
+        let a = NoteItem(text: "a", createdAt: Date(timeIntervalSince1970: 1_700_000_000))
+        let b = NoteItem(text: "b", createdAt: Date(timeIntervalSince1970: 1_700_000_100))
+        NoteStorage.saveNotes([a, b], to: url)
+        NoteStorage.remove(id: a.id, at: url)
+        #expect(NoteStorage.loadNotes(from: url) == [b])
+    }
 }
