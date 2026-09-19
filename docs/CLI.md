@@ -63,12 +63,14 @@ several keys with **space** and pressing **⏎** copies all their secrets, one
 per line. A revealed secret hides itself after 10 seconds. **⌃N** opens a form
 to add a key (the secret field is hidden as you type) and **⌃X** deletes after
 a confirmation — both use the same rules as `keyholdr add` and `keyholdr rm`.
+In the add form, **⇥** / **⏎** move between fields, **⏎** on the last field or
+**⌃S** saves, and **esc** cancels.
 
 **Notes tab.** Quick plain-text scratch notes, shared with the menu bar app.
 **⏎** copies a note (no Touch ID — notes are not secrets and are stored
 unencrypted), **⌃N** starts a new one and **⌃E** edits the selected one in a
-multi-line editor. Pasting keeps its newlines; **esc** saves and closes, and an
-empty note is discarded.
+multi-line editor. Pasting keeps its newlines; **⌃S** saves and keeps editing,
+**esc** saves and closes, and an empty note is discarded.
 
 Because it draws on the alternate screen, nothing you reveal stays in your
 terminal's scrollback. On quit, a one-line "Copied … to the clipboard." remains

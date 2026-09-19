@@ -198,8 +198,13 @@ The first read of each key shows a one-time macOS Keychain consent — choose
 
 ### macOS
 
-1. Install Xcode Command Line Tools: `xcode-select --install`
-2. Run `./build.sh` — release build → app bundle → launches in your menu bar.
+1. Install full [Xcode](https://developer.apple.com/xcode/), select it
+   (`sudo xcode-select -s /Applications/Xcode.app`) and accept its licence.
+   The Command Line Tools alone can't build the app on the current macOS SDK.
+2. Run `./build.sh` — release build → signed app bundle → launches in your
+   menu bar. Add `--no-launch` to build without touching running processes.
+3. Optional: `swift test` runs the test suite. For the Mac App Store variant,
+   see `build-mas.sh`.
 
 ### Windows
 
@@ -226,6 +231,10 @@ keyholdr/
 │   └── Views/                  popover UI, monochrome theme
 ├── Sources/KeyholdrTUI/     terminal UI primitives — raw mode, key parsing, text editing
 ├── Sources/keyholdr-cli/    terminal companion — full-screen UI, list, get, run
+├── Tests/keyholdrTests/     Swift Testing suites for Kit and TUI
+├── scripts/                  Xcode-free test harness, terminal UI smoke test
+├── docs/                     CLI reference and README media
+├── branding/                 app icon and App Store asset generators
 ├── build.sh                  macOS build + bundle script (direct distribution)
 └── build-mas.sh               Mac App Store build + signed installer .pkg
 ```
