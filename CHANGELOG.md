@@ -33,6 +33,12 @@ All notable changes to Keyholdr are documented here. Format follows
   onboarding is revisitable and the site is reachable from the app.
 
 ### Fixed
+- **`keyholdr` crashed on launch on macOS 27** (`zsh: trace trap`) for the
+  sandboxed direct-download CLI: the system's sandbox setup refused an executable
+  with no bundle identity. The CLI now embeds an Info.plist carrying the app's
+  bundle identifier, so it launches and still reads the same vault as the app.
+  (The Mac App Store CLI uses the `inherit` entitlement, which only works when
+  launched by the sandboxed app, so it is unaffected by this fix.)
 - One-time cleanup on launch that unregisters any login item silently
   created by pre-1.6.0(9) builds. SMAppService registrations are keyed to
   the bundle identifier, not the build, so upgrading alone didn't clear a

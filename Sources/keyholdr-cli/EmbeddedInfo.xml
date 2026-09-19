@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Embedded into the keyholdr-cli binary at link time (see Package.swift). -->
+    <key>CFBundleIdentifier</key>
+    <string>com.olixstudios.Keyholdr</string>
+    <key>CFBundleName</key>
+    <string>keyholdr-cli</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.6.0</string>
+</dict>
+</plist>

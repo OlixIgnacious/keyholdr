@@ -1,7 +1,18 @@
 // swift-tools-version: 6.0
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
+import Foundation
 import PackageDescription
+
+// The signed CLI runs inside the app sandbox, and on macOS 27 the sandbox
+// refuses to initialise for an executable that carries no bundle identity of
+// its own — `keyholdr` died with SIGTRAP before running any code. Embedding an
+// Info.plist that names the app's bundle identifier gives it one (and points it
+// at the same container as the app, so both read one vault).
+let cliInfoPlist = URL(fileURLWithPath: #filePath)
+    .deletingLastPathComponent()
+    .appendingPathComponent("Sources/keyholdr-cli/EmbeddedInfo.xml")
+    .path
 
 let package = Package(
     name: "keyholdr",
@@ -40,6 +51,11 @@ let package = Package(
                 "KeyholdrKit",
                 "KeyholdrTUI",
                 .product(name: "ArgumentParser", package: "swift-argument-parser")
+            ],
+            exclude: ["EmbeddedInfo.xml"],
+            linkerSettings: [
+                .unsafeFlags(["-Xlinker", "-sectcreate", "-Xlinker", "__TEXT",
+                              "-Xlinker", "__info_plist", "-Xlinker", cliInfoPlist])
             ]
         ),
         .testTarget(
