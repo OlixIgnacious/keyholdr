@@ -1,15 +1,13 @@
 import SwiftUI
 import AppKit
 
-/// Manual CLI linking instructions for the sandboxed Mac App Store build,
-/// which can't write to ~/.local/bin or patch a shell profile on its own the
-/// way the direct-distribution build's CLIInstaller does.
+/// Terminal guidance for the sandboxed Mac App Store build. The sandbox limits
+/// the command-line tool bundled in this build (it can't link itself onto the
+/// PATH, and it can't drive an interactive terminal UI), so terminal users are
+/// pointed at the Homebrew / direct-download build instead.
 struct TerminalSetupView: View {
-    private static let command = #"""
-    mkdir -p ~/.local/bin
-    ln -sf "/Applications/Keyholdr.app/Contents/MacOS/keyholdr-cli" ~/.local/bin/keyholdr
-    echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
-    """#
+    private static let command = "brew install --cask olixignacious/tap/keyholdr"
+    private static let releasesURL = URL(string: "https://github.com/OlixIgnacious/keyholdr/releases/latest")!
 
     @State private var copied = false
 
@@ -19,7 +17,7 @@ struct TerminalSetupView: View {
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundColor(KHTheme.ink)
 
-            Text("The App Store build is sandboxed, so it can't link the CLI onto your PATH automatically. Paste this into Terminal once:")
+            Text("The App Store build is sandboxed, which limits its command-line tool. For the terminal — including the full-screen keyholdr UI — install the Homebrew or direct-download build:")
                 .font(.system(size: 11))
                 .foregroundColor(KHTheme.ink60)
                 .fixedSize(horizontal: false, vertical: true)
@@ -44,7 +42,11 @@ struct TerminalSetupView: View {
             }
             .buttonStyle(.plain)
 
-            Text("Restart Terminal (or run `source ~/.zshrc`) afterward, then `keyholdr` is on your PATH.")
+            Link("Or download it from GitHub Releases", destination: Self.releasesURL)
+                .font(.system(size: 11))
+                .foregroundColor(KHTheme.ink60)
+
+            Text("Then run `keyholdr` in Terminal.")
                 .font(.system(size: 10))
                 .foregroundColor(KHTheme.ink40)
         }

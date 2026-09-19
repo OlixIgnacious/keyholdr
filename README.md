@@ -113,8 +113,9 @@ secrets in **Keys**. Notes are also not included in vault export/import.
 ### Option A — Mac App Store
 
 [Download Keyholdr](https://apps.apple.com/in/app/keyholdr/id6789253781?mt=12).
-Sandboxed, so the CLI needs a manual one-time link (see
-[Terminal companion](#terminal-companion) below) instead of the in-app installer.
+Sandboxed, which limits its command-line tool — for the terminal, use the
+Homebrew or direct-download build below (see
+[Terminal companion](#terminal-companion)).
 
 ### Option B — Homebrew
 
@@ -159,9 +160,10 @@ echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
 `~/.local/bin` — the in-app **CLI** footer button does this same thing
 automatically on a direct-download install.)
 
-**Mac App Store build:** sandboxing means there's no in-app installer at all.
-Run the same three commands above, or open the app and go to **⋯ menu →
-Terminal Setup…** for a ready-to-paste copy of them.
+**Mac App Store build:** the sandbox limits the command-line tool bundled in
+that build, so for the terminal — including the full-screen UI — install the
+Homebrew or direct-download build instead. **⋯ menu → Terminal Setup…** in the
+App Store app shows the Homebrew command.
 
 ```bash
 keyholdr                                         # full-screen UI: keys + notes, type to filter, ⏎ copies
