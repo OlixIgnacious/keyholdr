@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Keyholdr App Store slides</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper:#f4f3ef; --paper-soft:#ecebe6; --ink:#121212;
+    --ink60:rgba(18,18,18,.6); --ink40:rgba(18,18,18,.4); --ink12:rgba(18,18,18,.12); --ink06:rgba(18,18,18,.06);
+    --accent:#d2603a; --accent-dark:#ff8f63;
+    --sans:-apple-system,"SF Pro Text",system-ui,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,monospace;
+    --display:"Onest",-apple-system,system-ui,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:1440px;height:900px;overflow:hidden;background:#000}
+  body{font-family:var(--display);-webkit-font-smoothing:antialiased}
+
+  .slide{display:none;position:relative;width:1440px;height:900px;overflow:hidden;background:var(--paper);color:var(--ink)}
+  .slide.light{background:radial-gradient(1200px 700px at 8% 0%,#fbfaf6 0%,var(--paper) 60%,#ebe9e2 100%)}
+  .slide.dark{background:radial-gradient(1200px 800px at 90% 100%,#262626 0%,#121212 60%);color:var(--paper)}
+  body[data-s="1"] #s1,body[data-s="2"] #s2,body[data-s="3"] #s3,body[data-s="4"] #s4,body[data-s="5"] #s5{display:block}
+
+  /* ---------- headline block ---------- */
+  .copy{position:absolute;left:92px;top:104px;width:640px}
+  .eyebrow{font:500 15px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink40);margin-bottom:26px}
+  .dark .eyebrow{color:rgba(244,243,239,.45)}
+  h1{font-weight:500;font-size:104px;line-height:.98;letter-spacing:-.045em}
+  h1 em{font-style:normal;color:var(--accent)}
+  .dark h1 em{color:var(--accent-dark)}
+  .sub{margin-top:34px;font-size:31px;line-height:1.28;letter-spacing:-.015em;color:var(--ink60);font-weight:400;max-width:560px}
+  .dark .sub{color:rgba(244,243,239,.6)}
+
+  /* ---------- desktop panel ---------- */
+  .desk{position:absolute;border-radius:34px 0 0 0;overflow:hidden;
+    background:
+      radial-gradient(500px 420px at 15% 20%,#f6d9c0 0%,transparent 70%),
+      radial-gradient(560px 480px at 85% 10%,#cfc8f1 0%,transparent 70%),
+      radial-gradient(600px 500px at 60% 100%,#b7d6ea 0%,transparent 70%),
+      #e8dfd6;
+    box-shadow:0 0 0 1px rgba(0,0,0,.08),0 50px 100px -30px rgba(18,18,18,.35)}
+  .dark .desk{background:
+      radial-gradient(500px 420px at 15% 20%,#5a3a52 0%,transparent 70%),
+      radial-gradient(560px 480px at 85% 10%,#2c3a66 0%,transparent 70%),
+      radial-gradient(600px 500px at 60% 100%,#28505c 0%,transparent 70%),
+      #1c1a22;
+    box-shadow:0 0 0 1px rgba(255,255,255,.08),0 50px 100px -30px #000}
+  .menubar{position:absolute;left:0;right:0;top:0;height:34px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;
+    background:rgba(255,255,255,.45);backdrop-filter:blur(20px);font:500 13px var(--sans);color:rgba(0,0,0,.78)}
+  .dark .menubar{background:rgba(20,20,24,.5);color:rgba(255,255,255,.85)}
+  .menubar .l,.menubar .r{display:flex;align-items:center;gap:18px}
+  .menubar .tray{display:grid;place-items:center;width:28px;height:22px;border-radius:6px;background:rgba(0,0,0,.14)}
+  .dark .menubar .tray{background:rgba(255,255,255,.2)}
+  .menubar svg{width:15px;height:15px}
+
+  /* ---------- popover ---------- */
+  .pop{position:absolute;width:360px;height:480px;background:var(--paper);border-radius:12px;overflow:hidden;transform:scale(1.3);transform-origin:0 0;
+    box-shadow:0 0 0 .5px rgba(0,0,0,.2),0 30px 70px rgba(0,0,0,.30);font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased}
+  .pop.dk{background:#141414;color:var(--paper);
+    --ink:#f4f3ef;--ink60:rgba(244,243,239,.6);--ink40:rgba(244,243,239,.4);--ink12:rgba(244,243,239,.12);--ink06:rgba(244,243,239,.06);--paper:#121212}
+  .pop .col{display:flex;flex-direction:column;height:100%}
+  .glass{background:linear-gradient(rgba(255,255,255,.78),rgba(255,255,255,.5));
+    box-shadow:0 0 0 .5px rgba(0,0,0,.09),0 1px 0 rgba(255,255,255,.9) inset,0 2px 8px rgba(0,0,0,.05)}
+  .dk .glass{background:linear-gradient(rgba(255,255,255,.16),rgba(255,255,255,.07));
+    box-shadow:0 0 0 .5px rgba(255,255,255,.14),0 1px 0 rgba(255,255,255,.14) inset}
+  .tabs{display:flex;gap:2px;margin:14px 14px 10px;padding:3px;border-radius:999px;background:rgba(255,255,255,.6);box-shadow:0 0 0 1px var(--ink12) inset}
+  .dk .tabs{background:rgba(255,255,255,.06)}
+  .tab{flex:1;height:26px;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:6px;
+    font:500 10px var(--mono);letter-spacing:.5px;color:var(--ink60);text-transform:uppercase}
+  .tab svg{width:11px;height:11px}
+  .tab i{font-style:normal;color:var(--ink40)}
+  .tab.on{color:var(--ink)}
+  .tabs .tab.on{background:linear-gradient(rgba(255,255,255,.95),rgba(255,255,255,.7));box-shadow:0 0 0 .5px rgba(0,0,0,.08),0 1px 3px rgba(0,0,0,.12)}
+  .dk .tabs .tab.on{background:rgba(255,255,255,.18);box-shadow:0 0 0 .5px rgba(255,255,255,.2)}
+  .sr{display:flex;gap:8px;padding:0 14px 10px}
+  .sr .f{flex:1;height:32px;border-radius:999px;display:flex;align-items:center;gap:7px;padding:0 12px;font-size:13px;color:var(--ink40)}
+  .sr .f svg{width:12px;height:12px}
+  .sr .plus{width:30px;height:30px;margin-top:1px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center}
+  .sr .plus svg{width:12px;height:12px}
+  .list{flex:1;padding:6px 8px;display:flex;flex-direction:column;gap:2px;overflow:hidden}
+  .row{display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:10px}
+  .row.hov{background:var(--ink06)}
+  .tile{width:32px;height:32px;border-radius:8px;background:var(--ink);color:var(--paper);display:grid;place-items:center;font:600 11px var(--mono);flex:none}
+  .row .m{flex:1;min-width:0}
+  .row .n{font-size:13px;font-weight:500;display:flex;gap:6px;align-items:baseline;white-space:nowrap}
+  .row .n b{font:500 10px var(--mono);letter-spacing:.5px;color:var(--ink40)}
+  .row .s{font:11px var(--mono);color:var(--ink40);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .row .c{font:500 10px var(--mono);letter-spacing:.8px;color:var(--ink40)}
+  .row.hov .c{color:var(--ink)}
+  .foot{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;border-top:1px solid var(--ink06);font:500 10px var(--mono);letter-spacing:.5px;color:var(--ink40)}
+  .foot .g{display:flex;gap:14px;align-items:center}
+  .foot span{display:inline-flex;gap:5px;align-items:center}
+  .foot svg{width:10px;height:10px}
+
+  /* touch id overlay */
+  .bio{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+    background:color-mix(in srgb,var(--paper) 62%,transparent);backdrop-filter:blur(3.5px)}
+  .bio svg{width:84px;height:84px}
+  .bio .card2{display:flex;flex-direction:column;align-items:center;gap:14px;padding:30px 38px;border-radius:26px;background:color-mix(in srgb,var(--paper) 88%,transparent);box-shadow:0 0 0 .5px var(--ink12),0 20px 50px rgba(0,0,0,.4)}
+  .bio span{font:500 12px var(--mono);letter-spacing:.1em;text-transform:uppercase}
+  .bio small{font:11px var(--sans);color:var(--ink60);margin-top:-6px}
+
+  /* editor */
+  .ehead{display:flex;align-items:center;justify-content:space-between;padding:14px 14px 10px}
+  .cb{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;color:var(--ink60)}
+  .cb svg{width:11px;height:11px}
+  .ehead .t{font:500 10px var(--mono);letter-spacing:.5px;color:var(--ink40)}
+  .ehead .g{display:flex;gap:6px}
+  .editor{flex:1;margin:0 14px 10px;border-radius:18px;padding:14px 16px;font-size:13px;line-height:1.5;overflow:hidden}
+  .editor .cmd{font:12px/1.55 var(--mono);color:var(--ink);background:var(--ink06);border-radius:8px;padding:8px 10px;margin:8px 0;white-space:pre}
+  .caret{display:inline-block;width:1.5px;height:15px;background:var(--accent);vertical-align:-3px;margin-left:1px}
+
+  /* toast chip */
+  .chip{position:absolute;display:flex;align-items:center;gap:12px;padding:16px 24px 16px 18px;border-radius:999px;
+    background:rgba(255,255,255,.72);backdrop-filter:blur(24px);font:500 21px var(--display);letter-spacing:-.01em;color:var(--ink);
+    box-shadow:0 0 0 1px rgba(255,255,255,.7) inset,0 20px 50px rgba(0,0,0,.18)}
+  .chip .ck{width:32px;height:32px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center}
+  .chip .ck svg{width:16px;height:16px}
+  .dark .chip{background:rgba(40,40,44,.7);color:var(--paper);box-shadow:0 0 0 1px rgba(255,255,255,.12) inset,0 20px 50px rgba(0,0,0,.5)}
+  .dark .chip .ck{background:var(--accent-dark);color:#121212}
+
+  /* keycaps */
+  .keys{position:absolute;display:flex;gap:16px}
+  .cap{width:104px;height:104px;border-radius:24px;display:grid;place-items:center;font:500 46px var(--sans);color:var(--ink);
+    background:linear-gradient(#ffffff,#eeece6);box-shadow:0 0 0 1px rgba(0,0,0,.1),0 6px 0 #d3d0c6,0 16px 26px rgba(0,0,0,.2)}
+  .cap.k{background:linear-gradient(#2a2a2a,#121212);color:#fff;box-shadow:0 0 0 1px #000,0 6px 0 #000,0 16px 26px rgba(0,0,0,.35);font-family:var(--mono);font-weight:500}
+
+  /* faux editor window (slide 4) */
+  .win{position:absolute;border-radius:16px;background:#1b1c20;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 30px 70px rgba(0,0,0,.4)}
+  .win .bar{height:38px;display:flex;align-items:center;gap:8px;padding:0 16px;background:#26272c}
+  .win .bar i{width:12px;height:12px;border-radius:50%;background:#ff5f57}
+  .win .bar i:nth-child(2){background:#febc2e}.win .bar i:nth-child(3){background:#28c840}
+  .win pre{padding:22px 26px;font:15px/1.75 var(--mono);color:#c9ccd6}
+  .win .k1{color:#ff8f63}.win .k2{color:#7fd1b9}.win .k3{color:#8b8ea0}
+
+  /* cards (slide 5) */
+  .card{position:absolute;display:flex;gap:26px;align-items:center;width:600px;padding:30px 34px;border-radius:28px;
+    background:linear-gradient(rgba(255,255,255,.1),rgba(255,255,255,.04));box-shadow:0 0 0 1px rgba(255,255,255,.12) inset,0 30px 60px rgba(0,0,0,.4);backdrop-filter:blur(20px)}
+  .card .ic{width:72px;height:72px;border-radius:20px;background:var(--paper);color:#121212;display:grid;place-items:center;flex:none}
+  .card .ic svg{width:34px;height:34px}
+  .card h3{font-weight:500;font-size:30px;letter-spacing:-.02em;margin-bottom:6px}
+  .card p{font-size:20px;line-height:1.35;color:rgba(244,243,239,.6)}
+</style>
+</head>
+<body>
+
+<!-- ============ 1 · KEYS ============ -->
+<section class="slide light" id="s1">
+  <div class="copy">
+    <div class="eyebrow">Keyholdr</div>
+    <h1>Your keys, one <em>keystroke</em> away.</h1>
+    <p class="sub">A menu bar vault for your API keys. Search, copy, done.</p>
+  </div>
+  <div class="desk" style="left:760px;top:118px;width:700px;height:860px">
+    <div class="menubar"><div class="l"><b>Finder</b><span>File</span><span>Edit</span><span>View</span></div>
+      <div class="r"><div class="tray"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3"/></svg></div><span>Sat 19 Sep</span></div></div>
+    <div class="pop" style="left:100px;top:62px" id="pop1"></div>
+  </div>
+  <div class="chip" style="left:470px;top:668px"><div class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>Copied — GitHub (work)</div>
+</section>
+
+<!-- ============ 2 · TOUCH ID ============ -->
+<section class="slide dark" id="s2">
+  <div class="copy">
+    <div class="eyebrow">Security</div>
+    <h1>Locked behind <em>Touch&nbsp;ID.</em></h1>
+    <p class="sub">Every copy and reveal asks for your fingerprint. Secrets live in the macOS Keychain, never in plain text.</p>
+  </div>
+  <div class="desk" style="left:760px;top:118px;width:700px;height:860px">
+    <div class="menubar"><div class="l"><b>Finder</b><span>File</span><span>Edit</span><span>View</span></div>
+      <div class="r"><div class="tray"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3"/></svg></div><span>Sat 19 Sep</span></div></div>
+    <div class="pop dk" style="left:100px;top:62px" id="pop2"></div>
+  </div>
+</section>
+
+<!-- ============ 3 · NOTES ============ -->
+<section class="slide light" id="s3">
+  <div class="copy">
+    <div class="eyebrow">New · Notes</div>
+    <h1>Notes, right <em>beside</em> your keys.</h1>
+    <p class="sub" style="max-width:500px">A scrap pad in the same popover. Paste, jot, copy. It autosaves.</p>
+  </div>
+  <div class="desk" style="left:640px;top:118px;width:880px;height:860px">
+    <div class="menubar"><div class="l"><b>Finder</b><span>File</span><span>Edit</span><span>View</span></div>
+      <div class="r"><div class="tray"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3"/></svg></div><span>Sat 19 Sep</span></div></div>
+    <div class="pop" style="left:34px;top:62px" id="pop3a"></div>
+    <div class="pop" style="left:312px;top:150px" id="pop3b"></div>
+  </div>
+</section>
+
+<!-- ============ 4 · SUMMON ============ -->
+<section class="slide light" id="s4">
+  <div class="copy">
+    <div class="eyebrow">Always there</div>
+    <h1>Summon it from <em>anywhere.</em></h1>
+    <p class="sub">Press one shortcut in any app. Click away and it locks itself again.</p>
+  </div>
+  <div class="desk" style="left:640px;top:118px;width:880px;height:860px">
+    <div class="menubar"><div class="l"><b>Code</b><span>File</span><span>Edit</span><span>Selection</span></div>
+      <div class="r"><div class="tray"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3"/></svg></div><span>Sat 19 Sep</span></div></div>
+    <div class="win" style="left:30px;top:70px;width:470px;height:420px">
+      <div class="bar"><i></i><i></i><i></i></div>
+<pre><span class="k3"># .env.local</span>
+<span class="k1">OPENAI_API_KEY</span>=<span class="k2">▮▮▮▮▮▮▮▮▮▮▮▮</span>
+<span class="k1">STRIPE_SECRET</span>=
+<span class="k1">SUPABASE_URL</span>=https://acme.supabase.co
+<span class="k1">GITHUB_TOKEN</span>=
+
+<span class="k3"># paste from Keyholdr ↩</span></pre>
+    </div>
+    <div class="pop" style="left:270px;top:100px" id="pop4"></div>
+  </div>
+  <div class="keys" style="left:92px;top:640px">
+    <div class="cap">⌃</div><div class="cap">⌥</div><div class="cap">⌘</div><div class="cap k">K</div>
+  </div>
+</section>
+
+<!-- ============ 5 · LOCAL ============ -->
+<section class="slide dark" id="s5">
+  <div class="copy" style="top:230px">
+    <div class="eyebrow">Privacy</div>
+    <h1>Strictly <em>local.</em></h1>
+    <p class="sub">No servers, no accounts, no analytics. Moving Macs? Export one passphrase-encrypted file.</p>
+  </div>
+  <div class="card" style="left:770px;top:150px"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+    <div><h3>Keychain-backed</h3><p>Each secret is its own Keychain item, unlocked only after Touch ID.</p></div></div>
+  <div class="card" style="left:810px;top:365px"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8.5a15 15 0 0 1 20 0M5 12a10 10 0 0 1 14 0M8.5 15.5a5 5 0 0 1 7 0"/><path d="M4 4l16 16"/><circle cx="12" cy="19" r=".8" fill="currentColor"/></svg></div>
+    <div><h3>Nothing leaves your Mac</h3><p>No network calls. No sync. No tracking. Ever.</p></div></div>
+  <div class="card" style="left:770px;top:580px"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 20h16"/></svg></div>
+    <div><h3>Encrypted export</h3><p>One file, protected by your passphrase (PBKDF2 + AES-GCM).</p></div></div>
+</section>
+
+<script>
+const I = {
+  key:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3"/></svg>',
+  note:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5M8.5 13h7M8.5 17h5"/></svg>',
+  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.5-4.5"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+  unlock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+  copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>',
+  trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>',
+  print:'',
+};
+(function(){
+  const pt=(r,a)=>[50+r*Math.cos(a*Math.PI/180),52+r*Math.sin(a*Math.PI/180)].map(v=>v.toFixed(1)).join(' ');
+  const arcs=[[6,200,520],[13,150,470],[20,215,545],[27,170,490],[34,230,560],[41,190,500]];
+  const d=arcs.map(([r,a0,a1])=>{const sweep=a1-a0>180?1:0;return `M ${pt(r,a0)} A ${r} ${r} 0 ${sweep} 1 ${pt(r,a1%360)}`}).join(' ');
+  I.print=`<svg viewBox="0 0 100 100"><path d="${d}" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"/></svg>`;
+})();
+const KEYS = [
+  ['AW','AWS','personal',''],['GI','GitHub','work',''],['OP','OpenAI','default',''],
+  ['ST','Stripe','live','11MO · ROTATE?'],['CL','Claude','learn',''],['VE','Vercel','production',''],['SU','Supabase','staging','']
+];
+const NOTES = [
+  ['Deploy steps','git tag v1.7.0 && git push --tags','2H AGO'],
+  ['Staging URL','https://staging.acme.dev/api/v2','YESTERDAY'],
+  ['Webhook test','curl -X POST localhost:3000/hook -d @body.json','THU'],
+  ['Standup — Thursday','Ship notes tab, review PR #142','THU'],
+  ['Reading list','Designing Data-Intensive Applications','14 SEP']
+];
+const tabs = (on,kc,nc)=>`<div class="tabs"><div class="tab ${on==='k'?'on':''}">${I.key}KEYS <i>${kc}</i></div><div class="tab ${on==='n'?'on':''}">${I.note}NOTES <i>${nc}</i></div></div>`;
+const search = (ph,q='')=>`<div class="sr"><div class="f glass">${I.search}<span style="${q?'color:var(--ink)':''}">${q||ph}</span></div><div class="plus">${I.plus}</div></div>`;
+const footer = (left,right,icon)=>`<div class="foot"><span>${left}</span><div class="g"><span>${I.check}AUTOSTART</span><span>${icon}${right}</span></div></div>`;
+const keyRow=(k,hov,copied)=>`<div class="row ${hov?'hov':''}"><div class="tile">${k[0]}</div><div class="m"><div class="n">${k[1]}${k[3]?`<b>${k[3]}</b>`:''}</div><div class="s">${k[2]} · ••••••••</div></div><div class="c">${copied?'COPIED':'COPY'}</div></div>`;
+const noteRow=(n,hov)=>`<div class="row ${hov?'hov':''}"><div class="m"><div class="n">${n[0]}<b>${n[2]}</b></div><div class="s">${n[1]}</div></div><div class="c">COPY</div></div>`;
+
+function keysPop(id,opts={}){
+  const rows = KEYS.slice(0,opts.count||7).map((k,i)=>keyRow(k,i===opts.hover,i===opts.hover&&opts.copied)).join('');
+  document.getElementById(id).innerHTML = `<div class="col">${tabs('k',7,5)}${search('Search keys…',opts.q)}<div class="list">${rows}</div>${footer('7 KEYS','LOCKED AT REST',I.lock)}
+  ${opts.bio?`<div class="bio"><div class="card2"><div style="color:var(--accent-dark)">${I.print}</div><span>Touch ID</span><small>Unlock to copy “GitHub (work)”</small></div></div>`:''}</div>`;
+}
+function notesPop(id,hover){
+  document.getElementById(id).innerHTML = `<div class="col">${tabs('n',7,5)}${search('Search notes…')}<div class="list">${NOTES.map((n,i)=>noteRow(n,i===hover)).join('')}</div>${footer('5 NOTES','PLAIN TEXT',I.unlock)}</div>`;
+}
+function editorPop(id){
+  document.getElementById(id).innerHTML = `<div class="col"><div class="ehead"><div class="cb glass">${I.back}</div><div class="t">EDITED 2H AGO</div><div class="g"><div class="cb glass">${I.copy}</div><div class="cb glass">${I.trash}</div></div></div>
+  <div class="editor glass"><b style="font-weight:600">Deploy steps</b><br>Before every release:
+  <div class="cmd">swift test
+./build.sh --no-launch</div>
+  Then tag and push:
+  <div class="cmd">git tag v1.7.0 && git push --tags</div>
+  Bump the Homebrew tap, then submit for review.<span class="caret"></span></div>${footer('','PLAIN TEXT',I.unlock).replace('<span></span>','<span></span>')}</div>`;
+}
+keysPop('pop1',{hover:1,copied:true});
+keysPop('pop2',{hover:1,bio:true});
+notesPop('pop3a',0); editorPop('pop3b');
+keysPop('pop4',{q:'g'});
+(function(){const G=[['GI','GitHub','work',''],['GL','GitLab','ci',''],['GC','Google Cloud','prod',''],['GR','Groq','default',''],['GE','Gemini','codelab',''],['GD','GoDaddy','domains',''],['GF','Grafana','staging','']];
+ document.getElementById('pop4').querySelector('.list').innerHTML=G.map((k,i)=>keyRow(k,i===0,false)).join('');})();
+
+const s = new URLSearchParams(location.search).get('s') || '1';
+document.body.dataset.s = s;
+</script>
+</body>
+</html>
