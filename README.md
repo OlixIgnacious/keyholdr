@@ -51,7 +51,7 @@ clipboard, and everything locks itself again.
 - **Featherweight** — pure SwiftUI. **~700 KB**.
 - **Strictly local** — no servers, no sync, no analytics, no network calls. Ever.
 - **Moves when you do** — export the vault to a single passphrase-encrypted file (PBKDF2 + AES-GCM) and import it on the new machine.
-- **Terminal native** — `keyholdr get aws` prints a secret after Touch ID; `keyholdr run` injects keys as env vars so they never touch your dotfiles.
+- **Terminal native** — plain `keyholdr` opens a full-screen UI for your keys and notes; `keyholdr get aws` prints a secret after Touch ID; `keyholdr run` injects keys as env vars so they never touch your dotfiles.
 - **Rotation nudges** — a quiet `11MO · ROTATE?` hint appears on keys whose secret hasn't changed in six months.
 - **Onboarding, on demand** — revisit the first-launch tour any time from the `⋯` menu ("How Keyholdr Works…"), which also links out to the website.
 - **Scratch notes** — a **Notes** tab next to **Keys** for jotting or pasting throwaway text without opening Notes.app. Autosaves, plain text, one click to copy. See [Scratch notes](#scratch-notes).
@@ -164,7 +164,8 @@ Run the same three commands above, or open the app and go to **⋯ menu →
 Terminal Setup…** for a ready-to-paste copy of them.
 
 ```bash
-keyholdr                                         # interactive: type to filter, ↑↓, ⇥/space to mark, ⏎ copies
+keyholdr                                         # full-screen UI: keys + notes, type to filter, ⏎ copies
+keyholdr --classic                               # the simple inline picker (⇥/space to mark)
 keyholdr list                                    # every key, with age — never the secrets
 keyholdr get aws                                 # Touch ID → secret on stdout
 keyholdr get github --label work --copy          # to the clipboard instead
@@ -221,7 +222,8 @@ keyholdr/
 │   ├── KeyholdrApp.swift      MenuBarExtra entry point
 │   ├── Models/                 login item, global hotkey
 │   └── Views/                  popover UI, monochrome theme
-├── Sources/keyholdr-cli/    terminal companion — list, get, run
+├── Sources/KeyholdrTUI/     terminal UI primitives — raw mode, key parsing, text editing
+├── Sources/keyholdr-cli/    terminal companion — full-screen UI, list, get, run
 ├── build.sh                  macOS build + bundle script (direct distribution)
 └── build-mas.sh               Mac App Store build + signed installer .pkg
 ```

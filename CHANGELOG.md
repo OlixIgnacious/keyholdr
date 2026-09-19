@@ -16,6 +16,13 @@ All notable changes to Keyholdr are documented here. Format follows
   autostart being off by default.
 
 ### Added
+- **Terminal UI** — bare `keyholdr` now opens a full-screen UI with KEYS and
+  NOTES tabs, a detail pane, search, copy and reveal (Touch ID), multi-key copy,
+  add/delete keys, and browse/copy/create/edit/delete notes with a multi-line
+  editor that handles pasted text. Every existing command (`get`, `run`, `env`,
+  `list`, `add`, `rm`) and all scripted use is unchanged; pass `--classic` or set
+  `KEYHOLDR_CLASSIC=1` to keep the old inline picker. Falls back
+  to it automatically on a dumb terminal or one smaller than 60×16.
 - **Notes tab** — a `KEYS | NOTES` switcher and quick, autosaving, plain-text
   scratch notes for text you'd otherwise open Notes.app for. Searchable, one-click
   copy, empty notes discard themselves. Stored unencrypted in `notes.json`, never

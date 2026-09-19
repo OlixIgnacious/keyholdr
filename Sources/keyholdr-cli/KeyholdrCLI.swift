@@ -2,6 +2,7 @@ import AppKit
 import ArgumentParser
 import Foundation
 import KeyholdrKit
+import KeyholdrTUI
 import LocalAuthentication
 
 @main
@@ -9,7 +10,7 @@ struct KeyholdrCLI: ParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "keyholdr",
         abstract: "Your keys, one command away.",
-        discussion: "Reads the same vault as the Keyholdr menu bar app. Every secret access requires Touch ID (or your password). Run with no arguments to browse interactively — ⇥ or space marks several keys.",
+        discussion: "Reads the same vault as the Keyholdr menu bar app. Every secret access requires Touch ID (or your password). Run with no arguments to open the full-screen UI (keys and notes); pass --classic for the simple inline picker.",
         version: "1.5.0",
         subcommands: [Pick.self, List.self, Get.self, Run.self, Env.self, Add.self, Remove.self],
         defaultSubcommand: Pick.self
@@ -134,30 +135,15 @@ struct Add: ParsableCommand {
     var tags: String = ""
 
     func run() throws {
-        let keys = StorageManager.loadKeys()
-        // Same guard as the app: an identical platform + label pair would be
-        // unaddressable later.
-        if keys.contains(where: {
-            $0.platform.caseInsensitiveCompare(platform) == .orderedSame &&
-            $0.label.caseInsensitiveCompare(label) == .orderedSame
-        }) {
-            throw ValidationError("A \(platform) key labeled '\(label)' already exists. Use a different --label.")
-        }
+        // Checked before prompting, so a duplicate fails fast.
+        try ensureNewKey(platform: platform, label: label, in: StorageManager.loadKeys())
 
         guard let secret = readSecret(prompt: "Secret for \(platform) (\(label)) — input hidden: "),
               !secret.isEmpty else {
             throw ValidationError("No secret provided.")
         }
 
-        let tagList = tags.split(separator: ",")
-            .map { $0.trimmingCharacters(in: .whitespaces) }
-            .filter { !$0.isEmpty }
-        let item = KeyItem(platform: platform, label: label, tags: tagList, secretUpdatedAt: Date())
-
-        guard KeychainHelper.save(secret: secret, for: item.id) else {
-            throw ValidationError("Couldn't write the secret to the Keychain.")
-        }
-        StorageManager.saveKeys(keys + [item])
+        try addKey(platform: platform, label: label, tags: parseTags(tags), secret: secret)
         FileHandle.standardError.write(Data(Ansi.style("Added \(platform) (\(label)).\n", Ansi.green).utf8))
     }
 }
@@ -213,11 +199,7 @@ struct Remove: ParsableCommand {
             }
         }
 
-        let ids = Set(targets.map(\.id))
-        for id in ids { KeychainHelper.delete(for: id) }
-        var keys = StorageManager.loadKeys()
-        keys.removeAll { ids.contains($0.id) }
-        StorageManager.saveKeys(keys)
+        deleteKeys(targets)
         for target in targets {
             FileHandle.standardError.write(Data(Ansi.style("Removed \(target.platform) (\(target.label)).\n", Ansi.green).utf8))
         }
@@ -250,16 +232,38 @@ func readSecret(prompt: String) -> String? {
 struct Pick: ParsableCommand {
     static let configuration = CommandConfiguration(
         abstract: "Browse the vault interactively; ⏎ copies after Touch ID.",
-        discussion: "⇥ or space marks several keys — their secrets are copied together, one per line."
+        discussion: """
+        Opens a full-screen UI with KEYS and NOTES tabs. Space marks several keys — their \
+        secrets are copied together, one per line. Use --classic (or KEYHOLDR_CLASSIC=1) for \
+        the simple inline picker, where ⇥ or space marks.
+        """
     )
 
     @Argument(help: "Optional initial filter, e.g. `keyholdr pick aws`.")
     var filter: String = ""
 
+    @Flag(name: .long, help: "Use the simple inline picker instead of the full-screen UI.")
+    var classic = false
+
     func run() throws {
         guard Picker.isInteractive else {
             throw ValidationError("Interactive mode needs a terminal. Try `keyholdr list` or `keyholdr get <platform>`.")
         }
+
+        // The full-screen UI needs cursor addressing and room to draw; anything
+        // less falls back to the inline picker below.
+        let forceClassic = classic || ProcessInfo.processInfo.environment["KEYHOLDR_CLASSIC"] == "1"
+        if !forceClassic, Terminal.isSupported {
+            let size = Terminal().size
+            let minimum = Terminal.minimumSize
+            if size.columns >= minimum.columns, size.rows >= minimum.rows {
+                if let summary = Dashboard(initialFilter: filter).run() {
+                    FileHandle.standardError.write(Data(Ansi.style(summary + "\n", Ansi.green).utf8))
+                }
+                return
+            }
+        }
+
         let keys = StorageManager.loadKeys()
             .sorted { $0.platform.localizedCaseInsensitiveCompare($1.platform) == .orderedAscending }
         guard !keys.isEmpty else {
@@ -470,24 +474,11 @@ func resolveKey(platform: String, label: String?, interactive: Bool = false) thr
 /// without a context, exactly as before.
 @discardableResult
 func authenticateOrExit(reason: String) throws -> LAContext? {
-    final class ResultBox: @unchecked Sendable { var success = false }
-
-    let context = LAContext()
-    var error: NSError?
-    guard context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) else { return nil }
-
-    FileHandle.standardError.write(Data(Ansi.style("● Touch ID", Ansi.accent, Ansi.bold).appending(" — \(reason)\n").utf8))
-    let box = ResultBox()
-    let semaphore = DispatchSemaphore(value: 0)
-    context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: reason) { ok, _ in
-        box.success = ok
-        semaphore.signal()
-    }
-    semaphore.wait()
-
-    guard box.success else {
+    switch authenticate(reason: reason, announce: true) {
+    case .authenticated(let context):
+        return context
+    case .denied:
         FileHandle.standardError.write(Data(Ansi.style("Authentication failed.\n", Ansi.red).utf8))
         throw ExitCode(1)
     }
-    return context
 }

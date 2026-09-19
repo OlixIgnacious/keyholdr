@@ -16,7 +16,7 @@ both link `keyholdr` onto your PATH.
 
 | Command | What it does |
 |---|---|
-| `keyholdr` | Interactive picker (default subcommand) |
+| `keyholdr` | Full-screen UI for keys and notes (default subcommand) |
 | `keyholdr list` | List every key (never the secrets) |
 | `keyholdr get <platform>` | Print or copy a secret |
 | `keyholdr run` | Run a command with secrets injected as env vars |
@@ -28,20 +28,76 @@ Run `keyholdr <command> --help` for full flag details.
 
 ---
 
-### `keyholdr` / `keyholdr pick [filter]`
+### `keyholdr` / `keyholdr pick [filter]` — the terminal UI
 
-Opens an inline picker: type to filter by platform, label, or tag, ↑↓ to
-move, **⇥** or **space** to mark several keys, **⏎** to confirm. After Touch
-ID, the marked secrets (or the highlighted one, if none are marked) are
-copied to the clipboard — one per line when there's more than one.
+Opens a full-screen UI with **KEYS** and **NOTES** tabs, the same as the menu
+bar app. The left pane lists entries; the right pane shows the selected one
+(env var name, tags, dates, and the masked secret for a key; the full text for
+a note).
 
 ```bash
 keyholdr            # browse everything
 keyholdr aws        # start pre-filtered to "aws"
+keyholdr --classic  # the simple inline picker instead (also: KEYHOLDR_CLASSIC=1)
 ```
 
-Needs a real terminal (stdin and stderr must both be a tty). In scripts or
-pipes, use `list`, `get`, `run`, or `env` instead.
+```text
+╭─ KEYHOLDR ────────────────────────────────────────────────────────────────╮
+│ ● KEYS 15   ○ NOTES 3                               › type to search keys │
+├───────────────────────────────────────┬───────────────────────────────────┤
+│ ▸  AW  AWS            personal   8mo ⚠│  AWS                              │
+│    CL  Claude         learn      5d   │  personal                         │
+│    GH  GitHub         work       2w   │                                   │
+│                                       │  env var   AWS_API_KEY            │
+│                                       │  tags      [dev]                  │
+│                                       │  secret    ••••••••••••           │
+│                                       │            ⌃R to reveal (Touch ID)│
+├───────────────────────────────────────┴───────────────────────────────────┤
+│ ⏎ copy · ␣ mark · ⌃R reveal · ⌃N new · ⌃X delete · ⇥ notes · esc quit     │
+│ 15 KEYS                                                     LOCKED AT REST│
+╰───────────────────────────────────────────────────────────────────────────╯
+```
+
+**Keys tab.** Copy and reveal need Touch ID, exactly like `get`. Marking
+several keys with **space** and pressing **⏎** copies all their secrets, one
+per line. A revealed secret hides itself after 10 seconds. **⌃N** opens a form
+to add a key (the secret field is hidden as you type) and **⌃X** deletes after
+a confirmation — both use the same rules as `keyholdr add` and `keyholdr rm`.
+
+**Notes tab.** Quick plain-text scratch notes, shared with the menu bar app.
+**⏎** copies a note (no Touch ID — notes are not secrets and are stored
+unencrypted), **⌃N** starts a new one and **⌃E** edits the selected one in a
+multi-line editor. Pasting keeps its newlines; **esc** saves and closes, and an
+empty note is discarded.
+
+Because it draws on the alternate screen, nothing you reveal stays in your
+terminal's scrollback. On quit, a one-line "Copied … to the clipboard." remains
+if you copied something (never the secret itself).
+
+The UI needs a real terminal (stdin and stderr must both be a tty), a `TERM`
+other than `dumb`, and at least 60×16 cells — below that it falls back to the
+inline picker. Under about 76 columns the detail pane is hidden. In scripts or
+pipes, use `list`, `get`, `run`, or `env` instead. If a terminal is ever left in
+an odd state (for example after a crash), `reset` restores it.
+
+#### Terminal UI controls
+
+| Key | Action |
+|---|---|
+| type | filter the current tab (^U clears it, ^W deletes a word) |
+| ↑ / ↓, PgUp / PgDn, Home / End | move the selection |
+| ⏎ | copy the selection (or every marked key) |
+| space | mark / unmark a key (keys tab) |
+| ⌃R | reveal / hide the secret (keys tab, Touch ID) |
+| ⌃N | new key (keys tab) or new note (notes tab) |
+| ⌃E | edit the selected note (notes tab) |
+| ⌃X | delete the selection or marked keys, after a `y` confirmation |
+| ⇥ / ⇧⇥ | switch between KEYS and NOTES |
+| esc | clear the filter; quit when it is already empty (saves and closes the note editor) |
+| ^C, ^D | quit |
+
+The UI exits with code `0`. The other commands, and the inline picker, are
+unchanged.
 
 ---
 
@@ -187,7 +243,10 @@ and `GITHUB_TOKEN_WORK`.
 
 ---
 
-## Picker controls
+## Inline picker controls
+
+The inline picker is what `--classic` shows, and what `rm`, `run`, `env` and
+ambiguous key references use.
 
 | Key | Action |
 |---|---|
@@ -198,7 +257,7 @@ and `GITHUB_TOKEN_WORK`.
 | ^U | clear the filter |
 | esc, ^C, ^D | cancel |
 
-`pick`, `rm`, `run`, and `env` all use the multi-select picker. The picker
+`pick --classic`, `rm`, `run`, and `env` all use the multi-select picker. The picker
 that resolves an ambiguous `--label`-less reference (e.g. `keyholdr get aws`
 matching two keys) is single-select — ⏎ just picks the highlighted entry.
 
