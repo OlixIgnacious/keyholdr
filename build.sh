@@ -17,6 +17,9 @@ chmod +x "$APP_DIR/Contents/MacOS/Keyholdr"
 cp .build/release/keyholdr-cli "$APP_DIR/Contents/MacOS/keyholdr-cli"
 chmod +x "$APP_DIR/Contents/MacOS/keyholdr-cli"
 
+echo "🎨 Copying app icon..."
+cp Sources/keyholdr/AppIcon.icns "$APP_DIR/Contents/Resources/AppIcon.icns"
+
 echo "📝 Creating Info.plist..."
 cat <<EOF > "$APP_DIR/Contents/Info.plist"
 <?xml version="1.0" encoding="UTF-8"?>
@@ -27,6 +30,8 @@ cat <<EOF > "$APP_DIR/Contents/Info.plist"
     <string>en</string>
     <key>CFBundleExecutable</key>
     <string>Keyholdr</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
     <key>CFBundleIdentifier</key>
     <string>com.olixstudios.Keyholdr</string>
     <key>CFBundleInfoDictionaryVersion</key>
@@ -36,9 +41,9 @@ cat <<EOF > "$APP_DIR/Contents/Info.plist"
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.7.0</string>
+    <string>1.7.1</string>
     <key>CFBundleVersion</key>
-    <string>12</string>
+    <string>14</string>
     <key>LSMinimumSystemVersion</key>
     <string>13.0</string>
     <key>LSUIElement</key>
