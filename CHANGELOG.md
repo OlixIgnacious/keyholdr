@@ -5,7 +5,13 @@ All notable changes to Keyholdr are documented here. Format follows
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-09-19
+
 ### Changed
+- **Terminal Setup** (Mac App Store build) now points terminal users at the
+  Homebrew or direct-download build — the App Store sandbox limits its bundled
+  command-line tool, and it can't run the full-screen UI. README and the website
+  say the same.
 - **Autostart is now opt-in** — the app no longer registers itself as a login
   item on first launch. Use the AUTOSTART toggle in the footer (called out in
   onboarding) to enable it. Fixes an App Review rejection under Mac App Store
@@ -140,7 +146,8 @@ keys.
 - Touch ID / Windows Hello required to copy or reveal any key.
 - macOS: ⌘N to add a key, Escape to dismiss, instant search.
 
-[Unreleased]: https://github.com/OlixIgnacious/keyholdr/compare/v1.6.0...HEAD
+[Unreleased]: https://github.com/OlixIgnacious/keyholdr/compare/v1.7.0...HEAD
+[1.7.0]: https://github.com/OlixIgnacious/keyholdr/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/OlixIgnacious/keyholdr/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/OlixIgnacious/keyholdr/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/OlixIgnacious/keyholdr/compare/v1.3.0...v1.4.0

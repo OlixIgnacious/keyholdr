@@ -11,7 +11,7 @@ struct KeyholdrCLI: ParsableCommand {
         commandName: "keyholdr",
         abstract: "Your keys, one command away.",
         discussion: "Reads the same vault as the Keyholdr menu bar app. Every secret access requires Touch ID (or your password). Run with no arguments to open the full-screen UI (keys and notes); pass --classic for the simple inline picker.",
-        version: "1.5.0",
+        version: "1.7.0",
         subcommands: [Pick.self, List.self, Get.self, Run.self, Env.self, Add.self, Remove.self],
         defaultSubcommand: Pick.self
     )

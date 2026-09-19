@@ -14,8 +14,8 @@ set -e
 # Keep VERSION/BUILD in sync with the CFBundleShortVersionString/
 # CFBundleVersion in build.sh — App Store Connect needs a new BUILD for
 # every resubmission.
-VERSION="1.6.0"
-BUILD="11"
+VERSION="1.7.0"
+BUILD="12"
 
 echo "🚀 Building Keyholdr (MAS) in release mode..."
 swift build -c release -Xswiftc -DMAS_BUILD
