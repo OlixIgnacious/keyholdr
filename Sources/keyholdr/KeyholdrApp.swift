@@ -61,6 +61,9 @@ final class AppState: ObservableObject {
         // it once the prompt is dismissed so the user sees the result.
         securityManager.$isAuthenticating
             .removeDuplicates()
+            // A @Published replays its current value on subscribe; without this the
+            // sink runs at launch and marks the popover presented before it ever was.
+            .dropFirst()
             .sink { [weak self] isAuthenticating in
                 guard let self, !isAuthenticating, !self.isMenuPresented else { return }
                 NSApp.activate(ignoringOtherApps: true)

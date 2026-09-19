@@ -533,6 +533,14 @@ struct MainView: View {
     /// Returns true to swallow the event when it was handled.
     private func handleKeyDown(keyCode: UInt16, characters: String?, modifiers: NSEvent.ModifierFlags) -> Bool {
         let isFormOpen = showingAddSheet || editingItem != nil
+        // Onboarding/help and the export/import form each replace the list, so
+        // ⌘N must not queue a new key or note underneath them.
+        // The monitor closure holds a copy of this view from when it was installed,
+        // and @AppStorage values read through that copy never update — so the tab
+        // and onboarding flag come straight from UserDefaults, not selectedTab.
+        let defaults = UserDefaults.standard
+        let tab = VaultTab(rawValue: defaults.string(forKey: "selectedTab") ?? "") ?? .keys
+        let isListVisible = defaults.bool(forKey: "hasSeenOnboarding") && !showingHelp && transferMode == nil
 
         // Escape — close the export/import form
         if keyCode == 53, transferMode != nil {
@@ -551,7 +559,7 @@ struct MainView: View {
         }
 
         // ⌘N — new note on the Notes tab
-        if modifiers == .command, characters == "n", selectedTab == .notes, !isFormOpen, transferMode == nil {
+        if modifiers == .command, characters == "n", tab == .notes, !isFormOpen, isListVisible {
             withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
                 if notesStore.editingID != nil { notesStore.closeEditor() }
                 notesStore.newNote()
@@ -560,7 +568,7 @@ struct MainView: View {
         }
 
         // ⌘N — new key
-        if modifiers == .command, characters == "n", selectedTab == .keys, !isFormOpen {
+        if modifiers == .command, characters == "n", tab == .keys, !isFormOpen, isListVisible {
             withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
                 showingAddSheet = true
             }

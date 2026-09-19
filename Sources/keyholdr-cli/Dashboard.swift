@@ -28,7 +28,7 @@ final class Dashboard {
     struct NoteEditor {
         var note: NoteItem
         var buffer: TextBuffer
-        let isNew: Bool
+        var isNew: Bool
         var scrollTop = 0
     }
 
@@ -486,6 +486,8 @@ final class Dashboard {
         } else {
             if text != note.text { note.text = text; note.updatedAt = Date() }
             NoteStorage.upsert(note)
+            // Now on disk: emptying it later must delete it, even if the editor stays open (⌃S).
+            editor.isNew = false
         }
         reloadNotes()
         if let index = visibleNotes.firstIndex(where: { $0.id == note.id }) { noteIndex = index }
