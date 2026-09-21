@@ -34,16 +34,16 @@ Keychain-backed storage · Touch ID unlock · No servers, no accounts, no teleme
 
 ## Contents
 
-[Overview](#overview) ·
-[Features](#features) ·
-[Install](#install) ·
-[Terminal companion](#terminal-companion) ·
-[How secrets are stored](#how-secrets-are-stored) ·
-[Scratch notes](#scratch-notes) ·
-[Build from source](#build-from-source) ·
-[Project layout](#project-layout) ·
-[Contributing](#contributing) ·
-[License](#license)
+- [Overview](#overview)
+- [Features](#features)
+- [Install](#install)
+- [Terminal companion](#terminal-companion)
+- [How secrets are stored](#how-secrets-are-stored)
+- [Scratch notes](#scratch-notes)
+- [Build from source](#build-from-source)
+- [Project layout](#project-layout)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Overview
 
