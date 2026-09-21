@@ -66,7 +66,7 @@ clipboard, and the vault locks itself again.
 - **Biometric gate.** Every copy and reveal requires Touch ID or Apple Watch.
 - **Auto-lock.** Click away and the popover disappears and locks. Nothing lingers.
 - **Encrypted export.** Move to a new Mac with one passphrase-protected file (PBKDF2 + AES-GCM).
-- **Rotation nudges.** A quiet `11MO · ROTATE?` hint appears on keys that haven't changed in six months.
+- **Rotation nudges.** Once a key's secret is more than six months old, a quiet hint shows its age and asks whether to rotate it (for example `11MO · ROTATE?`).
 - **Opt-in autostart.** One toggle in the footer starts Keyholdr at login. It is off by default.
 
 **Everything else**
