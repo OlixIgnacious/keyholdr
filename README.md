@@ -112,7 +112,9 @@ secrets in **Keys**. Notes are also not included in vault export/import.
 
 ### Option A — Mac App Store
 
-[Download Keyholdr](https://apps.apple.com/in/app/keyholdr/id6789253781?mt=12).
+[Download Keyholdr](https://apps.apple.com/in/app/keyholdr/id6789253781?mt=12) —
+version 1.7.1 is live on the App Store, with the new app icon and the ⌘N and
+⌃⌥⌘K fixes for macOS 27 (see the [changelog](CHANGELOG.md)).
 Sandboxed, which limits its command-line tool — for the terminal, use the
 Homebrew or direct-download build below (see
 [Terminal companion](#terminal-companion)).
