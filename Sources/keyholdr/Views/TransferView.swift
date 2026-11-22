@@ -51,7 +51,7 @@ struct TransferView: View {
 
             VStack(spacing: 14) {
                 field(label: "PASSPHRASE") {
-                    SecureField(isExport ? "At least \(VaultExport.minimumPassphraseLength) characters" : "Passphrase", text: $passphrase)
+                    SecureField(isExport ? "At least \(VaultExport.minimumPassphraseLength) characters" as LocalizedStringKey : "Passphrase", text: $passphrase)
                         .textFieldStyle(.plain)
                         .font(.system(size: 13))
                 }
@@ -121,7 +121,7 @@ struct TransferView: View {
     }
 
     @ViewBuilder
-    private func field(label labelText: String, @ViewBuilder content: () -> some View) -> some View {
+    private func field(label labelText: LocalizedStringKey, @ViewBuilder content: () -> some View) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(labelText)
                 .font(.khMonoLabel)

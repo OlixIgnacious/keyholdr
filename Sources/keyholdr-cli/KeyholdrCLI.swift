@@ -11,10 +11,19 @@ struct KeyholdrCLI: ParsableCommand {
         commandName: "keyholdr",
         abstract: "Your keys, one command away.",
         discussion: "Reads the same vault as the Keyholdr menu bar app. Every secret access requires Touch ID (or your password). Run with no arguments to open the full-screen UI (keys and notes); pass --classic for the simple inline picker.",
-        version: "1.7.1",
+        version: "1.7.2",
         subcommands: [Pick.self, List.self, Get.self, Run.self, Env.self, Add.self, Remove.self],
         defaultSubcommand: Pick.self
     )
+
+    static func main() {
+        // The CLI is English-only, but it ships inside the app bundle, which
+        // carries the app's translations — so Foundation would otherwise word
+        // its own error messages in the user's language. Volatile: nothing is
+        // written to the defaults the app shares.
+        UserDefaults.standard.setVolatileDomain(["AppleLanguages": ["en"]], forName: UserDefaults.argumentDomain)
+        main(nil)
+    }
 }
 
 // MARK: - env

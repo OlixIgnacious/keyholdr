@@ -481,9 +481,14 @@ extension Dashboard {
         return Array(rows)
     }
 
+    /// The CLI is English-only, so month names stay English, but the order of
+    /// day, month and year follows the user's region ("Nov 18, 2026" in the US,
+    /// "18 Nov 2026" in the UK, "18. Nov 2026" in Germany).
     private static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "d MMM yyyy"
+        let region = Locale.current.region?.identifier ?? "US"
+        formatter.locale = Locale(identifier: "en_\(region)")
+        formatter.setLocalizedDateFormatFromTemplate("d MMM yyyy")
         return formatter
     }()
 }

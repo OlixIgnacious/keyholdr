@@ -20,6 +20,13 @@ chmod +x "$APP_DIR/Contents/MacOS/keyholdr-cli"
 echo "🎨 Copying app icon..."
 cp Sources/keyholdr/AppIcon.icns "$APP_DIR/Contents/Resources/AppIcon.icns"
 
+echo "🌐 Compiling translations..."
+# The String Catalog becomes <lang>.lproj/Localizable.strings(dict) in the
+# bundle, where SwiftUI looks them up (Bundle.main). Keep the language list in
+# CFBundleLocalizations below in step with the catalog.
+xcrun xcstringstool compile Sources/keyholdr/Localizable.xcstrings \
+    --output-directory "$APP_DIR/Contents/Resources"
+
 echo "📝 Creating Info.plist..."
 cat <<EOF > "$APP_DIR/Contents/Info.plist"
 <?xml version="1.0" encoding="UTF-8"?>
@@ -28,6 +35,15 @@ cat <<EOF > "$APP_DIR/Contents/Info.plist"
 <dict>
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
+    <key>CFBundleLocalizations</key>
+    <array>
+        <string>en</string>
+        <string>de</string>
+        <string>es</string>
+        <string>fr</string>
+        <string>ja</string>
+        <string>zh-Hans</string>
+    </array>
     <key>CFBundleExecutable</key>
     <string>Keyholdr</string>
     <key>CFBundleIconFile</key>
@@ -41,9 +57,9 @@ cat <<EOF > "$APP_DIR/Contents/Info.plist"
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.7.1</string>
+    <string>1.7.2</string>
     <key>CFBundleVersion</key>
-    <string>14</string>
+    <string>15</string>
     <key>LSMinimumSystemVersion</key>
     <string>13.0</string>
     <key>LSUIElement</key>

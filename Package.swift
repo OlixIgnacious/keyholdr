@@ -42,7 +42,9 @@ let package = Package(
                 "KeyholdrKit",
                 .product(name: "MenuBarExtraAccess", package: "MenuBarExtraAccess")
             ],
-            exclude: ["Keyholdr.entitlements", "Keyholdr-CLI.entitlements"]
+            // The String Catalog is compiled into the .app by build.sh / build-mas.sh
+            // (xcstringstool), so SwiftUI finds it in Bundle.main.
+            exclude: ["Keyholdr.entitlements", "Keyholdr-CLI.entitlements", "Localizable.xcstrings"]
         ),
         // The terminal companion: keyholdr list / get / run.
         .executableTarget(

@@ -89,7 +89,7 @@ struct NotesListView: View {
                     HStack(spacing: 6) {
                         Text("Add your first note")
                             .font(.system(size: 12, weight: .medium))
-                        Text("⌘N")
+                        Text(verbatim: "⌘N")
                             .font(.system(size: 11, weight: .medium, design: .monospaced))
                             .opacity(0.6)
                     }
@@ -139,13 +139,13 @@ private struct NoteRowView: View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 4) {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    Text(note.title)
+                    Text(note.localizedTitle)
                         .font(.system(size: 13, weight: .medium))
                         .foregroundColor(KHTheme.ink)
                         .lineLimit(1)
                         .truncationMode(.tail)
 
-                    Text(note.ageLabel())
+                    Text(note.localizedAgeLabel())
                         .font(.khMonoLabel)
                         .tracking(0.5)
                         .foregroundColor(KHTheme.ink40)
@@ -280,7 +280,7 @@ struct NoteEditorView: View {
             Spacer()
 
             if let note, !note.isEmpty {
-                Text("EDITED \(note.ageLabel())")
+                Text("EDITED \(note.localizedAgeLabel())")
                     .font(.khMonoLabel)
                     .tracking(0.5)
                     .foregroundColor(KHTheme.ink40)
@@ -319,7 +319,7 @@ struct NoteEditorView: View {
         }
     }
 
-    private func circleButton(_ systemName: String, help: String, action: @escaping () -> Void) -> some View {
+    private func circleButton(_ systemName: String, help: LocalizedStringKey, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: systemName)
                 .font(.system(size: 11, weight: .medium))

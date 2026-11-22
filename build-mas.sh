@@ -14,8 +14,8 @@ set -e
 # Keep VERSION/BUILD in sync with the CFBundleShortVersionString/
 # CFBundleVersion in build.sh — App Store Connect needs a new BUILD for
 # every resubmission.
-VERSION="1.7.1"
-BUILD="14"
+VERSION="1.7.2"
+BUILD="15"
 
 echo "🚀 Building Keyholdr (MAS) in release mode..."
 swift build -c release -Xswiftc -DMAS_BUILD
@@ -35,6 +35,13 @@ chmod +x "$APP_DIR/Contents/MacOS/keyholdr-cli"
 echo "🎨 Copying app icon..."
 cp Sources/keyholdr/AppIcon.icns "$APP_DIR/Contents/Resources/AppIcon.icns"
 
+echo "🌐 Compiling translations..."
+# The String Catalog becomes <lang>.lproj/Localizable.strings(dict) in the
+# bundle, where SwiftUI looks them up (Bundle.main). Keep the language list in
+# CFBundleLocalizations below in step with the catalog.
+xcrun xcstringstool compile Sources/keyholdr/Localizable.xcstrings \
+    --output-directory "$APP_DIR/Contents/Resources"
+
 echo "📝 Creating Info.plist..."
 cat <<EOF > "$APP_DIR/Contents/Info.plist"
 <?xml version="1.0" encoding="UTF-8"?>
@@ -43,6 +50,15 @@ cat <<EOF > "$APP_DIR/Contents/Info.plist"
 <dict>
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
+    <key>CFBundleLocalizations</key>
+    <array>
+        <string>en</string>
+        <string>de</string>
+        <string>es</string>
+        <string>fr</string>
+        <string>ja</string>
+        <string>zh-Hans</string>
+    </array>
     <key>CFBundleExecutable</key>
     <string>Keyholdr</string>
     <key>CFBundleIconFile</key>

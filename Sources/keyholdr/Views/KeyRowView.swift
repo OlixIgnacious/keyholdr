@@ -35,11 +35,11 @@ struct KeyRowView: View {
 
                     // Quiet rotation nudge for secrets older than ~6 months
                     if item.isStale {
-                        Text("\(item.compactAge.uppercased()) · ROTATE?")
+                        Text("\(item.localizedCompactAge.uppercased()) · ROTATE?")
                             .font(.khMonoLabel)
                             .tracking(0.5)
                             .foregroundColor(KHTheme.ink40)
-                            .help("This secret hasn't changed in \(item.compactAge). Consider rotating it.")
+                            .help("This secret hasn't changed in \(item.localizedAgeDescription). Consider rotating it.")
                     }
                 }
 
@@ -93,7 +93,7 @@ struct KeyRowView: View {
         "\(item.label) · ••••••••"
     }
 
-    private func iconButton(_ systemName: String, help: String, action: @escaping () -> Void) -> some View {
+    private func iconButton(_ systemName: String, help: LocalizedStringKey, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: systemName)
                 .font(.system(size: 11))
@@ -110,7 +110,7 @@ struct KeyRowView: View {
             revealedSecret = nil
         } else {
             Task {
-                let success = await securityManager.authenticate(reason: "reveal the secret for \(item.platform)")
+                let success = await securityManager.authenticate(reason: String(localized: "reveal the secret for \(item.platform)", comment: "Touch ID reason; macOS shows it as “Keyholdr is trying to <reason>”"))
                 if success {
                     if let secret = KeychainHelper.retrieve(for: item.id, context: securityManager.context) {
                         withAnimation {
@@ -124,7 +124,7 @@ struct KeyRowView: View {
 
     private func copyToClipboard() {
         Task {
-            let success = await securityManager.authenticate(reason: "copy the secret for \(item.platform)")
+            let success = await securityManager.authenticate(reason: String(localized: "copy the secret for \(item.platform)", comment: "Touch ID reason; macOS shows it as “Keyholdr is trying to <reason>”"))
             if success {
                 if let secret = KeychainHelper.retrieve(for: item.id, context: securityManager.context) {
                     let pasteboard = NSPasteboard.general

@@ -271,8 +271,8 @@ struct MainView: View {
 
     private var footerCount: String {
         switch selectedTab {
-        case .keys: return "\(keys.count) \(keys.count == 1 ? "KEY" : "KEYS")"
-        case .notes: return "\(notesStore.notes.count) \(notesStore.notes.count == 1 ? "NOTE" : "NOTES")"
+        case .keys: return String(localized: "\(keys.count) KEYS", comment: "Footer count; plural forms in the catalog")
+        case .notes: return String(localized: "\(notesStore.notes.count) NOTES", comment: "Footer count; plural forms in the catalog")
         }
     }
 
@@ -381,7 +381,7 @@ struct MainView: View {
             if !allTags.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 5) {
-                        TagPill(title: "ALL", isSelected: selectedTag == nil) {
+                        TagPill(title: String(localized: "ALL", comment: "Tag filter that shows every key"), isSelected: selectedTag == nil) {
                             withAnimation(.easeOut(duration: 0.2)) { selectedTag = nil }
                         }
 
@@ -417,7 +417,7 @@ struct MainView: View {
                             HStack(spacing: 6) {
                                 Text("Add your first key")
                                     .font(.system(size: 12, weight: .medium))
-                                Text("⌘N")
+                                Text(verbatim: "⌘N")
                                     .font(.system(size: 11, weight: .medium, design: .monospaced))
                                     .opacity(0.6)
                             }
@@ -596,7 +596,7 @@ struct MainView: View {
 
     private func startEditing(_ item: KeyItem) {
         Task {
-            let success = await securityManager.authenticate(reason: "edit the details for \(item.platform)")
+            let success = await securityManager.authenticate(reason: String(localized: "edit the details for \(item.platform)", comment: "Touch ID reason; macOS shows it as “Keyholdr is trying to <reason>”"))
             if success {
                 self.editingSecret = KeychainHelper.retrieve(for: item.id, context: securityManager.context) ?? ""
                 withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
@@ -633,7 +633,7 @@ struct MainView: View {
         let panel = NSOpenPanel()
         panel.allowedContentTypes = vaultFileType
         panel.allowsMultipleSelection = false
-        panel.message = "Choose a Keyholdr vault export"
+        panel.message = String(localized: "Choose a Keyholdr vault export")
         NSApp.activate(ignoringOtherApps: true)
         guard panel.runModal() == .OK, let url = panel.url else { return }
 
@@ -652,7 +652,7 @@ struct MainView: View {
 
     private func performExport(passphrase: String) {
         Task {
-            let success = await securityManager.authenticate(reason: "export all keys")
+            let success = await securityManager.authenticate(reason: String(localized: "export all keys", comment: "Touch ID reason; macOS shows it as “Keyholdr is trying to <reason>”"))
             guard success else { return }
 
             // Capture everything before the save panel: the popover may close
@@ -664,13 +664,13 @@ struct MainView: View {
                 let panel = NSSavePanel()
                 panel.allowedContentTypes = vaultFileType
                 panel.nameFieldStringValue = "vault.\(VaultExport.fileExtension)"
-                panel.message = "The file is encrypted with your passphrase"
+                panel.message = String(localized: "The file is encrypted with your passphrase")
                 NSApp.activate(ignoringOtherApps: true)
                 closeTransfer()
                 guard panel.runModal() == .OK, let url = panel.url else { return }
                 try data.write(to: url)
             } catch {
-                transferError = "Export failed: \(error.localizedDescription)"
+                transferError = String(localized: "Export failed: \(error.localizedDescription)")
             }
         }
     }
@@ -686,32 +686,32 @@ struct MainView: View {
             StorageManager.saveKeys(keys)
             closeTransfer()
         } catch VaultExportError.wrongPassphrase {
-            transferError = "Wrong passphrase for this file."
+            transferError = String(localized: "Wrong passphrase for this file.")
         } catch {
-            transferError = "That file doesn't look like a Keyholdr vault export."
+            transferError = String(localized: "That file doesn't look like a Keyholdr vault export.")
         }
     }
 
     #if !MAS_BUILD
     private func installCLI() {
         guard !cliInstalled else {
-            cliInstallResult = "Already installed at\n~/.local/bin/keyholdr"
+            cliInstallResult = String(localized: "Already installed at\n~/.local/bin/keyholdr")
             return
         }
         switch CLIInstaller.install() {
         case .alreadyInstalled:
             cliInstalled = true
-            cliInstallResult = "Already installed at\n~/.local/bin/keyholdr"
+            cliInstallResult = String(localized: "Already installed at\n~/.local/bin/keyholdr")
         case .installed(let patched):
             cliInstalled = true
             hasDismissedCLIBanner = true
             if patched {
-                cliInstallResult = "Installed ✓\n~/.local/bin added to PATH.\nRestart Terminal to pick it up."
+                cliInstallResult = String(localized: "Installed ✓\n~/.local/bin added to PATH.\nRestart Terminal to pick it up.")
             } else {
-                cliInstallResult = "Installed ✓\n~/.local/bin/keyholdr\nMake sure ~/.local/bin is in your PATH."
+                cliInstallResult = String(localized: "Installed ✓\n~/.local/bin/keyholdr\nMake sure ~/.local/bin is in your PATH.")
             }
         case .failed(let reason):
-            cliInstallResult = "Install failed:\n\(reason)"
+            cliInstallResult = String(localized: "Install failed:\n\(reason)")
         }
     }
     #endif
@@ -770,7 +770,7 @@ enum VaultTab: String {
 }
 
 private struct TabSegment: View {
-    let title: String
+    let title: LocalizedStringKey
     let symbol: String
     let count: Int
     let isSelected: Bool
@@ -795,7 +795,7 @@ private struct TabSegment: View {
             Text(title)
                 .font(.khMonoLabel)
                 .tracking(0.5)
-            Text("\(count)")
+            Text(verbatim: "\(count)")
                 .font(.khMonoLabel)
                 .foregroundColor(KHTheme.ink40)
         }

@@ -5,6 +5,19 @@ All notable changes to Keyholdr are documented here. Format follows
 
 ## [Unreleased]
 
+## [1.7.2] - 2026-11-22
+
+### Added
+- **The app speaks German, Japanese, French, Simplified Chinese and Spanish.**
+  macOS picks the language from System Settings → Language & Region (or the
+  per-app language there); anything else falls back to English. The Touch ID
+  reasons are translated too. The CLI stays in English.
+
+### Changed
+- **Terminal UI:** the key detail pane's "created" date follows your region's
+  day/month/year order ("Nov 18, 2026" in the US, "18 Nov 2026" in the UK),
+  still with English month names.
+
 ## [1.7.1] - 2026-09-19
 
 Available on the [Mac App Store](https://apps.apple.com/in/app/keyholdr/id6789253781?mt=12).
@@ -177,7 +190,8 @@ keys.
 - Touch ID / Windows Hello required to copy or reveal any key.
 - macOS: ⌘N to add a key, Escape to dismiss, instant search.
 
-[Unreleased]: https://github.com/OlixIgnacious/keyholdr/compare/v1.7.1...HEAD
+[Unreleased]: https://github.com/OlixIgnacious/keyholdr/compare/v1.7.2...HEAD
+[1.7.2]: https://github.com/OlixIgnacious/keyholdr/compare/v1.7.1...v1.7.2
 [1.7.1]: https://github.com/OlixIgnacious/keyholdr/compare/v1.7.0...v1.7.1
 [1.7.0]: https://github.com/OlixIgnacious/keyholdr/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/OlixIgnacious/keyholdr/compare/v1.5.0...v1.6.0

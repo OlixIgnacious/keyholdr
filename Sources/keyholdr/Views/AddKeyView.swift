@@ -187,11 +187,11 @@ struct AddKeyView: View {
             key.platform.caseInsensitiveCompare(cleanedPlatform) == .orderedSame &&
             key.label.caseInsensitiveCompare(effectiveLabel) == .orderedSame
         }
-        return clash ? "You already have a \(cleanedPlatform) key labeled “\(effectiveLabel)” — use a different label." : nil
+        return clash ? String(localized: "You already have a \(cleanedPlatform) key labeled “\(effectiveLabel)” — use a different label.") : nil
     }
 
     @ViewBuilder
-    private func field(label labelText: String, @ViewBuilder content: () -> some View) -> some View {
+    private func field(label labelText: LocalizedStringKey, @ViewBuilder content: () -> some View) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(labelText)
                 .font(.khMonoLabel)

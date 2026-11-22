@@ -2,7 +2,7 @@ import SwiftUI
 
 struct OnboardingView: View {
     let onDismiss: () -> Void
-    var ctaTitle: String = "Add your first key"
+    var ctaTitle: LocalizedStringKey = "Add your first key"
     var ctaShortcut: String? = "⌘N"
 
     var body: some View {
@@ -18,7 +18,7 @@ struct OnboardingView: View {
                     .foregroundColor(KHTheme.ink)
                     .padding(.bottom, 10)
 
-                Text("Keyholdr")
+                Text(verbatim: "Keyholdr")
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundColor(KHTheme.ink)
 
@@ -70,7 +70,7 @@ struct OnboardingView: View {
                         Text(ctaTitle)
                             .font(.system(size: 13, weight: .medium))
                         if let ctaShortcut {
-                            Text(ctaShortcut)
+                            Text(verbatim: ctaShortcut)
                                 .font(.system(size: 11, weight: .medium, design: .monospaced))
                                 .opacity(0.6)
                         }
@@ -91,8 +91,8 @@ struct OnboardingView: View {
 
 private struct OnboardingRow: View {
     let icon: String
-    let title: String
-    let detail: String
+    let title: LocalizedStringKey
+    let detail: LocalizedStringKey
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
