@@ -103,8 +103,10 @@ Keyholdr needs macOS 13 or later. Pick the channel that suits you:
 ### Option A — Mac App Store
 
 [Download Keyholdr](https://apps.apple.com/in/app/keyholdr/id6789253781?mt=12).
-Version 1.7.1 is live, with the new app icon and the `⌘N` and `⌃⌥⌘K` fixes for
-macOS 27 (see the [changelog](CHANGELOG.md)).
+Version 1.7.2 translates the app into German, Japanese, French, Simplified
+Chinese and Spanish. It is out on Homebrew and as a direct download, and comes
+to the App Store once Apple approves it; until then the store has 1.7.1 (see
+the [changelog](CHANGELOG.md)).
 
 The App Store sandbox limits the bundled command-line tool. For the terminal,
 use the Homebrew or direct-download build (see
