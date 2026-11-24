@@ -14,7 +14,7 @@ Keychain-backed storage · Touch ID unlock · No servers, no accounts, no teleme
 [**Download on the Mac App Store**](https://apps.apple.com/in/app/keyholdr/id6789253781?mt=12)
 &nbsp;·&nbsp; [Homebrew](#option-b--homebrew)
 &nbsp;·&nbsp; [Direct download](https://github.com/OlixIgnacious/keyholdr/releases/latest)
-&nbsp;·&nbsp; [Website](https://olixignacious.github.io/keyholdr-site/)
+&nbsp;·&nbsp; [Website](https://keyholdr.dev/)
 
 [![Release](https://img.shields.io/github/v/release/OlixIgnacious/keyholdr?style=flat-square&color=121212&labelColor=121212)](https://github.com/OlixIgnacious/keyholdr/releases/latest)
 [![macOS 13+](https://img.shields.io/badge/macOS-13%2B-121212?style=flat-square&logo=apple&logoColor=white)](#install)

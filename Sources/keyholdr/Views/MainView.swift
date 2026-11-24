@@ -36,7 +36,7 @@ struct MainView: View {
     @State private var showingHelp = false
 
     @Environment(\.openURL) private var openURL
-    private static let websiteURL = URL(string: "https://olixignacious.github.io/keyholdr-site/")!
+    private static let websiteURL = URL(string: "https://keyholdr.dev/")!
 
     #if MAS_BUILD
     @State private var showingTerminalSetup = false
